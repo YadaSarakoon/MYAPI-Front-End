@@ -1,7 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-// --- Component: MyAPI SVG Logo (ตัว A ทรงมนโค้ง) ---
+// ==========================================
+// 1. TYPES & INTERFACES
+// ==========================================
+type EndpointKey = 
+  | 'AUTH' 
+  | 'CREATE_PARCEL_INSURED' 
+  | 'CREATE_PARCEL_NO_INSURED'
+  | 'TRACKING_GET'
+  | 'WEBHOOK_CONFIG'
+  | 'CUSTOMER_UPDATE';
+
+interface RequestPayload {
+  [key: string]: any;
+}
+
+// ==========================================
+// 2. SVG LOGO COMPONENT
+// ==========================================
 const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
   <svg
     viewBox="0 0 280 85"
@@ -20,21 +37,28 @@ const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
     >
       My
     </text>
+
     <g transform="translate(108, 14)">
       <path
         d="M 10 52 L 35 8 C 38 3, 44 3, 47 8 L 72 52"
         fill="none"
-        stroke="url(#myapi_cyan_gradient_sb)"
+        stroke="url(#myapi_cyan_gradient)"
         strokeWidth="13"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle cx="41" cy="45" r="7.5" fill="url(#myapi_dot_gradient_sb)" />
+      <circle 
+        cx="41" 
+        cy="45" 
+        r="7.5" 
+        fill="url(#myapi_dot_gradient)" 
+      />
     </g>
+
     <text
       x="196"
       y="64"
-      fill="url(#myapi_pi_gradient_sb)"
+      fill="url(#myapi_pi_gradient)"
       fontSize="66"
       fontFamily="Inter, system-ui, -apple-system, sans-serif"
       fontWeight="900"
@@ -42,16 +66,19 @@ const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
     >
       PI
     </text>
+
     <defs>
-      <linearGradient id="myapi_cyan_gradient_sb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <linearGradient id="myapi_cyan_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stopColor="#00E5FF" />
         <stop offset="100%" stopColor="#0088FF" />
       </linearGradient>
-      <linearGradient id="myapi_dot_gradient_sb" x1="0%" y1="0%" x2="0%" y2="100%">
+
+      <linearGradient id="myapi_dot_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
         <stop offset="0%" stopColor="#00B2FF" />
         <stop offset="100%" stopColor="#0055FF" />
       </linearGradient>
-      <linearGradient id="myapi_pi_gradient_sb" x1="0%" y1="0%" x2="100%" y2="100%">
+
+      <linearGradient id="myapi_pi_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stopColor="#0077FF" />
         <stop offset="100%" stopColor="#0044CC" />
       </linearGradient>
@@ -59,323 +86,534 @@ const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
   </svg>
 );
 
-export const Sandbox: React.FC = () => {
+// ==========================================
+// 3. MAIN SANDBOX PAGE COMPONENT
+// ==========================================
+export function Sandbox() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'create' | 'tracking' | 'webhook' | 'customer'>('overview');
-  const [activeNav, setActiveNav] = useState('Sandbox');
-  const [apiKey, setApiKey] = useState('sk_test_51MzQ...89xA2');
-  const [testResponse, setTestResponse] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'Overview' | 'Create Shipment' | 'Tracking Update' | 'Webhook Event' | 'Customer System Update'>('Create Shipment');
+  const [selectedEndpoint, setSelectedEndpoint] = useState<EndpointKey>('CREATE_PARCEL_INSURED');
+  const [bearerToken, setBearerToken] = useState<string>('Zznl0qTp3p75ceFIntT1XXQcVS44ZCl3');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [responseOutput, setResponseOutput] = useState<Record<string, any> | null>(null);
+  const [responseStatus, setResponseStatus] = useState<{ code: number; text: string } | null>(null);
+  const [lang, setLang] = useState<'TH' | 'EN'>('EN');
+  
+  // State สำหรับควบคุมแจ้งเตือนการกด Copy
+  const [copiedToken, setCopiedToken] = useState<boolean>(false);
 
-  const handleTestRequest = () => {
+  const tabs = [
+    { id: 'Overview', label: 'Overview' },
+    { id: 'Create Shipment', label: 'Create Shipment' },
+    { id: 'Tracking Update', label: 'Tracking Update' },
+    { id: 'Webhook Event', label: 'Webhook Event' },
+    { id: 'Customer System Update', label: 'Customer System Update' },
+  ] as const;
+
+  // Mock Request Data
+  const requestPayloads: Record<EndpointKey, RequestPayload> = {
+    AUTH: {
+      client_id: "maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7",
+      client_secret: "fQbMMUd3EcP9HjTaakrxvWjugMuuremA",
+      grant_type: "client_credentials",
+      scope: "parcel"
+    },
+    CREATE_PARCEL_INSURED: {
+      express: "THAI_POST",
+      sender: {
+        name: "คุณมายเอ็กซ์เพรส ภูเก็ต",
+        phoneNumber: "0813150764",
+        address: "69/429 หมู่ 2",
+        subDistrict: "วิชิต",
+        district: "เมืองภูเก็ต",
+        province: "ภูเก็ต",
+        zipCode: "83000"
+      },
+      receiver: {
+        name: "คุณมายเอ็กซ์เพรส ชลบุรี",
+        phoneNumber: "0989392917",
+        address: "188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1",
+        subDistrict: "หนองขาม",
+        district: "ศรีราชา",
+        province: "ชลบุรี",
+        zipCode: "20230"
+      },
+      note: "",
+      weightGram: 1000,
+      isInsured: true,
+      insuranceDeclaredValue: 3000,
+      insuranceProductPrice: 3000
+    },
+    CREATE_PARCEL_NO_INSURED: {
+      express: "THAI_POST",
+      sender: {
+        name: "คุณมายเอ็กซ์เพรส ภูเก็ต",
+        phoneNumber: "0813150764",
+        address: "69/429 หมู่ 2",
+        subDistrict: "วิชิต",
+        district: "เมืองภูเก็ต",
+        province: "ภูเก็ต",
+        zipCode: "83000"
+      },
+      receiver: {
+        name: "คุณมายเอ็กซ์เพรส ชลบุรี",
+        phoneNumber: "0989392917",
+        address: "188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1",
+        subDistrict: "หนองขาม",
+        district: "ศรีราชา",
+        province: "ชลบุรี",
+        zipCode: "20230"
+      },
+      note: "",
+      weightGram: 1000,
+      isInsured: false
+    },
+    TRACKING_GET: {
+      trackingNumber: "JB048855193TH"
+    },
+    WEBHOOK_CONFIG: {
+      url: "https://your-domain.com/api/v1/webhook",
+      events: ["PARCEL_CREATED", "STATUS_UPDATED"]
+    },
+    CUSTOMER_UPDATE: {
+      customerId: "CUST_991823",
+      status: "ACTIVE"
+    }
+  };
+
+  // Switch Tab Handler
+  const handleTabChange = (tabId: typeof activeTab) => {
+    setActiveTab(tabId);
+    setResponseOutput(null);
+    setResponseStatus(null);
+    
+    // Auto Select Endpoint based on Tab
+    if (tabId === 'Overview' || tabId === 'Create Shipment') {
+      setSelectedEndpoint('CREATE_PARCEL_INSURED');
+    } else if (tabId === 'Tracking Update') {
+      setSelectedEndpoint('TRACKING_GET');
+    } else if (tabId === 'Webhook Event') {
+      setSelectedEndpoint('WEBHOOK_CONFIG');
+    } else if (tabId === 'Customer System Update') {
+      setSelectedEndpoint('CUSTOMER_UPDATE');
+    }
+  };
+
+  // Copy Handler Function
+  const handleCopyToken = () => {
+    const fullToken = `Bearer ${bearerToken}`;
+    navigator.clipboard.writeText(fullToken);
+    setCopiedToken(true);
+    setTimeout(() => setCopiedToken(false), 2000);
+  };
+
+  // Mock Request Handler
+  const handleSendRequest = () => {
     setIsLoading(true);
+    setResponseOutput(null);
+    setResponseStatus(null);
+
     setTimeout(() => {
-      setTestResponse(JSON.stringify({
-        status: "success",
-        code: 200,
-        message: "Mock API Sandbox response returned successfully",
-        data: {
-          tracking_number: "EF889127394TH",
-          courier: "THAILAND_POST",
-          status: "IN_TRANSIT",
-          estimated_delivery: "2026-08-27"
-        }
-      }, null, 2));
       setIsLoading(false);
-    }, 600);
+      setResponseStatus({ code: 200, text: '200 OK' });
+
+      if (selectedEndpoint === 'AUTH') {
+        setResponseOutput({
+          expires_in: 7200,
+          token_type: "bearer",
+          access_token: "Zznl0qTp3p75ceFIntT1XXQcVS44ZCl3"
+        });
+      } else if (selectedEndpoint === 'CREATE_PARCEL_INSURED') {
+        setResponseOutput({
+          message: "create parcel success",
+          data: {
+            id: "8a88a0acb0ff10fb526cb3de97f7c1681e8cc488d4b39eb646f484fbf23cb8e3OP1721804390165",
+            status: "NEW",
+            type: "NON_COD",
+            sender: requestPayloads.CREATE_PARCEL_INSURED.sender,
+            receiver: requestPayloads.CREATE_PARCEL_INSURED.receiver,
+            shipping: {
+              express: "THAI_POST",
+              trackingNumber: "JB048855193TH",
+              weightGram: 1000
+            },
+            isInsured: true,
+            insuranceDeclaredValue: 3000,
+            insuranceProductPrice: 3000,
+            createdAt: new Date().toISOString()
+          }
+        });
+      } else if (selectedEndpoint === 'CREATE_PARCEL_NO_INSURED') {
+        setResponseOutput({
+          message: "create parcel success",
+          data: {
+            id: "8a88a0acb0ff10fb526cb3de97f7c1681e8cc488d4b39eb646f484fbf23cb8e3OP1721804390165",
+            status: "NEW",
+            type: "NON_COD",
+            sender: requestPayloads.CREATE_PARCEL_NO_INSURED.sender,
+            receiver: requestPayloads.CREATE_PARCEL_NO_INSURED.receiver,
+            shipping: {
+              express: "THAI_POST",
+              trackingNumber: "JB048855193TH",
+              weightGram: 1000
+            },
+            isInsured: false,
+            createdAt: new Date().toISOString()
+          }
+        });
+      } else if (selectedEndpoint === 'TRACKING_GET') {
+        setResponseOutput({
+          trackingNumber: "JB048855193TH",
+          express: "THAI_POST",
+          status: "IN_TRANSIT",
+          logs: [
+            { time: new Date().toISOString(), location: "ศูนย์ไปรษณีย์ภูเก็ต", status: "รับฝาก" },
+            { time: new Date().toISOString(), location: "ศูนย์ไปรษณีย์ศรีราชา", status: "อยู่ระหว่างการขนส่ง" }
+          ]
+        });
+      } else {
+        setResponseOutput({
+          message: "action successfully processed",
+          status: "SUCCESS",
+          timestamp: new Date().toISOString()
+        });
+      }
+    }, 500);
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 font-['Prompt'] flex antialiased">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
-      `}</style>
+    <>
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-      {/* 1. SIDEBAR */}
-      <aside className="w-64 bg-slate-200/80 border-r border-slate-300 flex flex-col justify-between p-4 shrink-0">
-        <div className="space-y-6">
-          <div className="flex items-center gap-2 px-2 py-1">
-            <Link to="/">
+      <div 
+        className="flex h-screen bg-[#F8FAFC] text-slate-800 overflow-hidden"
+        style={{ fontFamily: "'Kanit', 'Prompt', sans-serif" }}
+      >
+        {/* Sidebar */}
+        <aside className="w-60 bg-white text-slate-700 flex flex-col justify-between border-r border-slate-200 shrink-0">
+          <div>
+            <Link to="/" className="flex items-center px-5 py-4 border-b border-slate-100 hover:opacity-90 transition">
               <MyApiLogo className="h-7" />
             </Link>
-          </div>
 
-          <div className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 px-3">
-            OpenAPI Console
-          </div>
-
-          <nav className="space-y-1 text-sm font-bold">
-            {[
-              { name: 'API Docs', icon: '📄' },
-              { name: 'Sandbox', icon: '🧪' },
-              { name: 'Production', icon: '⚡' },
-              { name: 'Dashboard', icon: '📊' },
-              { name: 'Wallet', icon: '💳' },
-              { name: 'Webhook', icon: '🔔' },
-            ].map((item) => (
-              <button
-                key={item.name}
-                type="button"
-                onClick={() => setActiveNav(item.name)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-left transition-all cursor-pointer ${
-                  activeNav === item.name
-                    ? 'bg-white text-slate-900 shadow-sm border border-slate-200/80'
-                    : 'text-slate-600 hover:bg-slate-300/60'
-                }`}
+            <nav className="p-3 flex flex-col gap-1 text-sm font-medium">
+              <div className="px-3 py-3 text-xs font-bold text-slate-400 font-mono tracking-wider uppercase">
+                OPENAPI CONSOLE
+              </div>
+              
+              <Link 
+                to="/docs" 
+                className="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
               >
-                <span>{item.icon}</span>
-                <span>{item.name}</span>
-              </button>
-            ))}
-          </nav>
-        </div>
+                API Docs
+              </Link>
 
-        <button
-          type="button"
-          onClick={() => navigate('/login')}
-          className="w-full px-4 py-2.5 text-xs font-bold text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl text-left transition-colors cursor-pointer"
-        >
-          ออกจากระบบ
-        </button>
-      </aside>
+              <Link 
+                to="/sandbox" 
+                className="px-4 py-2.5 bg-[#EBF5FF] text-[#1A56DB] rounded-lg font-semibold transition-colors"
+              >
+                Sandbox
+              </Link>
 
-      {/* 2. MAIN CONTENT AREA */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white">
-        
-        {/* TOPBAR */}
-        <header className="h-16 border-b border-slate-200 px-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span className="font-extrabold text-sm text-slate-900">Sandbox Mode</span>
+              <Link 
+                to="/production" 
+                className="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              >
+                Production
+              </Link>
+
+              <Link 
+                to="/dashboard" 
+                className="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              >
+                Dashboard
+              </Link>
+
+              <Link 
+                to="/wallet" 
+                className="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              >
+                Wallet
+              </Link>
+
+              <Link 
+                to="/webhook" 
+                className="px-4 py-2.5 rounded-lg text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors"
+              >
+                Webhook
+              </Link>
+            </nav>
           </div>
 
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search API..."
-                className="w-48 sm:w-64 pl-8 pr-4 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs focus:outline-none focus:bg-white focus:border-blue-500 transition-colors"
-              />
-              <span className="absolute left-2.5 top-2 text-slate-400 text-xs">🔍</span>
-            </div>
-            
-            <div className="text-xs font-bold text-slate-500 flex items-center gap-2">
-              <span className="text-blue-600">TH</span> | <span>EN</span>
-            </div>
+          <div className="p-3 border-t border-slate-100">
+            <button
+              onClick={() => navigate('/login')}
+              className="w-full text-left px-4 py-2.5 text-sm font-semibold text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+            >
+              ออกจากระบบ
+            </button>
           </div>
-        </header>
+        </aside>
 
-        {/* CONTENT BODY */}
-        <main className="p-8 space-y-8 overflow-y-auto">
+        {/* Main Content Area */}
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]">
           
-          {/* HEADER TITLE & SUB-NAVIGATION TABS */}
-          <div className="space-y-4">
-            <h1 className="text-2xl font-black text-slate-900">Webhook</h1>
+          {/* Top Header Bar & Navigation Tabs */}
+          <header className="bg-white border-b border-slate-200 px-8 pt-6 pb-0 flex flex-col gap-6 shrink-0 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                <h1 className="text-xl font-bold text-slate-900">Sandbox Test Console</h1>
+              </div>
 
-            <div className="flex border-b border-slate-200 gap-8 text-xs font-bold text-slate-500">
-              {[
-                { id: 'overview', label: 'Overview' },
-                { id: 'create', label: 'Create Shipment' },
-                { id: 'tracking', label: 'Tracking Update' },
-                { id: 'webhook', label: 'Webhook Event' },
-                { id: 'customer', label: 'Customer System Update' },
-              ].map((tab) => (
+              {/* Language Switcher */}
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 select-none">
+                <span className={lang === 'TH' ? 'text-slate-900 font-bold' : 'text-slate-400'}>TH</span>
                 <button
-                  key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`pb-3 transition-colors cursor-pointer relative ${
-                    activeTab === tab.id ? 'text-blue-600 font-extrabold' : 'hover:text-slate-800'
-                  }`}
+                  onClick={() => setLang(lang === 'TH' ? 'EN' : 'TH')}
+                  className="relative w-9 h-5 bg-blue-600 rounded-full p-0.5 transition-colors focus:outline-none"
                 >
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"></span>
-                  )}
+                  <div
+                    className={`w-4 h-4 bg-white rounded-full shadow-md transform transition-transform ${
+                      lang === 'EN' ? 'translate-x-4' : 'translate-x-0'
+                    }`}
+                  />
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* GRID SECTION: AVAILABLE EVENTS & WEBHOOK SUMMARY */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            {/* LEFT TABLE: AVAILABLE EVENTS */}
-            <div className="lg:col-span-8 space-y-3">
-              <h2 className="text-base font-bold text-slate-900">Available Events</h2>
-              <p className="text-xs text-slate-500">รายการ Event ที่ระบบจะส่งไปยัง Webhook URL</p>
-
-              <div className="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-100/80 border-b border-slate-200 text-slate-700 font-bold">
-                    <tr>
-                      <th className="p-3.5 pl-6 w-1/3">Event</th>
-                      <th className="p-3.5">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-slate-600">
-                    <tr>
-                      <td className="p-3.5 pl-6">
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 font-mono font-bold rounded-lg border border-rose-100 inline-block">
-                          shipment.create
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-400">สร้างออเดอร์พัสดุสำเร็จในระบบ</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3.5 pl-6">
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 font-mono font-bold rounded-lg border border-rose-100 inline-block">
-                          shipment.updated
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-400">อัปเดตสถานะการจัดส่งพัสดุ</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3.5 pl-6">
-                        <span className="px-3 py-1 bg-rose-50 text-rose-600 font-mono font-bold rounded-lg border border-rose-100 inline-block">
-                          delivery.success
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-slate-400">พัสดุจัดส่งถึงผู้รับเรียบร้อยแล้ว</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <span className={lang === 'EN' ? 'text-slate-900 font-bold' : 'text-slate-400'}>EN</span>
               </div>
             </div>
 
-            {/* RIGHT SUMMARY BOX */}
-            <div className="lg:col-span-4 bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-4">
-              <h3 className="text-sm font-bold text-slate-900">Webhook Summary</h3>
-              
-              <div className="space-y-3 text-xs font-semibold">
-                <div className="flex justify-between items-center text-slate-600">
-                  <span className="flex items-center gap-1.5 text-slate-500">∇ HTTP Method</span>
-                  <span className="font-mono font-bold text-slate-900">POST</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-600">
-                  <span className="flex items-center gap-1.5 text-slate-500">☑ Content-Type</span>
-                  <span className="font-mono text-slate-900">app/json</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-600">
-                  <span className="flex items-center gap-1.5 text-slate-500">🔒 Authentication</span>
-                  <span className="font-mono text-slate-900">XXX-XXXX</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-600">
-                  <span className="flex items-center gap-1.5 text-slate-500">📥 Response</span>
-                  <span className="font-mono font-bold text-emerald-600">200 OK</span>
-                </div>
-                <div className="flex justify-between items-center text-slate-600">
-                  <span className="flex items-center gap-1.5 text-slate-500">🔄 Retry Policy</span>
-                  <span className="font-bold text-slate-900">3 ครั้ง</span>
-                </div>
-              </div>
-            </div>
+            {/* Sub-navigation Tabs */}
+            <nav className="flex items-center gap-8 -mb-px overflow-x-auto text-sm font-mono">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id)}
+                    className={`pb-3 border-b-2 font-semibold whitespace-nowrap transition-colors ${
+                      isActive
+                        ? 'border-blue-500 text-blue-500'
+                        : 'border-transparent text-slate-800 hover:text-slate-600'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </header>
 
-          </div>
+          {/* Console Body Content */}
+          <div className="flex-1 grid grid-cols-12 p-6 gap-6 overflow-hidden">
+            {/* Request Config Panel */}
+            <div className="col-span-6 bg-white border border-slate-200 shadow-sm rounded-xl p-5 flex flex-col justify-between overflow-y-auto max-h-full">
+              <div className="flex-1 flex flex-col min-h-0">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4 shrink-0">
+                  Select Endpoint ({activeTab})
+                </h2>
+                
+                {/* Endpoint Selection List based on activeTab */}
+                <div className="flex flex-col gap-2 mb-4 shrink-0">
+                  {(activeTab === 'Overview' || activeTab === 'Create Shipment') && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedEndpoint('CREATE_PARCEL_INSURED')}
+                        className={`p-3 rounded-lg border text-left text-sm font-medium transition flex items-center justify-between ${
+                          selectedEndpoint === 'CREATE_PARCEL_INSURED'
+                            ? 'bg-[#EBF5FF] border-[#1A56DB]/40 text-[#1A56DB] shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="font-mono text-xs bg-[#1A56DB] text-white font-bold px-2 py-0.5 rounded mr-2">POST</span>
+                        <span className="flex-1 font-mono text-xs font-semibold">/v1/parcel</span>
+                        <span className="text-xs font-semibold text-emerald-600">Insured</span>
+                      </button>
 
-          {/* DIAGRAM SECTION: HOW WEBHOOK WORKS */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h2 className="text-base font-bold text-slate-900">How Webhook Works</h2>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedEndpoint('CREATE_PARCEL_NO_INSURED')}
+                        className={`p-3 rounded-lg border text-left text-sm font-medium transition flex items-center justify-between ${
+                          selectedEndpoint === 'CREATE_PARCEL_NO_INSURED'
+                            ? 'bg-[#EBF5FF] border-[#1A56DB]/40 text-[#1A56DB] shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="font-mono text-xs bg-[#1A56DB] text-white font-bold px-2 py-0.5 rounded mr-2">POST</span>
+                        <span className="flex-1 font-mono text-xs font-semibold">/v1/parcel</span>
+                        <span className="text-xs text-slate-500">Non-Insured</span>
+                      </button>
 
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="bg-slate-200/80 px-6 py-4 rounded-xl text-center space-y-1 w-full sm:w-auto min-w-[130px]">
-                <div className="text-xl">🛒</div>
-                <div className="text-xs font-bold text-slate-700">Event Occurs</div>
-              </div>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedEndpoint('AUTH')}
+                        className={`p-3 rounded-lg border text-left text-sm font-medium transition flex items-center justify-between ${
+                          selectedEndpoint === 'AUTH'
+                            ? 'bg-[#EBF5FF] border-[#1A56DB]/40 text-[#1A56DB] shadow-sm'
+                            : 'bg-white border-slate-200 text-slate-700 hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="font-mono text-xs bg-[#1A56DB] text-white font-bold px-2 py-0.5 rounded mr-2">POST</span>
+                        <span className="flex-1 font-mono text-xs font-semibold">/v1/auth/oauth2/token</span>
+                        <span className="text-xs text-slate-500">Auth Token</span>
+                      </button>
+                    </>
+                  )}
 
-              <div className="text-slate-400 font-mono text-xs flex items-center gap-1">
-                <span>⟶</span>
-                <span className="bg-white px-3 py-1 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-600">
-                  Send to webhook
-                </span>
-                <span>⟶</span>
-              </div>
-
-              <div className="bg-slate-200/80 px-6 py-4 rounded-xl text-center space-y-1 w-full sm:w-auto min-w-[130px]">
-                <div className="text-xl">🖥️</div>
-                <div className="text-xs font-bold text-slate-700">Your Server</div>
-              </div>
-
-              <div className="text-slate-400 font-mono text-xs flex items-center gap-1">
-                <span>⟶</span>
-                <span className="bg-white px-3 py-1 border border-slate-200 rounded-lg text-[11px] font-bold text-slate-600">
-                  Return 200 OK
-                </span>
-                <span>⟶</span>
-              </div>
-
-              <div className="bg-slate-200/80 px-6 py-4 rounded-xl text-center space-y-1 w-full sm:w-auto min-w-[130px]">
-                <div className="text-xl">⏱️</div>
-                <div className="text-xs font-bold text-slate-700">Completed</div>
-              </div>
-            </div>
-          </div>
-
-          {/* TEST CREDENTIALS & SAMPLE MOCK API CONSOLE */}
-          <div className="space-y-4 pt-4 border-t border-slate-100">
-            <h2 className="text-base font-bold text-slate-900">Test Credentials & Mock API</h2>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* TEST CREDENTIALS BOX */}
-              <div className="bg-slate-900 text-white p-6 rounded-2xl space-y-4">
-                <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                  Test Credentials
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-xs text-slate-400">Sandbox API Key</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={apiKey}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs font-mono text-emerald-400 focus:outline-none"
-                    />
+                  {activeTab === 'Tracking Update' && (
                     <button
                       type="button"
-                      onClick={() => alert("Copied API Key!")}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-xs font-bold rounded-xl transition-colors cursor-pointer shrink-0"
+                      onClick={() => setSelectedEndpoint('TRACKING_GET')}
+                      className="p-3 bg-[#EBF5FF] border border-[#1A56DB]/40 text-[#1A56DB] rounded-lg text-left text-sm font-medium flex items-center justify-between"
                     >
-                      Copy
+                      <span className="font-mono text-xs bg-emerald-600 text-white font-bold px-2 py-0.5 rounded mr-2">GET</span>
+                      <span className="flex-1 font-mono text-xs font-semibold">/v1/tracking/:trackingNumber</span>
+                      <span className="text-xs text-slate-500">Track Info</span>
                     </button>
+                  )}
+
+                  {activeTab === 'Webhook Event' && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedEndpoint('WEBHOOK_CONFIG')}
+                      className="p-3 bg-[#EBF5FF] border border-[#1A56DB]/40 text-[#1A56DB] rounded-lg text-left text-sm font-medium flex items-center justify-between"
+                    >
+                      <span className="font-mono text-xs bg-[#1A56DB] text-white font-bold px-2 py-0.5 rounded mr-2">POST</span>
+                      <span className="flex-1 font-mono text-xs font-semibold">/v1/webhook/config</span>
+                      <span className="text-xs text-slate-500">Config Hook</span>
+                    </button>
+                  )}
+
+                  {activeTab === 'Customer System Update' && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedEndpoint('CUSTOMER_UPDATE')}
+                      className="p-3 bg-[#EBF5FF] border border-[#1A56DB]/40 text-[#1A56DB] rounded-lg text-left text-sm font-medium flex items-center justify-between"
+                    >
+                      <span className="font-mono text-xs bg-amber-600 text-white font-bold px-2 py-0.5 rounded mr-2">PUT</span>
+                      <span className="flex-1 font-mono text-xs font-semibold">/v1/customer/status</span>
+                      <span className="text-xs text-slate-500">Update Customer</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Authorization Header Input With Copy Button */}
+                {selectedEndpoint !== 'AUTH' && (
+                  <div className="mb-4 shrink-0">
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-xs font-semibold text-slate-600">Authorization Header</label>
+                      <button
+                        type="button"
+                        onClick={handleCopyToken}
+                        className="text-[11px] font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1 transition"
+                      >
+                        {copiedToken ? (
+                          <span className="text-emerald-600 font-semibold flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Copied!
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Copy
+                          </span>
+                        )}
+                      </button>
+                    </div>
+
+                    <div className="relative flex items-center">
+                      <input
+                        type="text"
+                        value={`Bearer ${bearerToken}`}
+                        onChange={(e) => setBearerToken(e.target.value.replace('Bearer ', ''))}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2.5 pl-3 pr-16 text-xs font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-[#1A56DB]"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleCopyToken}
+                        className="absolute right-2 px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 text-slate-600 text-[11px] font-medium rounded-md shadow-sm transition"
+                      >
+                        {copiedToken ? 'Copied' : 'Copy'}
+                      </button>
+                    </div>
                   </div>
-                </div>
+                )}
 
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={handleTestRequest}
-                    disabled={isLoading}
-                    className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all cursor-pointer"
-                  >
-                    {isLoading ? "กำลังยิง Mock API..." : "🚀 ยิงข้อความทดสอบ (Send Sample Request)"}
-                  </button>
+                {/* Request Body JSON */}
+                <h3 className="text-xs font-semibold text-slate-600 mb-2 shrink-0">Request Body (JSON)</h3>
+                <div className="flex-1 min-h-[160px] bg-[#0B132B] rounded-lg border border-slate-800 overflow-hidden shadow-sm">
+                  <pre className="p-4 h-full font-mono text-xs text-[#38BDF8] overflow-auto">
+                    {JSON.stringify(requestPayloads[selectedEndpoint], null, 2)}
+                  </pre>
                 </div>
               </div>
 
-              {/* SAMPLE RESPONSE BOX */}
-              <div className="bg-slate-950 text-slate-300 p-6 rounded-2xl border border-slate-800 space-y-3 font-mono text-xs">
-                <div className="flex items-center justify-between text-slate-500 border-b border-slate-800 pb-2">
-                  <span>Sample Response</span>
-                  <span className="text-emerald-400">200 OK</span>
-                </div>
+              {/* Action Button */}
+              <button
+                type="button"
+                onClick={handleSendRequest}
+                disabled={isLoading}
+                className="mt-4 w-full bg-[#1A56DB] hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold py-3 rounded-lg transition shadow-sm flex items-center justify-center gap-2 text-sm shrink-0"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Sending Request...</span>
+                  </>
+                ) : (
+                  <span>Send Test Request</span>
+                )}
+              </button>
+            </div>
 
-                <pre className="overflow-x-auto text-[11px] leading-relaxed text-slate-300">
-                  {testResponse || `// กดปุ่ม "ยิงข้อความทดสอบ" ด้านซ้ายเพื่อดู Sample Response
-{
-  "status": "waiting_for_trigger",
-  "message": "Click the button to simulate API payload"
-}`}
-                </pre>
+            {/* Response Console Panel */}
+            <div className="col-span-6 bg-white border border-slate-200 shadow-sm rounded-xl p-5 flex flex-col overflow-hidden max-h-full">
+              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3 shrink-0">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Response Console</h2>
+                {responseStatus && (
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-[#EBF5FF] text-[#1A56DB] font-bold border border-blue-200">
+                    {responseStatus.text}
+                  </span>
+                )}
               </div>
 
+              <div className="flex-1 bg-[#0B132B] border border-slate-800 rounded-lg p-4 font-mono text-xs overflow-auto min-h-0 shadow-sm">
+                {isLoading && (
+                  <div className="h-full flex flex-col items-center justify-center text-slate-400 gap-2">
+                    <div className="w-5 h-5 border-2 border-[#38BDF8] border-t-transparent rounded-full animate-spin"></div>
+                    <span>Waiting for API response...</span>
+                  </div>
+                )}
+
+                {!isLoading && !responseOutput && (
+                  <div className="h-full flex items-center justify-center text-slate-500">
+                    Click "Send Test Request" to simulate API call.
+                  </div>
+                )}
+
+                {!isLoading && responseOutput && (
+                  <pre className="text-[#38BDF8] whitespace-pre-wrap">
+                    {JSON.stringify(responseOutput, null, 2)}
+                  </pre>
+                )}
+              </div>
             </div>
           </div>
-
         </main>
       </div>
-
-    </div>
+    </>
   );
-};
+}
+
+export default Sandbox;

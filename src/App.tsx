@@ -3,7 +3,7 @@ import { Home } from './pages/Home';
 import { SignUp } from './pages/SignUp';
 import { Login } from './pages/Login';
 import { ApiDocs } from './pages/ApiDocs';
-import { Sandbox } from './pages/Sandbox';
+import { Sandbox }  from './pages/Sandbox';
 
 export default function App() {
   return (
