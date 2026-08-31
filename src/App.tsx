@@ -3,7 +3,7 @@ import { Home } from './pages/Home';
 import { SignUp } from './pages/SignUp';
 import { Login } from './pages/Login';
 import { ApiDocs } from './pages/ApiDocs';
-
+import { Sandbox } from './pages/Sandbox';
 
 export default function App() {
   return (
@@ -15,6 +15,7 @@ export default function App() {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/login" element={<Login />} />
       <Route path="/docs" element={<ApiDocs />} />
+      <Route path="/sandbox" element={<Sandbox />} />
     </Routes>
   );
 }
