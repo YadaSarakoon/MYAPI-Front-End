@@ -61,8 +61,6 @@ interface Endpoint {
   errors: ErrorItem[];
 }
 
-type StringMap = Record<string, string>;
-
 interface FormField {
   key: string;
   value: string;
@@ -1178,47 +1176,6 @@ const GROUPS = GROUP_ORDER.map((group) => ({
   label: group,
   items: ENDPOINTS.filter((endpoint) => endpoint.group === group),
 }));
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-
-function buildResolvedPath(
-  endpoint: Endpoint,
-  pathValues: StringMap,
-): string {
-  let path = endpoint.path;
-
-  endpoint.pathParams.forEach((param) => {
-    path = path.replace(
-      `:${param.key}`,
-      pathValues[param.key] || `:${param.key}`,
-    );
-  });
-
-  return path;
-}
-
-function buildQueryString(
-  endpoint: Endpoint,
-  queryValues: StringMap,
-): string {
-  const active = endpoint.queryParams.filter(
-    (param) => (queryValues[param.key] ?? '') !== '',
-  );
-
-  if (!active.length) return '';
-
-  return (
-    '?' +
-    active
-      .map(
-        (param) =>
-          `${param.key}=${encodeURIComponent(queryValues[param.key])}`,
-      )
-      .join('&')
-  );
-}
 
 /* ============================================================
    UI PRIMITIVES
