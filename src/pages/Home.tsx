@@ -118,13 +118,6 @@ const ShipmentAutomationArt: React.FC = () => (
 );
 
 // --- Interfaces & Types ---
-interface ContactFormState {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
 interface RegisterFormState {
   company: string;
   fullName: string;
@@ -170,15 +163,6 @@ export const Home: React.FC = () => {
   // Form Tab State ('contact' | 'register')
   const [activeFormTab, setActiveFormTab] = useState<'contact' | 'register'>('contact');
 
-  // Contact Form State
-  const [contactForm, setContactForm] = useState<ContactFormState>({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [contactSubmitted, setContactSubmitted] = useState<boolean>(false);
-
   // Goship Register Form State
   const [registerForm, setRegisterForm] = useState<RegisterFormState>({
     company: '',
@@ -191,27 +175,11 @@ export const Home: React.FC = () => {
   const [registerSubmitted, setRegisterSubmitted] = useState<boolean>(false);
 
   // Form Handlers
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setContactForm((prev) => ({ ...prev, [name]: value }));
-  };
-
   const handleRegisterInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setContactSubmitted(true);
-    setTimeout(() => {
-      setContactSubmitted(false);
-      setContactForm({ name: '', email: '', subject: '', message: '' });
-    }, 4000);
   };
 
   const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
