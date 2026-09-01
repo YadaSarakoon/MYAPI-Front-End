@@ -68,6 +68,12 @@ interface FormField {
   value: string;
 }
 
+interface SandboxCredentials {
+  clientId: string;
+  clientSecret: string;
+  createdAt: string;
+}
+
 type ApiResponseState =
   | { loading: true }
   | { loading?: false; status: number; ms: number; body: unknown; demo?: boolean }
@@ -526,6 +532,32 @@ function buildQueryString(endpoint: Endpoint, queryValues: StringMap): string {
   return '?' + active.map((qp) => `${qp.key}=${encodeURIComponent(queryValues[qp.key])}`).join('&');
 }
 
+function randomToken(length: number): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let out = '';
+  const cryptoObj = typeof window !== 'undefined' ? window.crypto : undefined;
+  if (cryptoObj?.getRandomValues) {
+    const values = new Uint32Array(length);
+    cryptoObj.getRandomValues(values);
+    for (let i = 0; i < length; i++) out += chars[values[i] % chars.length];
+  } else {
+    for (let i = 0; i < length; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function generateSandboxCredentials(): SandboxCredentials {
+  return { clientId: randomToken(32), clientSecret: randomToken(32), createdAt: new Date().toISOString() };
+}
+
+function authBodyFromCredentials(creds: SandboxCredentials): string {
+  return JSON.stringify(
+    { client_id: creds.clientId, client_secret: creds.clientSecret, grant_type: 'client_credentials', scope: 'parcel' },
+    null,
+    2
+  );
+}
+
 function buildCurl(
   endpoint: Endpoint,
   env: Env,
@@ -835,10 +867,182 @@ function Sidebar({
 }
 
 /* ============================================================
+   SANDBOX CREDENTIALS
+   ============================================================ */
+
+interface CredentialsCardProps {
+  loggedIn: boolean;
+  credentials: SandboxCredentials | null;
+  onLogin: () => void;
+  onGenerate: () => void;
+  onRegenerate: () => void;
+  onGenerateAccessToken: () => void;
+}
+
+function CredentialsCard({
+  loggedIn,
+  credentials,
+  onLogin,
+  onGenerate,
+  onRegenerate,
+  onGenerateAccessToken,
+}: CredentialsCardProps) {
+  const [secretVisible, setSecretVisible] = useState(false);
+  const [confirmingRegenerate, setConfirmingRegenerate] = useState(false);
+
+  const handleRegenerateClick = () => {
+    if (!confirmingRegenerate) {
+      setConfirmingRegenerate(true);
+      return;
+    }
+    setConfirmingRegenerate(false);
+    setSecretVisible(false);
+    onRegenerate();
+  };
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-emerald-50 blur-3xl" />
+      <div className="relative p-6 lg:p-7">
+        <div className="mb-2 inline-flex rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+          Sandbox · Instant
+        </div>
+        <h2 className="text-base font-bold text-slate-950">Sandbox Credentials</h2>
+        <p className="mt-1 max-w-lg text-xs leading-6 text-slate-500">
+          สร้าง client_id / client_secret สำหรับ Sandbox ได้ทันที ไม่ต้องรออนุมัติ ต่างจาก Production ที่ต้องผ่านการตรวจสอบก่อนใช้งาน
+        </p>
+
+        <div className="mt-5">
+          {!loggedIn && (
+            <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-6 text-slate-500">
+                เข้าสู่ระบบก่อน เพื่อสร้าง credentials ของท่านเอง (ป้องกันการสุ่มสร้างจำนวนมาก)
+              </p>
+              <button
+                type="button"
+                onClick={onLogin}
+                className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-slate-800"
+              >
+                เข้าสู่ระบบ
+              </button>
+            </div>
+          )}
+
+          {loggedIn && !credentials && (
+            <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-6 text-slate-500">
+                ยังไม่มี credentials — กดสร้างเพื่อรับ client_id และ client_secret ทันที
+              </p>
+              <button
+                type="button"
+                onClick={onGenerate}
+                className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-indigo-200 transition-colors hover:bg-indigo-700"
+              >
+                Generate Sandbox Credentials
+              </button>
+            </div>
+          )}
+
+          {loggedIn && credentials && (
+            <div className="space-y-3">
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">client_id</span>
+                  <CopyButton text={credentials.clientId} />
+                </div>
+                <div className="px-3 py-2.5">
+                  <code className="break-all font-mono text-[11px] text-slate-700">{credentials.clientId}</code>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">client_secret</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setSecretVisible((v) => !v)}
+                      className="rounded-md px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    >
+                      {secretVisible ? 'ซ่อน' : 'แสดง'}
+                    </button>
+                    <CopyButton text={credentials.clientSecret} />
+                  </div>
+                </div>
+                <div className="px-3 py-2.5">
+                  <code className="break-all font-mono text-[11px] text-slate-700">
+                    {secretVisible ? credentials.clientSecret : '•'.repeat(32)}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[10px] text-slate-400">
+                  สร้างเมื่อ {new Date(credentials.createdAt).toLocaleString('th-TH')}
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {confirmingRegenerate && (
+                    <>
+                      <span className="text-[10px] font-semibold text-rose-600">secret เดิมจะใช้งานไม่ได้ทันที ยืนยันหรือไม่?</span>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingRegenerate(false)}
+                        className="rounded-lg px-3 py-1.5 text-[11px] font-semibold text-slate-500 hover:bg-slate-100"
+                      >
+                        ยกเลิก
+                      </button>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={onGenerateAccessToken}
+                    disabled={confirmingRegenerate}
+                    className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-indigo-200 transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Generate Access Token →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRegenerateClick}
+                    className={`rounded-lg px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                      confirmingRegenerate
+                        ? 'bg-rose-600 text-white hover:bg-rose-500'
+                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    {confirmingRegenerate ? 'ยืนยัน Regenerate' : 'Regenerate'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
    OVERVIEW
    ============================================================ */
 
-function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: string) => void }) {
+function Overview({
+  onNavigate,
+  loggedIn,
+  credentials,
+  onLogin,
+  onGenerateCredentials,
+  onRegenerateCredentials,
+  onGenerateAccessToken,
+}: {
+  onNavigate: (page: DocsPage, endpointId?: string) => void;
+  loggedIn: boolean;
+  credentials: SandboxCredentials | null;
+  onLogin: () => void;
+  onGenerateCredentials: () => void;
+  onRegenerateCredentials: () => void;
+  onGenerateAccessToken: () => void;
+}) {
   const overviewCards = [
     ['Authentication', 'สร้าง Access Token ด้วย client_id / client_secret แล้วเริ่มยิงคำขอทดสอบ'],
     ['Parcel API', 'ทดลองสร้าง ค้นหา ลบพัสดุ และตรวจสอบสถานะการชำระเงิน COD'],
@@ -869,6 +1073,15 @@ function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: st
               </div>
             </div>
           </section>
+
+          <CredentialsCard
+            loggedIn={loggedIn}
+            credentials={credentials}
+            onLogin={onLogin}
+            onGenerate={onGenerateCredentials}
+            onRegenerate={onRegenerateCredentials}
+            onGenerateAccessToken={onGenerateAccessToken}
+          />
 
           {/* What you can test */}
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -934,14 +1147,20 @@ export function Sandbox() {
   const [env, setEnv] = useState<Env>('test');
   const [search, setSearch] = useState('');
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [credentials, setCredentials] = useState<SandboxCredentials | null>(null);
+  const [issuedAccessToken, setIssuedAccessToken] = useState<string | null>(null);
 
   const endpoint = useMemo(() => ENDPOINTS.find((e) => e.id === activeId) || ENDPOINTS[0], [activeId]);
 
-  const initFor = (ep: Endpoint): { pv: StringMap; qv: StringMap; body: string } => {
+  const initFor = (ep: Endpoint, creds: SandboxCredentials | null = credentials): { pv: StringMap; qv: StringMap; body: string } => {
     const pv: StringMap = {};
     ep.pathParams.forEach((p) => (pv[p.key] = p.example));
     const qv: StringMap = {};
     ep.queryParams.forEach((q) => (qv[q.key] = q.required ? q.example : ''));
+    if (ep.id === 'generate-access-token' && creds) {
+      return { pv, qv, body: authBodyFromCredentials(creds) };
+    }
     return { pv, qv, body: ep.bodyExample != null ? JSON.stringify(ep.bodyExample, null, 2) : '' };
   };
 
@@ -971,18 +1190,101 @@ export function Sandbox() {
     setResponse({ loading: true });
     const delay = 500 + Math.random() * 400;
     setTimeout(() => {
-      const hasToken = token.trim().length > 0;
-      if (endpoint.auth === 'bearer' && !hasToken) {
+      if (endpoint.id === 'generate-access-token') {
+        let parsed: { client_id?: string; client_secret?: string } = {};
+        try {
+          parsed = JSON.parse(bodyText || '{}');
+        } catch {
+          setResponse({
+            status: 400,
+            ms: Math.round(delay),
+            body: { status: 400, message: 'Invalid JSON body', name: 'BadRequestException' },
+            demo: true,
+          });
+          return;
+        }
+        const matches =
+          credentials != null &&
+          parsed.client_id === credentials.clientId &&
+          parsed.client_secret === credentials.clientSecret;
+        if (!matches) {
+          setResponse({
+            status: 400,
+            ms: Math.round(delay),
+            body:
+              (endpoint.errors[0]?.body as Record<string, unknown>) ??
+              { error: 'invalid_client', error_description: 'Invalid client authentication' },
+            demo: true,
+          });
+          return;
+        }
+        const issued = randomToken(32);
+        setIssuedAccessToken(issued);
+        setToken(issued);
         setResponse({
-          status: 401,
+          status: 200,
           ms: Math.round(delay),
-          body: { status: 401, message: 'Access token is missing or unauthorized', name: 'UnauthorizedException' },
+          body: { expires_in: 7200, token_type: 'bearer', access_token: issued },
           demo: true,
         });
         return;
       }
+
+      const typedToken = token.trim();
+      if (endpoint.auth === 'bearer') {
+        if (!typedToken) {
+          setResponse({
+            status: 401,
+            ms: Math.round(delay),
+            body: { status: 401, message: 'Access token is missing or unauthorized', name: 'UnauthorizedException' },
+            demo: true,
+          });
+          return;
+        }
+        if (typedToken !== issuedAccessToken) {
+          setResponse({
+            status: 401,
+            ms: Math.round(delay),
+            body: { status: 401, message: 'Access token is invalid or expired', name: 'UnauthorizedException' },
+            demo: true,
+          });
+          return;
+        }
+      }
       setResponse({ status: endpoint.successCode, ms: Math.round(delay), body: endpoint.successExample, demo: true });
     }, delay);
+  };
+
+  const handleLogin = () => setLoggedIn(true);
+
+  const handleGenerateCredentials = () => {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    if (activeId === 'generate-access-token') {
+      setBodyText(authBodyFromCredentials(creds));
+      setResponse(null);
+    }
+  };
+
+  const handleRegenerateCredentials = () => {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    if (activeId === 'generate-access-token') {
+      setBodyText(authBodyFromCredentials(creds));
+      setResponse(null);
+    }
+  };
+
+  const handleGenerateAccessToken = () => {
+    selectEndpoint('generate-access-token');
+  };
+
+  const handleUseIssuedToken = () => {
+    if (issuedAccessToken) setToken(issuedAccessToken);
   };
 
   const curl = buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
@@ -1015,6 +1317,12 @@ export function Sandbox() {
             }
             setPage(target);
           }}
+          loggedIn={loggedIn}
+          credentials={credentials}
+          onLogin={handleLogin}
+          onGenerateCredentials={handleGenerateCredentials}
+          onRegenerateCredentials={handleRegenerateCredentials}
+          onGenerateAccessToken={handleGenerateAccessToken}
         />
       ) : (
         <main className="min-w-0 flex-1 overflow-y-auto">
@@ -1298,26 +1606,100 @@ export function Sandbox() {
                       <button
                         type="button"
                         onClick={handleSend}
-                        className="shrink-0 bg-indigo-600 px-4 text-xs font-bold text-white transition-colors hover:bg-indigo-500"
+                        disabled={endpoint.id === 'generate-access-token' && !credentials}
+                        className="shrink-0 bg-indigo-600 px-4 text-xs font-bold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
                       >
                         Send
                       </button>
                     </div>
 
-                    <Field label="Credentials">
-                      <input
-                        type="password"
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                        placeholder="วาง access_token ที่นี่"
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-                      />
-                      {endpoint.id === 'generate-access-token' && (
-                        <p className="mt-1.5 text-[10px] text-slate-400">
-                          endpoint นี้ไม่ต้องใช้ token — ใช้ client_id / client_secret ใน body แทน
-                        </p>
-                      )}
-                    </Field>
+                    {endpoint.id === 'generate-access-token' ? (
+                      <Field label="Sandbox Credentials">
+                        {credentials ? (
+                          <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
+                            <div className="flex items-start gap-2">
+                              <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] text-emerald-700">
+                                ✓
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[11px] font-bold text-emerald-800">Using Sandbox Credentials</p>
+                                <p className="mt-1 text-[10px] leading-5 text-emerald-700">
+                                  ระบบเติม client_id และ client_secret จาก Overview ให้ใน Request Body อัตโนมัติ
+                                </p>
+                              </div>
+                            </div>
+                            <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                              <div className="rounded-lg border border-emerald-100 bg-white px-2.5 py-2">
+                                <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">client_id</div>
+                                <code className="mt-1 block truncate font-mono text-[10px] text-slate-700">{credentials.clientId}</code>
+                              </div>
+                              <div className="rounded-lg border border-emerald-100 bg-white px-2.5 py-2">
+                                <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">client_secret</div>
+                                <code className="mt-1 block truncate font-mono text-[10px] text-slate-700">{'•'.repeat(24)}</code>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                            <div className="flex items-start gap-2">
+                              <span className="mt-0.5">⚠️</span>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[11px] font-bold text-amber-800">ยังไม่มี Sandbox Credentials</p>
+                                <p className="mt-1 text-[10px] leading-5 text-amber-700">
+                                  กลับไปที่ Overview เพื่อสร้าง client_id และ client_secret ก่อน Generate Access Token
+                                </p>
+                                <button
+                                  type="button"
+                                  onClick={() => setPage('overview')}
+                                  className="mt-2 rounded-lg bg-white px-3 py-1.5 text-[10px] font-bold text-amber-700 shadow-sm ring-1 ring-amber-200 transition-colors hover:bg-amber-50"
+                                >
+                                  ไปที่ Overview →
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </Field>
+                    ) : (
+                      <Field label="Access Token">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="password"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            placeholder="วาง access_token ที่นี่"
+                            className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                          />
+                          {endpoint.auth === 'bearer' && issuedAccessToken && (
+                            <button
+                              type="button"
+                              onClick={handleUseIssuedToken}
+                              className="shrink-0 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
+                            >
+                              ใช้ token ล่าสุด
+                            </button>
+                          )}
+                        </div>
+                        {endpoint.auth === 'bearer' && !issuedAccessToken && (
+                          <p className="mt-1.5 text-[10px] text-amber-600">
+                            ยังไม่มี access_token ที่ออกจริง — ไปเรียก{' '}
+                            <button
+                              type="button"
+                              onClick={() => selectEndpoint('generate-access-token')}
+                              className="font-semibold underline underline-offset-2 hover:text-amber-700"
+                            >
+                              Generate Access Token
+                            </button>{' '}
+                            ให้สำเร็จก่อน
+                          </p>
+                        )}
+                        {endpoint.auth === 'bearer' && issuedAccessToken && (
+                          <p className="mt-1.5 text-[10px] text-emerald-600">
+                            ✓ ระบบออก access_token แล้วและพร้อมใช้งาน
+                          </p>
+                        )}
+                      </Field>
+                    )}
 
                     {endpoint.pathParams.length > 0 && (
                       <Field label="Path Params">
@@ -1365,10 +1747,16 @@ export function Sandbox() {
                         <textarea
                           value={bodyText}
                           onChange={(e) => setBodyText(e.target.value)}
+                          readOnly={endpoint.id === 'generate-access-token' && !!credentials}
                           rows={10}
                           spellCheck={false}
                           className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 font-mono text-[11px] outline-none focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100"
                         />
+                        {endpoint.id === 'generate-access-token' && credentials && (
+                          <p className="mt-1.5 text-[10px] text-slate-400">
+                            ระบบเติม client_id / client_secret จาก Sandbox Credentials ให้อัตโนมัติ เพื่อป้องกันการกรอก Credential ผิด
+                          </p>
+                        )}
                       </Field>
                     )}
 
@@ -1433,7 +1821,48 @@ export function Sandbox() {
 
                     {response && !response.loading && (
                       <>
+                        {endpoint.id === 'generate-access-token' && response.status === 200 && typeof response.body === 'object' && response.body !== null && 'access_token' in response.body && (
+                          <div className="mb-3 overflow-hidden rounded-xl border border-emerald-200 bg-emerald-50/60">
+                            <div className="border-b border-emerald-100 px-4 py-3">
+                              <div className="flex items-center gap-2">
+                                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs text-emerald-700">✓</span>
+                                <div>
+                                  <div className="text-[11px] font-bold text-emerald-800">Access Token Generated</div>
+                                  <div className="mt-0.5 text-[10px] text-emerald-700">Token พร้อมสำหรับเรียก API ที่ต้องใช้ Bearer Authentication</div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="p-4">
+                              <div className="mb-1.5 text-[9px] font-bold uppercase tracking-wider text-slate-500">access_token</div>
+                              <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-white px-2.5 py-2">
+                                <code className="min-w-0 flex-1 break-all font-mono text-[10px] text-slate-700">
+                                  {(response.body as { access_token: string }).access_token}
+                                </code>
+                                <CopyButton text={(response.body as { access_token: string }).access_token} />
+                              </div>
+                              <div className="mt-3 grid grid-cols-2 gap-2">
+                                <div className="rounded-lg bg-white px-3 py-2">
+                                  <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Token Type</div>
+                                  <div className="mt-1 font-mono text-[10px] font-semibold text-slate-700">Bearer</div>
+                                </div>
+                                <div className="rounded-lg bg-white px-3 py-2">
+                                  <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">Expires In</div>
+                                  <div className="mt-1 font-mono text-[10px] font-semibold text-slate-700">7200 seconds</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                         <CodeBlock>{JSON.stringify(response.body, null, 2)}</CodeBlock>
+                        {endpoint.id === 'generate-access-token' && response.status === 200 && (
+                          <button
+                            type="button"
+                            onClick={() => selectEndpoint('create-parcel-non-cod')}
+                            className="mt-3 w-full rounded-lg bg-indigo-600 px-3 py-2 text-[11px] font-bold text-white transition-colors hover:bg-indigo-700"
+                          >
+                            ไปทดลอง Parcel API →
+                          </button>
+                        )}
                         {response.demo && (
                           <p className="mt-2 text-[10px] text-slate-400">
                             * โหมดสาธิต — แสดงตัวอย่างการตอบกลับสำหรับ endpoint นี้ ยังไม่ได้เชื่อมต่อกับเซิร์ฟเวอร์จริง
