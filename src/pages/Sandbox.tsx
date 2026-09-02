@@ -1309,9 +1309,10 @@ export function Sandbox() {
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [loggedIn, setLoggedIn] = useState(false);
   const [sandboxCredentials, setSandboxCredentials] = useState<Credentials | null>(null);
-  const [productionCredentials] = useState<Credentials | null>(null);
+  const [productionCredentials, setProductionCredentials] = useState<Credentials | null>(null);
   // Prototype default: production is locked until the admin approves the application.
   const [productionAccess, setProductionAccess] = useState<ProductionAccessStatus>('not_applied');
+  const [productionAccessGateSeen, setProductionAccessGateSeen] = useState(false);
   const [issuedAccessTokens, setIssuedAccessTokens] = useState<Record<Env, string | null>>({ test: null, prod: null });
   const [responseView, setResponseView] = useState<'body' | 'headers'>('body');
 
@@ -1353,6 +1354,25 @@ export function Sandbox() {
     setCollapsedGroups((current) => ({ ...current, [group]: !current[group] }));
   };
 
+  const issueAccessTokenForEnv = (targetEnv: Env = env) => {
+    const creds = targetEnv === 'test' ? sandboxCredentials : productionCredentials;
+    if (!creds) {
+      if (targetEnv === 'prod') {
+        const newCreds = generateCredentials();
+        setProductionCredentials(newCreds);
+        setBodyText(authBodyFromCredentials(newCreds));
+      }
+      return null;
+    }
+
+    const issued = randomToken(32);
+    setIssuedAccessTokens((current) => ({ ...current, [targetEnv]: issued }));
+    setToken(issued);
+    if (targetEnv === 'test') setBodyText(authBodyFromCredentials(creds));
+    if (targetEnv === 'prod') setBodyText(authBodyFromCredentials(creds));
+    return issued;
+  };
+
   const handleSend = () => {
     if (productionLocked) {
       setResponse({
@@ -1366,6 +1386,11 @@ export function Sandbox() {
         demo: true,
       });
       return;
+    }
+
+    if (env === 'prod' && ['create-parcel-non-cod', 'create-parcel-cod'].includes(endpoint.id)) {
+      const confirmed = window.confirm('จะสร้างพัสดุจริง มีค่าใช้จ่าย ยืนยัน?');
+      if (!confirmed) return;
     }
 
     setResponse({ loading: true });
@@ -1467,14 +1492,36 @@ export function Sandbox() {
   const handleApplyProduction = () => {
     // Prototype behavior. Replace this with POST /production-access-request in the real app.
     setProductionAccess('pending');
+    setProductionAccessGateSeen(true);
+  };
+
+  const handleSimulateProductionApproval = () => {
+    setProductionAccess('approved');
+    setProductionAccessGateSeen(false);
+    setProductionCredentials((current) => current ?? generateCredentials());
+    setEnv('prod');
+    setResponse(null);
+  };
+
+  const handleOpenProductionAccessGate = () => {
+    setProductionAccessGateSeen(true);
+    window.location.assign('/production');
   };
 
   const handleEnvironmentChange = (nextEnv: Env) => {
+    if (nextEnv === 'prod' && productionAccess === 'approved' && !productionCredentials) {
+      setProductionCredentials(generateCredentials());
+    }
+
     setEnv(nextEnv);
     setToken(issuedAccessTokens[nextEnv] ?? '');
     setResponse(null);
 
-    const nextCredentials = nextEnv === 'test' ? sandboxCredentials : productionCredentials;
+    const nextCredentials = nextEnv === 'test' ? sandboxCredentials : productionCredentials ?? (nextEnv === 'prod' ? generateCredentials() : null);
+    if (nextEnv === 'prod' && !productionCredentials && nextCredentials) {
+      setProductionCredentials(nextCredentials);
+    }
+
     if (activeId === 'generate-access-token' && nextCredentials) {
       setBodyText(authBodyFromCredentials(nextCredentials));
     } else if (activeId === 'generate-access-token') {
@@ -1483,8 +1530,35 @@ export function Sandbox() {
   };
 
   const handleGenerateAccessToken = () => {
-    if (productionLocked) return;
+    if (env === 'prod' && productionAccess !== 'approved') {
+      setProductionAccessGateSeen(true);
+      setResponse({
+        status: 403,
+        ms: 0,
+        body: {
+          status: 403,
+          message: 'Production access is required before issuing a live token.',
+          name: 'ProductionAccessRequired',
+        },
+        demo: true,
+      });
+      return;
+    }
+
+    if (env === 'prod' && !productionCredentials) {
+      setProductionCredentials(generateCredentials());
+    }
+
     selectEndpoint('generate-access-token');
+    const issued = issueAccessTokenForEnv();
+    if (issued) {
+      setResponse({
+        status: 200,
+        ms: 0,
+        body: { expires_in: 7200, token_type: 'bearer', access_token: issued },
+        demo: true,
+      });
+    }
   };
 
   const handleUseIssuedToken = () => {
@@ -1838,13 +1912,22 @@ export function Sandbox() {
                                   </>
                                 )}
                                 {productionAccess !== 'pending' && (
-                                  <button
-                                    type="button"
-                                    onClick={handleApplyProduction}
-                                    className="mt-3 rounded-lg bg-violet-600 px-3.5 py-2 text-[11px] font-bold text-white transition-colors hover:bg-violet-700"
-                                  >
-                                    {productionAccess === 'rejected' ? 'Re-apply' : 'Apply for Production Access'}
-                                  </button>
+                                  <div className="mt-3 flex flex-wrap gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={handleApplyProduction}
+                                      className="rounded-lg bg-violet-600 px-3.5 py-2 text-[11px] font-bold text-white transition-colors hover:bg-violet-700"
+                                    >
+                                      {productionAccess === 'rejected' ? 'Re-apply' : 'Apply for Production Access'}
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={handleSimulateProductionApproval}
+                                      className="rounded-lg border border-violet-200 bg-white px-3.5 py-2 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-50"
+                                    >
+                                      Simulate Approved
+                                    </button>
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -1923,25 +2006,64 @@ export function Sandbox() {
                       </Field>
                     ) : (
                       <Field label="Access Token">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="password"
-                            value={token}
-                            onChange={(e) => setToken(e.target.value)}
-                            placeholder="วาง access_token ที่นี่"
-                            className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-                          />
-                          {endpoint.auth === 'bearer' && activeIssuedAccessToken && (
+                        {env === 'prod' && productionAccess === 'approved' ? (
+                          <div className="space-y-2">
                             <button
                               type="button"
-                              onClick={handleUseIssuedToken}
-                              className="shrink-0 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
+                              onClick={handleGenerateAccessToken}
+                              className="w-full rounded-lg bg-violet-600 px-3 py-2.5 text-[11px] font-bold text-white transition-colors hover:bg-violet-700"
                             >
-                              ใช้ token ล่าสุด
+                              Generate token
                             </button>
-                          )}
-                        </div>
-                        {endpoint.auth === 'bearer' && !activeIssuedAccessToken && (
+                            {activeIssuedAccessToken && (
+                              <p className="text-[10px] text-emerald-600">✓ Token สำหรับ Production ถูกสร้างแล้วและพร้อมใช้งาน</p>
+                            )}
+                          </div>
+                        ) : env === 'prod' && productionAccess !== 'approved' ? (
+                          <div className="space-y-2 rounded-xl border border-violet-200 bg-violet-50 p-3">
+                            <p className="text-[11px] font-bold text-violet-900">Production access required</p>
+                            <p className="text-[10px] leading-5 text-violet-700">
+                              คุณต้องมีสิทธิ์ Production ก่อนใช้ token จริงบน environment นี้
+                            </p>
+                            {!productionAccessGateSeen ? (
+                              <button
+                                type="button"
+                                onClick={handleOpenProductionAccessGate}
+                                className="rounded-lg bg-violet-600 px-3 py-1.5 text-[10px] font-bold text-white transition-colors hover:bg-violet-700"
+                              >
+                                ไปสมัคร Production Access
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={handleGenerateAccessToken}
+                                className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-[10px] font-bold text-violet-700 transition-colors hover:bg-violet-50"
+                              >
+                                ลองอีกครั้ง
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="password"
+                              value={token}
+                              onChange={(e) => setToken(e.target.value)}
+                              placeholder="วาง access_token ที่นี่"
+                              className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                            />
+                            {endpoint.auth === 'bearer' && activeIssuedAccessToken && (
+                              <button
+                                type="button"
+                                onClick={handleUseIssuedToken}
+                                className="shrink-0 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
+                              >
+                                ใช้ token ล่าสุด
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {endpoint.auth === 'bearer' && !activeIssuedAccessToken && env !== 'prod' && (
                           <p className="mt-1.5 text-[10px] text-amber-600">
                             ยังไม่มี access_token ที่ออกจริง — ไปเรียก{' '}
                             <button
@@ -1954,7 +2076,7 @@ export function Sandbox() {
                             ให้สำเร็จก่อน
                           </p>
                         )}
-                        {endpoint.auth === 'bearer' && activeIssuedAccessToken && (
+                        {endpoint.auth === 'bearer' && activeIssuedAccessToken && env !== 'prod' && (
                           <p className="mt-1.5 text-[10px] text-emerald-600">
                             ✓ ระบบออก access_token แล้วและพร้อมใช้งาน
                           </p>
