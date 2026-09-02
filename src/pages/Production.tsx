@@ -1,6 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { Card } from '../components/common/Card';
@@ -388,6 +387,146 @@ function StatusBadge({
 }
 
 // ============================================================
+// API CREDENTIALS CARD
+//
+// SECURITY NOTE (see conversation): the Client Secret is a
+// production credential used to sign real API calls. It must
+// never be retrievable in full from the frontend after issuance.
+// This card intentionally has NO "reveal" affordance for an
+// already-issued secret — the only ways to see a full secret
+// value are:
+//   1. Immediately after Regenerate (shown once, in-memory only)
+//   2. Never again after that — only Regenerate works from here
+// The backend should mirror this: store the secret encrypted
+// (key held in Vault/Secret Manager) or hashed, never return the
+// full value on a plain "GET credentials" call, and require
+// re-authentication + audit logging on the regenerate endpoint.
+// ============================================================
+
+function generateMockSecret() {
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+    let out = '';
+
+    for (let i = 0; i < 32; i += 1) {
+        out += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return `mxp_live_sk_${out}`;
+}
+
+function ApiCredentialsCard({
+    clientId,
+    revealedSecret,
+    onRegenerateSecret,
+    onDismissRevealedSecret,
+}: {
+    clientId: string;
+    revealedSecret: string | null;
+    onRegenerateSecret: () => void;
+    onDismissRevealedSecret: () => void;
+}) {
+    return (
+        <Card
+            className="overflow-hidden"
+            padded={false}
+        >
+            <div className="border-b border-slate-100 px-5 py-4">
+                <h3 className="text-sm font-bold text-slate-950">
+                    API Credentials
+                </h3>
+
+                <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Credentials issued after Production approval.
+                </p>
+            </div>
+
+            <div className="space-y-4 p-5">
+                <Field label="Client ID">
+                    <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                        <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-700">
+                            {clientId}
+                        </code>
+
+                        <CopyButton text={clientId} />
+                    </div>
+                </Field>
+
+                <Field label="Client Secret">
+                    {revealedSecret ? (
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50/60 px-3 py-2.5">
+                                <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-800">
+                                    {revealedSecret}
+                                </code>
+
+                                <CopyButton
+                                    text={revealedSecret}
+                                />
+                            </div>
+
+                            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+                                <p className="text-[11px] font-semibold leading-5 text-amber-900">
+                                    บันทึกค่านี้ไว้ตอนนี้ — จะไม่แสดงค่าเต็มให้เห็นอีก
+                                </p>
+
+                                <p className="mt-1 text-[10px] leading-5 text-amber-700">
+                                    ระบบจะเก็บ Secret นี้แบบเข้ารหัส/hash
+                                    เท่านั้น หากทำหายให้กด Regenerate
+                                    เพื่อสร้างค่าใหม่ (ค่าเดิมจะใช้งานไม่ได้ทันที)
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={
+                                    onDismissRevealedSecret
+                                }
+                                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-50"
+                            >
+                                บันทึกแล้ว ซ่อนค่านี้
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
+                                <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-400">
+                                    ••••••••••••••••••••
+                                </code>
+
+                                <span className="text-[10px] font-semibold text-slate-400">
+                                    Not retrievable
+                                </span>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={
+                                    onRegenerateSecret
+                                }
+                                className="w-full rounded-lg border border-rose-200 bg-white px-3 py-2 text-[11px] font-semibold text-rose-600 transition hover:bg-rose-50"
+                            >
+                                Regenerate Client Secret
+                            </button>
+                        </div>
+                    )}
+                </Field>
+
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3">
+                    <p className="text-[11px] leading-5 text-amber-800">
+                        Client Secret ใช้สำหรับยิง Production API จริง
+                        ห้ามฝัง Secret นี้ไว้ใน Frontend/โค้ดฝั่งไคลเอนต์
+                        ควรเก็บไว้ในฝั่งเซิร์ฟเวอร์เท่านั้น (env ที่เข้ารหัส
+                        หรือ Vault/Secret Manager)
+                    </p>
+                </div>
+            </div>
+        </Card>
+    );
+}
+
+// ============================================================
 // ACCESS GATE
 // ============================================================
 
@@ -542,10 +681,18 @@ function Overview({
     onCreateShipment,
     onTopUp,
     onTracking,
+    clientId,
+    revealedSecret,
+    onRegenerateSecret,
+    onDismissRevealedSecret,
 }: {
     onCreateShipment: () => void;
     onTopUp: () => void;
     onTracking: () => void;
+    clientId: string;
+    revealedSecret: string | null;
+    onRegenerateSecret: () => void;
+    onDismissRevealedSecret: () => void;
 }) {
     return (
         <div className="space-y-7">
@@ -717,52 +864,16 @@ function Overview({
                 </section>
 
                 <aside className="space-y-6 xl:col-span-4">
-                    <Card
-                        className="overflow-hidden"
-                        padded={false}
-                    >
-                        <div className="border-b border-slate-100 px-5 py-4">
-                            <h3 className="text-sm font-bold text-slate-950">
-                                API Credentials
-                            </h3>
-
-                            <p className="mt-1 text-xs leading-5 text-slate-500">
-                                Credentials issued after Production approval.
-                            </p>
-                        </div>
-
-                        <div className="space-y-4 p-5">
-                            <Field label="Client ID">
-                                <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                                    <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-700">
-                                        mxp_live_••••••••••••
-                                    </code>
-
-                                    <CopyButton text="" />
-                                </div>
-                            </Field>
-
-                            <Field label="Client Secret">
-                                <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5">
-                                    <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-700">
-                                        ••••••••••••••••••••
-                                    </code>
-
-                                    <span className="text-[10px] font-semibold text-slate-400">
-                                        Hidden
-                                    </span>
-                                </div>
-                            </Field>
-
-                            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3">
-                                <p className="text-[11px] leading-5 text-amber-800">
-                                    Keep your Production credentials secure.
-                                    Never expose your Client Secret in a
-                                    frontend application.
-                                </p>
-                            </div>
-                        </div>
-                    </Card>
+                    <ApiCredentialsCard
+                        clientId={clientId}
+                        revealedSecret={revealedSecret}
+                        onRegenerateSecret={
+                            onRegenerateSecret
+                        }
+                        onDismissRevealedSecret={
+                            onDismissRevealedSecret
+                        }
+                    />
 
                     <Card
                         className="overflow-hidden"
@@ -1826,6 +1937,38 @@ export function Production() {
     };
 
     // --------------------------------------------------------
+    // API CREDENTIALS STATE
+    //
+    // clientId is fine to show in full (not a secret, like a
+    // username). revealedSecret is intentionally *not* the
+    // account's real secret hash — it only ever holds a value
+    // right after Regenerate, and is cleared on dismiss/unmount.
+    // In a real integration this would come from a one-time
+    // API response, never from a "GET credentials" endpoint.
+    // --------------------------------------------------------
+
+    const [clientId] = useState(
+        'mxp_live_9f3a1c7e2b8d4f60',
+    );
+
+    const [revealedSecret, setRevealedSecret] =
+        useState<string | null>(null);
+
+    const handleRegenerateSecret = () => {
+        const confirmed = window.confirm(
+            '⚠️ Regenerate Client Secret?\n\nค่าเดิมจะใช้งานไม่ได้ทันที ระบบที่ยิง Production อยู่ต้องอัปเดต Secret ใหม่ก่อนถึงจะเรียก API ต่อได้',
+        );
+
+        if (!confirmed) return;
+
+        setRevealedSecret(generateMockSecret());
+    };
+
+    const handleDismissRevealedSecret = () => {
+        setRevealedSecret(null);
+    };
+
+    // --------------------------------------------------------
     // TAB
     // --------------------------------------------------------
 
@@ -2055,6 +2198,16 @@ export function Production() {
                                         setActiveTab(
                                             'Tracking',
                                         )
+                                    }
+                                    clientId={clientId}
+                                    revealedSecret={
+                                        revealedSecret
+                                    }
+                                    onRegenerateSecret={
+                                        handleRegenerateSecret
+                                    }
+                                    onDismissRevealedSecret={
+                                        handleDismissRevealedSecret
                                     }
                                 />
                             )}
