@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { ApiDocs } from './pages/ApiDocs';
 import { Sandbox } from './pages/Sandbox';
 import { Production } from './pages/Production';
+import Wallet from './pages/Wallet';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
       <Route path="/docs" element={<ApiDocs />} />
       <Route path="/sandbox" element={<Sandbox />} />
       <Route path="/production" element={<Production />} />
+      <Route path="/wallet" element={<Wallet />} />
     </Routes>
   );
 }
