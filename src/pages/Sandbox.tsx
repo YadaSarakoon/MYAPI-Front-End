@@ -6,7 +6,7 @@ import logo from '../assets/logo.png';
    ============================================================ */
 
 type Method = 'GET' | 'POST' | 'DELETE';
-type Env = 'test' | 'prod';
+type Env = 'test';
 type BodyType = 'json' | 'formdata' | 'none';
 type AuthType = 'none' | 'bearer';
 type DocsPage = 'overview' | 'docs';
@@ -68,13 +68,11 @@ interface FormField {
   value: string;
 }
 
-interface Credentials {
+interface SandboxCredentials {
   clientId: string;
   clientSecret: string;
   createdAt: string;
 }
-
-type ProductionAccessStatus = 'not_applied' | 'pending' | 'approved' | 'rejected';
 
 type ApiResponseState =
   | { loading: true }
@@ -87,7 +85,6 @@ type ApiResponseState =
 
 const BASE_URLS: Record<Env, string> = {
   test: 'https://dev-open-api.myexpress.ai',
-  prod: 'https://open-api.myexpress.ai',
 };
 
 const METHOD_STYLE: Record<
@@ -108,18 +105,6 @@ const STATUS_TABLE: { code: number; detail: string }[] = [
   { code: 403, detail: 'Error find an account forbidden' },
   { code: 500, detail: 'Error internal server http request' },
 ];
-
-const CLIENT_LIBRARY_LANGUAGES = [
-  'cURL',
-  'JavaScript Fetch',
-  'JavaScript Axios',
-  'Python Requests',
-  'Java OkHttp',
-  'PHP cURL',
-  'Go Native',
-  'C# HttpClient',
-] as const;
-type ClientLibraryLanguage = (typeof CLIENT_LIBRARY_LANGUAGES)[number];
 
 /* ============================================================
    DATA — extracted from MyExpress Open API Postman collection
@@ -560,11 +545,11 @@ function randomToken(length: number): string {
   return out;
 }
 
-function generateCredentials(): Credentials {
+function generateSandboxCredentials(): SandboxCredentials {
   return { clientId: randomToken(32), clientSecret: randomToken(32), createdAt: new Date().toISOString() };
 }
 
-function authBodyFromCredentials(creds: Credentials): string {
+function authBodyFromCredentials(creds: SandboxCredentials): string {
   return JSON.stringify(
     { client_id: creds.clientId, client_secret: creds.clientSecret, grant_type: 'client_credentials', scope: 'parcel' },
     null,
@@ -592,159 +577,6 @@ function buildCurl(
     lines[lines.length - 1] = lines[lines.length - 1].replace(/ \\$/, '');
   }
   return lines.join('\n');
-}
-
-function buildClientLibrarySnippet(
-  language: ClientLibraryLanguage,
-  endpoint: Endpoint,
-  env: Env,
-  token: string,
-  pathValues: StringMap,
-  queryValues: StringMap,
-  bodyText: string
-): string {
-  const url = BASE_URLS[env] + buildResolvedPath(endpoint, pathValues) + buildQueryString(endpoint, queryValues);
-  const method = endpoint.method;
-  const authHeader = endpoint.auth === 'bearer' ? `Bearer ${token || '{access_token}'}` : '';
-  const parsedBody = (() => {
-    if (endpoint.bodyType !== 'json' || !bodyText) return null;
-    try {
-      return JSON.parse(bodyText);
-    } catch {
-      return bodyText;
-    }
-  })();
-
-  const jsonLiteral = parsedBody === null ? '' : JSON.stringify(parsedBody, null, 2);
-
-  switch (language) {
-    case 'cURL':
-      return buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
-    case 'JavaScript Fetch':
-      return `const url = '${url}';
-
-const response = await fetch(url, {
-  method: '${method}',
-  headers: {
-    'Content-Type': 'application/json',
-    ${authHeader ? "'Authorization': 'Bearer ${token || '{access_token}'}'," : ''}
-  },
-  ${parsedBody && method !== 'GET' ? `body: JSON.stringify(${jsonLiteral}, null, 2),` : ''}
-});
-
-const data = await response.json();
-console.log(data);`;
-    case 'JavaScript Axios':
-      return `import axios from 'axios';
-
-const url = '${url}';
-const config = {
-  method: '${method.toLowerCase()}',
-  url,
-  headers: {
-    'Content-Type': 'application/json',
-    ${authHeader ? "Authorization: 'Bearer ${token || '{access_token}'}'," : ''}
-  },
-  ${parsedBody && method !== 'GET' ? `data: ${jsonLiteral},` : ''}
-};
-
-const response = await axios(config);
-console.log(response.data);`;
-    case 'Python Requests':
-      return `import requests
-
-url = '${url}'
-headers = {
-    'Content-Type': 'application/json',
-    ${authHeader ? "'Authorization': 'Bearer ${token || '{access_token}'}'" : ''}
-}
-${parsedBody && method !== 'GET' ? `payload = ${jsonLiteral}` : ''}
-
-response = requests.${method.toLowerCase()}(url, headers=headers, ${parsedBody && method !== 'GET' ? 'json=payload' : ''})
-print(response.text)`;
-    case 'Java OkHttp':
-      return `import okhttp3.*;
-
-public class MyApiClient {
-  public static void main(String[] args) throws Exception {
-    OkHttpClient client = new OkHttpClient();
-    MediaType mediaType = MediaType.parse("application/json");
-
-    Request.Builder builder = new Request.Builder()
-      .url("${url}")
-      .header("Content-Type", "application/json")
-      ${authHeader ? `.header("Authorization", "Bearer ${token || '{access_token}'}")` : ''};
-
-    RequestBody body = ${parsedBody && method !== 'GET' ? `RequestBody.create(${JSON.stringify(JSON.stringify(parsedBody, null, 2))}, mediaType)` : 'null'};
-    Request request = builder.method("${method}", body).build();
-
-    try (Response response = client.newCall(request).execute()) {
-      System.out.println(response.body().string());
-    }
-  }
-}`;
-    case 'PHP cURL':
-      return `<?php
-$curl = curl_init();
-
-curl_setopt_array($curl, [
-    CURLOPT_URL => '${url}',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_CUSTOMREQUEST => '${method}',
-    CURLOPT_HTTPHEADER => [
-        'Content-Type: application/json',
-        ${authHeader ? "'Authorization: Bearer ${token || '{access_token}'}'" : ''}
-    ],
-    ${parsedBody && method !== 'GET' ? `CURLOPT_POSTFIELDS => ${JSON.stringify(jsonLiteral)},` : ''}
-]);
-
-$response = curl_exec($curl);
-curl_close($curl);
-
-echo $response;`;
-    case 'Go Native':
-      return `package main
-
-import (
-    "bytes"
-    "fmt"
-    "net/http"
-)
-
-func main() {
-    url := "${url}"
-    ${parsedBody && method !== 'GET' ? `payload := []byte(${JSON.stringify(JSON.stringify(parsedBody, null, 2))})` : ''}
-    req, err := http.NewRequest("${method}", url, ${parsedBody && method !== 'GET' ? 'bytes.NewBuffer(payload)' : 'nil'})
-    if err != nil {
-        panic(err)
-    }
-    req.Header.Set("Content-Type", "application/json")
-    ${authHeader ? 'req.Header.Set("Authorization", "Bearer ' + (token || '{access_token}') + '")' : ''}
-    client := &http.Client{}
-    resp, err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-    fmt.Println(resp.Status)
-}`;
-    case 'C# HttpClient':
-      return `using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-
-var client = new HttpClient();
-var request = new HttpRequestMessage(HttpMethod.${method === 'GET' ? 'Get' : method === 'POST' ? 'Post' : 'Delete'}, "${url}");
-request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-${authHeader ? `request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "${token || '{access_token}'}");` : ''}
-${parsedBody && method !== 'GET' ? `request.Content = new StringContent(${JSON.stringify(JSON.stringify(parsedBody, null, 2))}, Encoding.UTF8, "application/json");` : ''}
-
-var response = await client.SendAsync(request);
-var body = await response.Content.ReadAsStringAsync();
-Console.WriteLine(body);`;
-    default:
-      return buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
-  }
 }
 
 /* ============================================================
@@ -819,17 +651,20 @@ function CodeBlock({
   const text = typeof children === 'string' ? children : '';
   return (
     <div
-      className={`overflow-hidden rounded-xl border ${tone === 'dark' ? 'border-slate-800 bg-[#0B1220]' : 'border-slate-200 bg-white'
-        }`}
+      className={`overflow-hidden rounded-xl border ${
+        tone === 'dark' ? 'border-slate-800 bg-[#0B1220]' : 'border-slate-200 bg-white'
+      }`}
     >
       {label && (
         <div
-          className={`flex items-center justify-between border-b px-3 py-2 ${tone === 'dark' ? 'border-slate-800 bg-[#111827]' : 'border-slate-200 bg-slate-50'
-            }`}
+          className={`flex items-center justify-between border-b px-3 py-2 ${
+            tone === 'dark' ? 'border-slate-800 bg-[#111827]' : 'border-slate-200 bg-slate-50'
+          }`}
         >
           <span
-            className={`text-[10px] font-bold uppercase tracking-wider ${tone === 'dark' ? 'text-slate-400' : 'text-slate-500'
-              }`}
+            className={`text-[10px] font-bold uppercase tracking-wider ${
+              tone === 'dark' ? 'text-slate-400' : 'text-slate-500'
+            }`}
           >
             {label}
           </span>
@@ -837,8 +672,9 @@ function CodeBlock({
         </div>
       )}
       <pre
-        className={`overflow-x-auto p-4 font-mono text-[11px] leading-6 whitespace-pre-wrap break-words ${tone === 'dark' ? 'text-indigo-100' : 'text-slate-700'
-          }`}
+        className={`overflow-x-auto p-4 font-mono text-[11px] leading-6 whitespace-pre-wrap break-words ${
+          tone === 'dark' ? 'text-indigo-100' : 'text-slate-700'
+        }`}
       >
         {children}
       </pre>
@@ -947,10 +783,11 @@ function Sidebar({
           <button
             type="button"
             onClick={() => onPageChange('overview')}
-            className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all ${page === 'overview'
+            className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all ${
+              page === 'overview'
                 ? 'bg-indigo-50 font-semibold text-indigo-700'
                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+            }`}
           >
             <span className="flex h-5 w-5 items-center justify-center rounded-md">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -992,10 +829,11 @@ function Sidebar({
                           type="button"
                           key={item.id}
                           onClick={() => onEndpointSelect(item.id)}
-                          className={`group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all ${active
+                          className={`group flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition-all ${
+                            active
                               ? 'bg-indigo-50 text-indigo-800'
                               : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                            }`}
+                          }`}
                         >
                           <MethodChip method={item.method} />
                           <span className={`min-w-0 flex-1 truncate ${active ? 'font-semibold' : ''}`}>{item.name}</span>
@@ -1033,7 +871,7 @@ function Sidebar({
 
 interface CredentialsCardProps {
   loggedIn: boolean;
-  credentials: Credentials | null;
+  credentials: SandboxCredentials | null;
   onLogin: () => void;
   onGenerate: () => void;
   onRegenerate: () => void;
@@ -1165,10 +1003,11 @@ function CredentialsCard({
                   <button
                     type="button"
                     onClick={handleRegenerateClick}
-                    className={`rounded-lg px-3.5 py-1.5 text-[11px] font-bold transition-colors ${confirmingRegenerate
+                    className={`rounded-lg px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                      confirmingRegenerate
                         ? 'bg-rose-600 text-white hover:bg-rose-500'
                         : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     {confirmingRegenerate ? 'ยืนยัน Regenerate' : 'Regenerate'}
                   </button>
@@ -1197,7 +1036,7 @@ function Overview({
 }: {
   onNavigate: (page: DocsPage, endpointId?: string) => void;
   loggedIn: boolean;
-  credentials: Credentials | null;
+  credentials: SandboxCredentials | null;
   onLogin: () => void;
   onGenerateCredentials: () => void;
   onRegenerateCredentials: () => void;
@@ -1223,11 +1062,12 @@ function Overview({
               </div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">MyExpress API Sandbox</h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                ทดลองยิง MyExpress Open API แบบ interactive พร้อมดูตัวอย่าง request และ response แบบ real-time
+                ทดลองยิง MyExpress Open API แบบ interactive พร้อมดู request และ response
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">REST API</span>
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">OAuth 2.0</span>
+                <span className="rounded-lg bg-emerald-50 px-3 py-1.5 font-mono text-[10px] text-emerald-700">dev-open-api.myexpress.ai</span>
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">JSON</span>
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">Try it out</span>
               </div>
@@ -1304,24 +1144,16 @@ function Overview({
 export function Sandbox() {
   const [page, setPage] = useState<DocsPage>('overview');
   const [activeId, setActiveId] = useState<string>(ENDPOINTS[0].id);
-  const [env, setEnv] = useState<Env>('test');
+  const env: Env = 'test';
   const [search, setSearch] = useState('');
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [loggedIn, setLoggedIn] = useState(false);
-  const [sandboxCredentials, setSandboxCredentials] = useState<Credentials | null>(null);
-  const [productionCredentials, setProductionCredentials] = useState<Credentials | null>(null);
-  // Prototype default: production is locked until the admin approves the application.
-  const [productionAccess, setProductionAccess] = useState<ProductionAccessStatus>('not_applied');
-  const [productionAccessGateSeen, setProductionAccessGateSeen] = useState(false);
-  const [issuedAccessTokens, setIssuedAccessTokens] = useState<Record<Env, string | null>>({ test: null, prod: null });
-  const [responseView, setResponseView] = useState<'body' | 'headers'>('body');
+  const [credentials, setCredentials] = useState<SandboxCredentials | null>(null);
+  const [issuedAccessToken, setIssuedAccessToken] = useState<string | null>(null);
 
   const endpoint = useMemo(() => ENDPOINTS.find((e) => e.id === activeId) || ENDPOINTS[0], [activeId]);
-  const activeCredentials = env === 'test' ? sandboxCredentials : productionCredentials;
-  const activeIssuedAccessToken = issuedAccessTokens[env];
-  const productionLocked = env === 'prod' && productionAccess !== 'approved';
 
-  const initFor = (ep: Endpoint, creds: Credentials | null = activeCredentials): { pv: StringMap; qv: StringMap; body: string } => {
+  const initFor = (ep: Endpoint, creds: SandboxCredentials | null = credentials): { pv: StringMap; qv: StringMap; body: string } => {
     const pv: StringMap = {};
     ep.pathParams.forEach((p) => (pv[p.key] = p.example));
     const qv: StringMap = {};
@@ -1354,45 +1186,7 @@ export function Sandbox() {
     setCollapsedGroups((current) => ({ ...current, [group]: !current[group] }));
   };
 
-  const issueAccessTokenForEnv = (targetEnv: Env = env) => {
-    const creds = targetEnv === 'test' ? sandboxCredentials : productionCredentials;
-    if (!creds) {
-      if (targetEnv === 'prod') {
-        const newCreds = generateCredentials();
-        setProductionCredentials(newCreds);
-        setBodyText(authBodyFromCredentials(newCreds));
-      }
-      return null;
-    }
-
-    const issued = randomToken(32);
-    setIssuedAccessTokens((current) => ({ ...current, [targetEnv]: issued }));
-    setToken(issued);
-    if (targetEnv === 'test') setBodyText(authBodyFromCredentials(creds));
-    if (targetEnv === 'prod') setBodyText(authBodyFromCredentials(creds));
-    return issued;
-  };
-
   const handleSend = () => {
-    if (productionLocked) {
-      setResponse({
-        status: 403,
-        ms: 0,
-        body: {
-          status: 403,
-          message: 'Production access is not approved.',
-          name: 'ProductionAccessRequired',
-        },
-        demo: true,
-      });
-      return;
-    }
-
-    if (env === 'prod' && ['create-parcel-non-cod', 'create-parcel-cod'].includes(endpoint.id)) {
-      const confirmed = window.confirm('จะสร้างพัสดุจริง มีค่าใช้จ่าย ยืนยัน?');
-      if (!confirmed) return;
-    }
-
     setResponse({ loading: true });
     const delay = 500 + Math.random() * 400;
     setTimeout(() => {
@@ -1409,12 +1203,10 @@ export function Sandbox() {
           });
           return;
         }
-
         const matches =
-          activeCredentials != null &&
-          parsed.client_id === activeCredentials.clientId &&
-          parsed.client_secret === activeCredentials.clientSecret;
-
+          credentials != null &&
+          parsed.client_id === credentials.clientId &&
+          parsed.client_secret === credentials.clientSecret;
         if (!matches) {
           setResponse({
             status: 400,
@@ -1426,9 +1218,8 @@ export function Sandbox() {
           });
           return;
         }
-
         const issued = randomToken(32);
-        setIssuedAccessTokens((current) => ({ ...current, [env]: issued }));
+        setIssuedAccessToken(issued);
         setToken(issued);
         setResponse({
           status: 200,
@@ -1450,7 +1241,7 @@ export function Sandbox() {
           });
           return;
         }
-        if (typedToken !== activeIssuedAccessToken) {
+        if (typedToken !== issuedAccessToken) {
           setResponse({
             status: 401,
             ms: Math.round(delay),
@@ -1460,7 +1251,6 @@ export function Sandbox() {
           return;
         }
       }
-
       setResponse({ status: endpoint.successCode, ms: Math.round(delay), body: endpoint.successExample, demo: true });
     }, delay);
   };
@@ -1468,115 +1258,36 @@ export function Sandbox() {
   const handleLogin = () => setLoggedIn(true);
 
   const handleGenerateCredentials = () => {
-    const creds = generateCredentials();
-    setSandboxCredentials(creds);
-    setIssuedAccessTokens((current) => ({ ...current, test: null }));
-    if (env === 'test') setToken('');
-    if (activeId === 'generate-access-token' && env === 'test') {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    if (activeId === 'generate-access-token') {
       setBodyText(authBodyFromCredentials(creds));
       setResponse(null);
     }
   };
 
   const handleRegenerateCredentials = () => {
-    const creds = generateCredentials();
-    setSandboxCredentials(creds);
-    setIssuedAccessTokens((current) => ({ ...current, test: null }));
-    if (env === 'test') setToken('');
-    if (activeId === 'generate-access-token' && env === 'test') {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    if (activeId === 'generate-access-token') {
       setBodyText(authBodyFromCredentials(creds));
       setResponse(null);
     }
   };
 
-  const handleApplyProduction = () => {
-    // Prototype behavior. Replace this with POST /production-access-request in the real app.
-    setProductionAccess('pending');
-    setProductionAccessGateSeen(true);
-  };
-
-  const handleSimulateProductionApproval = () => {
-    setProductionAccess('approved');
-    setProductionAccessGateSeen(false);
-    setProductionCredentials((current) => current ?? generateCredentials());
-    setEnv('prod');
-    setResponse(null);
-  };
-
-  const handleOpenProductionAccessGate = () => {
-    setProductionAccessGateSeen(true);
-    window.location.assign('/production');
-  };
-
-  const handleEnvironmentChange = (nextEnv: Env) => {
-    if (nextEnv === 'prod' && productionAccess === 'approved' && !productionCredentials) {
-      setProductionCredentials(generateCredentials());
-    }
-
-    setEnv(nextEnv);
-    setToken(issuedAccessTokens[nextEnv] ?? '');
-    setResponse(null);
-
-    const nextCredentials = nextEnv === 'test' ? sandboxCredentials : productionCredentials ?? (nextEnv === 'prod' ? generateCredentials() : null);
-    if (nextEnv === 'prod' && !productionCredentials && nextCredentials) {
-      setProductionCredentials(nextCredentials);
-    }
-
-    if (activeId === 'generate-access-token' && nextCredentials) {
-      setBodyText(authBodyFromCredentials(nextCredentials));
-    } else if (activeId === 'generate-access-token') {
-      setBodyText(JSON.stringify(ENDPOINTS.find((e) => e.id === 'generate-access-token')?.bodyExample ?? {}, null, 2));
-    }
-  };
-
   const handleGenerateAccessToken = () => {
-    if (env === 'prod' && productionAccess !== 'approved') {
-      setProductionAccessGateSeen(true);
-      setResponse({
-        status: 403,
-        ms: 0,
-        body: {
-          status: 403,
-          message: 'Production access is required before issuing a live token.',
-          name: 'ProductionAccessRequired',
-        },
-        demo: true,
-      });
-      return;
-    }
-
-    if (env === 'prod' && !productionCredentials) {
-      setProductionCredentials(generateCredentials());
-    }
-
     selectEndpoint('generate-access-token');
-    const issued = issueAccessTokenForEnv();
-    if (issued) {
-      setResponse({
-        status: 200,
-        ms: 0,
-        body: { expires_in: 7200, token_type: 'bearer', access_token: issued },
-        demo: true,
-      });
-    }
   };
 
   const handleUseIssuedToken = () => {
-    if (activeIssuedAccessToken) setToken(activeIssuedAccessToken);
+    if (issuedAccessToken) setToken(issuedAccessToken);
   };
 
-  const [selectedClientLibrary, setSelectedClientLibrary] = useState<ClientLibraryLanguage>('cURL');
-
   const curl = buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
-  const clientLibrarySnippet = buildClientLibrarySnippet(
-    selectedClientLibrary,
-    endpoint,
-    env,
-    token,
-    pathValues,
-    queryValues,
-    bodyText,
-  );
   const resolvedUrl = BASE_URLS[env] + buildResolvedPath(endpoint, pathValues) + buildQueryString(endpoint, queryValues);
 
   const goLanding = () => window.location.assign('/');
@@ -1607,7 +1318,7 @@ export function Sandbox() {
             setPage(target);
           }}
           loggedIn={loggedIn}
-          credentials={sandboxCredentials}
+          credentials={credentials}
           onLogin={handleLogin}
           onGenerateCredentials={handleGenerateCredentials}
           onRegenerateCredentials={handleRegenerateCredentials}
@@ -1838,12 +1549,13 @@ export function Sandbox() {
                           <tr key={s.code}>
                             <td className="w-20 px-6 py-3">
                               <span
-                                className={`inline-flex rounded-md px-2 py-1 font-mono text-[10px] font-bold ${s.code === 200
+                                className={`inline-flex rounded-md px-2 py-1 font-mono text-[10px] font-bold ${
+                                  s.code === 200
                                     ? 'bg-emerald-50 text-emerald-600'
                                     : s.code >= 400
-                                      ? 'bg-rose-50 text-rose-600'
-                                      : 'bg-slate-50 text-slate-600'
-                                  }`}
+                                    ? 'bg-rose-50 text-rose-600'
+                                    : 'bg-slate-50 text-slate-600'
+                                }`}
                               >
                                 {s.code}
                               </span>
@@ -1858,84 +1570,24 @@ export function Sandbox() {
               </section>
 
               {/* Try it out column */}
-              <aside className="min-w-0 xl:col-span-5 xl:sticky xl:top-6 xl:self-start">
-                <div className="max-h-[calc(100vh-3rem)] overflow-y-auto pr-1">
-                  <div className="space-y-5">
-                    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                        <h3 className="text-sm font-bold text-slate-950">Try it out</h3>
-                        <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                          {(['test', 'prod'] as Env[]).map((e) => {
-                            const locked = e === 'prod' && productionAccess !== 'approved';
-                            return (
-                              <button
-                                key={e}
-                                type="button"
-                                onClick={() => handleEnvironmentChange(e)}
-                                className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition-colors ${
-                                  env === e
-                                    ? e === 'prod'
-                                      ? 'bg-white text-violet-700 shadow-sm'
-                                      : 'bg-white text-indigo-700 shadow-sm'
-                                    : locked
-                                      ? 'text-slate-300 hover:text-slate-500'
-                                      : 'text-slate-400 hover:text-slate-600'
-                                }`}
-                              >
-                                {e === 'test' ? '🧪 Sandbox' : locked ? '🔒 Production' : '🚀 Production'}
-                              </button>
-                            );
-                          })}
-                        </div>
+              <aside className="min-w-0 space-y-5 xl:sticky xl:top-6 xl:col-span-5">
+                <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+                    <h3 className="text-sm font-bold text-slate-950">Try it out</h3>
+                    <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-[10px] font-bold text-emerald-700">Sandbox Environment</span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5 p-5">
+                    <div>
+                      <div className="mb-2 flex items-center justify-between gap-3">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Sandbox Base URL</span>
+                        <code className="truncate font-mono text-[10px] text-slate-500">{BASE_URLS.test}</code>
                       </div>
 
-                      {env === 'prod' && productionAccess !== 'approved' ? (
-                        <div className="p-5">
-                          <div className="rounded-xl border border-violet-200 bg-violet-50/60 p-4">
-                            <div className="flex items-start gap-3">
-                              <span className="mt-0.5 text-lg">🔒</span>
-                              <div className="min-w-0 flex-1">
-                                {productionAccess === 'pending' ? (
-                                  <>
-                                    <p className="text-xs font-bold text-amber-800">Production access is pending</p>
-                                    <p className="mt-1 text-[11px] leading-5 text-amber-700">Admin กำลังตรวจสอบคำขอของคุณ เมื่ออนุมัติแล้วจึงจะได้รับ Production Credentials</p>
-                                  </>
-                                ) : productionAccess === 'rejected' ? (
-                                  <>
-                                    <p className="text-xs font-bold text-rose-800">Production access was rejected</p>
-                                    <p className="mt-1 text-[11px] leading-5 text-rose-700">กรุณาส่งคำขอใหม่ตามรายละเอียดจาก Admin</p>
-                                  </>
-                                ) : (
-                                  <>
-                                    <p className="text-xs font-bold text-violet-900">Production access required</p>
-                                    <p className="mt-1 text-[11px] leading-5 text-violet-800">Production ใช้งานจริงได้เฉพาะ Partner ที่ส่งแบบฟอร์มและได้รับการอนุมัติจาก Admin แล้วเท่านั้น</p>
-                                  </>
-                                )}
-                                {productionAccess !== 'pending' && (
-                                  <div className="mt-3 flex flex-wrap gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={handleApplyProduction}
-                                      className="rounded-lg bg-violet-600 px-3.5 py-2 text-[11px] font-bold text-white transition-colors hover:bg-violet-700"
-                                    >
-                                      {productionAccess === 'rejected' ? 'Re-apply' : 'Apply for Production Access'}
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={handleSimulateProductionApproval}
-                                      className="rounded-lg border border-violet-200 bg-white px-3.5 py-2 text-[11px] font-bold text-violet-700 transition-colors hover:bg-violet-50"
-                                    >
-                                      Simulate Approved
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                      <div className="space-y-5 p-5">
-                    <div className="flex items-stretch overflow-hidden rounded-lg border border-slate-200">
+                      <div className="flex items-stretch overflow-hidden rounded-lg border border-slate-200">
                       <span
                         className={`px-2.5 py-2 text-[11px] font-bold text-white font-mono ${METHOD_STYLE[endpoint.method].solid}`}
                       >
@@ -1950,32 +1602,33 @@ export function Sandbox() {
                       <button
                         type="button"
                         onClick={handleSend}
-                        disabled={productionLocked || (endpoint.id === 'generate-access-token' && !activeCredentials)}
+                        disabled={endpoint.id === 'generate-access-token' && !credentials}
                         className="shrink-0 bg-indigo-600 px-4 text-xs font-bold text-white transition-colors hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300"
                       >
                         Send
                       </button>
+                      </div>
                     </div>
 
                     {endpoint.id === 'generate-access-token' ? (
-                      <Field label={`${env === 'test' ? 'Sandbox' : 'Production'} Credentials`}>
-                        {activeCredentials ? (
+                      <Field label="Sandbox Credentials">
+                        {credentials ? (
                           <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
                             <div className="flex items-start gap-2">
                               <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-[10px] text-emerald-700">
                                 ✓
                               </span>
                               <div className="min-w-0 flex-1">
-                                <p className="text-[11px] font-bold text-emerald-800">Using {env === 'test' ? 'Sandbox' : 'Production'} Credentials</p>
+                                <p className="text-[11px] font-bold text-emerald-800">Using Sandbox Credentials</p>
                                 <p className="mt-1 text-[10px] leading-5 text-emerald-700">
-                                  ระบบเติม client_id และ client_secret จาก Credentials ของ environment นี้ให้ใน Request Body อัตโนมัติ
+                                  ระบบเติม client_id และ client_secret จาก Overview ให้ใน Request Body อัตโนมัติ
                                 </p>
                               </div>
                             </div>
                             <div className="mt-3 grid gap-2 sm:grid-cols-2">
                               <div className="rounded-lg border border-emerald-100 bg-white px-2.5 py-2">
                                 <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">client_id</div>
-                                <code className="mt-1 block truncate font-mono text-[10px] text-slate-700">{activeCredentials.clientId}</code>
+                                <code className="mt-1 block truncate font-mono text-[10px] text-slate-700">{credentials.clientId}</code>
                               </div>
                               <div className="rounded-lg border border-emerald-100 bg-white px-2.5 py-2">
                                 <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">client_secret</div>
@@ -2006,64 +1659,25 @@ export function Sandbox() {
                       </Field>
                     ) : (
                       <Field label="Access Token">
-                        {env === 'prod' && productionAccess === 'approved' ? (
-                          <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="password"
+                            value={token}
+                            onChange={(e) => setToken(e.target.value)}
+                            placeholder="วาง access_token ที่นี่"
+                            className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                          />
+                          {endpoint.auth === 'bearer' && issuedAccessToken && (
                             <button
                               type="button"
-                              onClick={handleGenerateAccessToken}
-                              className="w-full rounded-lg bg-violet-600 px-3 py-2.5 text-[11px] font-bold text-white transition-colors hover:bg-violet-700"
+                              onClick={handleUseIssuedToken}
+                              className="shrink-0 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
                             >
-                              Generate token
+                              ใช้ token ล่าสุด
                             </button>
-                            {activeIssuedAccessToken && (
-                              <p className="text-[10px] text-emerald-600">✓ Token สำหรับ Production ถูกสร้างแล้วและพร้อมใช้งาน</p>
-                            )}
-                          </div>
-                        ) : env === 'prod' && productionAccess !== 'approved' ? (
-                          <div className="space-y-2 rounded-xl border border-violet-200 bg-violet-50 p-3">
-                            <p className="text-[11px] font-bold text-violet-900">Production access required</p>
-                            <p className="text-[10px] leading-5 text-violet-700">
-                              คุณต้องมีสิทธิ์ Production ก่อนใช้ token จริงบน environment นี้
-                            </p>
-                            {!productionAccessGateSeen ? (
-                              <button
-                                type="button"
-                                onClick={handleOpenProductionAccessGate}
-                                className="rounded-lg bg-violet-600 px-3 py-1.5 text-[10px] font-bold text-white transition-colors hover:bg-violet-700"
-                              >
-                                ไปสมัคร Production Access
-                              </button>
-                            ) : (
-                              <button
-                                type="button"
-                                onClick={handleGenerateAccessToken}
-                                className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-[10px] font-bold text-violet-700 transition-colors hover:bg-violet-50"
-                              >
-                                ลองอีกครั้ง
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <input
-                              type="password"
-                              value={token}
-                              onChange={(e) => setToken(e.target.value)}
-                              placeholder="วาง access_token ที่นี่"
-                              className="min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-                            />
-                            {endpoint.auth === 'bearer' && activeIssuedAccessToken && (
-                              <button
-                                type="button"
-                                onClick={handleUseIssuedToken}
-                                className="shrink-0 whitespace-nowrap rounded-lg border border-indigo-200 bg-indigo-50 px-2.5 py-1.5 text-[10px] font-bold text-indigo-700 transition-colors hover:bg-indigo-100"
-                              >
-                                ใช้ token ล่าสุด
-                              </button>
-                            )}
-                          </div>
-                        )}
-                        {endpoint.auth === 'bearer' && !activeIssuedAccessToken && env !== 'prod' && (
+                          )}
+                        </div>
+                        {endpoint.auth === 'bearer' && !issuedAccessToken && (
                           <p className="mt-1.5 text-[10px] text-amber-600">
                             ยังไม่มี access_token ที่ออกจริง — ไปเรียก{' '}
                             <button
@@ -2076,7 +1690,7 @@ export function Sandbox() {
                             ให้สำเร็จก่อน
                           </p>
                         )}
-                        {endpoint.auth === 'bearer' && activeIssuedAccessToken && env !== 'prod' && (
+                        {endpoint.auth === 'bearer' && issuedAccessToken && (
                           <p className="mt-1.5 text-[10px] text-emerald-600">
                             ✓ ระบบออก access_token แล้วและพร้อมใช้งาน
                           </p>
@@ -2130,14 +1744,14 @@ export function Sandbox() {
                         <textarea
                           value={bodyText}
                           onChange={(e) => setBodyText(e.target.value)}
-                          readOnly={endpoint.id === 'generate-access-token' && !!activeCredentials}
+                          readOnly={endpoint.id === 'generate-access-token' && !!credentials}
                           rows={10}
                           spellCheck={false}
                           className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 font-mono text-[11px] outline-none focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100"
                         />
-                        {endpoint.id === 'generate-access-token' && activeCredentials && (
+                        {endpoint.id === 'generate-access-token' && credentials && (
                           <p className="mt-1.5 text-[10px] text-slate-400">
-                            ระบบเติม client_id / client_secret จาก {env === 'test' ? 'Sandbox' : 'Production'} Credentials ให้อัตโนมัติ เพื่อป้องกันการกรอก Credential ผิด
+                            ระบบเติม client_id / client_secret จาก Sandbox Credentials ให้อัตโนมัติ เพื่อป้องกันการกรอก Credential ผิด
                           </p>
                         )}
                       </Field>
@@ -2162,59 +1776,22 @@ export function Sandbox() {
                     <Field label="cURL">
                       <CodeBlock>{curl}</CodeBlock>
                     </Field>
-
-                    <Field label="Client Libraries">
-                      <div className="space-y-3">
-                        <div className="flex flex-wrap gap-2">
-                          {CLIENT_LIBRARY_LANGUAGES.map((language) => (
-                            <button
-                              key={language}
-                              type="button"
-                              onClick={() => setSelectedClientLibrary(language)}
-                              className={`rounded-md border px-2.5 py-1 text-[10px] font-bold transition-colors ${selectedClientLibrary === language
-                                  ? 'border-indigo-200 bg-indigo-50 text-indigo-700'
-                                  : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700'
-                                }`}
-                            >
-                              {language === 'cURL' && selectedClientLibrary === 'cURL' ? 'cURL' : language}
-                            </button>
-                          ))}
-                        </div>
-                        <CodeBlock label={selectedClientLibrary}>{clientLibrarySnippet}</CodeBlock>
-                      </div>
-                    </Field>
                   </div>
-                      )}
                 </section>
 
                 <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                   <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                     <h3 className="text-sm font-bold text-slate-950">Response</h3>
                     {response && !response.loading && (
-                      <div className="flex items-center gap-2">
-                        <div className="inline-flex rounded-lg bg-slate-100 p-0.5">
-                          {(['body', 'headers'] as const).map((tab) => (
-                            <button
-                              key={tab}
-                              type="button"
-                              onClick={() => setResponseView(tab)}
-                              className={`rounded-md px-2 py-1 text-[10px] font-bold transition-colors ${
-                                responseView === tab ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'
-                              }`}
-                            >
-                              {tab === 'body' ? 'Body' : 'Headers'}
-                            </button>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className={`inline-flex rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${response.status < 300 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                              }`}
-                          >
-                            {response.status}
-                          </span>
-                          <span className="text-[10px] text-slate-400">{response.ms} ms</span>
-                        </div>
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`inline-flex rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${
+                            response.status < 300 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
+                          }`}
+                        >
+                          {response.status}
+                        </span>
+                        <span className="text-[10px] text-slate-400">{response.ms} ms</span>
                       </div>
                     )}
                   </div>
@@ -2273,34 +1850,7 @@ export function Sandbox() {
                             </div>
                           </div>
                         )}
-
-                        {responseView === 'body' ? (
-                          <CodeBlock>{JSON.stringify(response.body, null, 2)}</CodeBlock>
-                        ) : (
-                          <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                            <table className="w-full text-left text-[11px]">
-                              <tbody className="divide-y divide-slate-200">
-                                <tr>
-                                  <td className="px-3 py-2 font-semibold text-slate-500">Content-Type</td>
-                                  <td className="px-3 py-2 font-mono text-slate-700">application/json; charset=utf-8</td>
-                                </tr>
-                                <tr>
-                                  <td className="px-3 py-2 font-semibold text-slate-500">X-Request-Id</td>
-                                  <td className="px-3 py-2 font-mono text-slate-700">req_7f8d2b1a</td>
-                                </tr>
-                                <tr>
-                                  <td className="px-3 py-2 font-semibold text-slate-500">X-Response-Time</td>
-                                  <td className="px-3 py-2 font-mono text-slate-700">245ms</td>
-                                </tr>
-                                <tr>
-                                  <td className="px-3 py-2 font-semibold text-slate-500">Server</td>
-                                  <td className="px-3 py-2 font-mono text-slate-700">myapi-gateway</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-
+                        <CodeBlock>{JSON.stringify(response.body, null, 2)}</CodeBlock>
                         {endpoint.id === 'generate-access-token' && response.status === 200 && (
                           <button
                             type="button"
@@ -2319,8 +1869,6 @@ export function Sandbox() {
                     )}
                   </div>
                 </section>
-                  </div>
-                </div>
               </aside>
             </div>
           </div>
