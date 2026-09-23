@@ -2,78 +2,9 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import myImage from '../assets/pic2.png'; 
 import myImage3 from '../assets/pic3.png'; 
-import myImage4 from '../assets/pic4.png'; 
+import logoLight from '../assets/logoLight.png';
+import logoDark from '../assets/logoDark.png';
 
-// --- Component: MyAPI SVG Logo ---
-const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
-  <svg
-    viewBox="0 0 280 85"
-    className={`${className} w-auto overflow-visible`}
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* คำว่า "My" สีน้ำเงินเข้มจัด */}
-    <text
-      x="0"
-      y="64"
-      fill="#0B132B"
-      fontSize="66"
-      fontFamily="Inter, system-ui, -apple-system, sans-serif"
-      fontWeight="900"
-      letterSpacing="-1.5"
-    >
-      My
-    </text>
-
-    {/* ไอคอนตัว A ทรงเส้นมนโค้ง */}
-    <g transform="translate(108, 14)">
-      <path
-        d="M 10 52 L 35 8 C 38 3, 44 3, 47 8 L 72 52"
-        fill="none"
-        stroke="url(#myapi_cyan_gradient)"
-        strokeWidth="13"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle
-        cx="41"
-        cy="45"
-        r="7.5"
-        fill="url(#myapi_dot_gradient)"
-      />
-    </g>
-
-    {/* คำว่า "PI" สีฟ้าสด */}
-    <text
-      x="196"
-      y="64"
-      fill="url(#myapi_pi_gradient)"
-      fontSize="66"
-      fontFamily="Inter, system-ui, -apple-system, sans-serif"
-      fontWeight="900"
-      letterSpacing="-0.5"
-    >
-      PI
-    </text>
-
-    <defs>
-      <linearGradient id="myapi_cyan_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#00E5FF" />
-        <stop offset="100%" stopColor="#0088FF" />
-      </linearGradient>
-
-      <linearGradient id="myapi_dot_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#00B2FF" />
-        <stop offset="100%" stopColor="#0055FF" />
-      </linearGradient>
-
-      <linearGradient id="myapi_pi_gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#0077FF" />
-        <stop offset="100%" stopColor="#0044CC" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
 
 // --- Interfaces & Types ---
 interface ContactFormState {
@@ -92,9 +23,7 @@ interface RegisterFormState {
   courier: string;
 }
 
-// ✅ FIX: เพิ่ม 'print' เข้าไปใน TabType
 type TabType = 'label' | 'print' | 'tracking';
-type DropdownType = 'products' | null;
 
 interface FAQItem {
   q: string;
@@ -125,28 +54,13 @@ const FAQ_DATA: FAQItem[] = [
 ];
 
 export const Home: React.FC = () => {
-  // Navigation & Dropdown State
-  const [activeDropdown, setActiveDropdown] = useState<DropdownType>(null);
-  
   // Feature Tabs State
   const [activeTab, setActiveTab] = useState<TabType>('label');
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Form Tab State ('contact' | 'register')
-  const [activeFormTab, setActiveFormTab] = useState<'contact' | 'register'>('register');
-
-  // Contact Form State
-  const [contactForm, setContactForm] = useState<ContactFormState>({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
-  const [contactSubmitted, setContactSubmitted] = useState<boolean>(false);
-
-  // Goship Register Form State
+  // Register Form State
   const [registerForm, setRegisterForm] = useState<RegisterFormState>({
     company: '',
     fullName: '',
@@ -155,15 +69,6 @@ export const Home: React.FC = () => {
     website: '',
     courier: '',
   });
-  const [registerSubmitted, setRegisterSubmitted] = useState<boolean>(false);
-
-  // Form Handlers
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setContactForm((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleRegisterInputChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -172,20 +77,9 @@ export const Home: React.FC = () => {
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setContactSubmitted(true);
-    setTimeout(() => {
-      setContactSubmitted(false);
-      setContactForm({ name: '', email: '', subject: '', message: '' });
-    }, 4000);
-  };
-
   const handleRegisterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setRegisterSubmitted(true);
     setTimeout(() => {
-      setRegisterSubmitted(false);
       setRegisterForm({
         company: '',
         fullName: '',
@@ -230,44 +124,11 @@ export const Home: React.FC = () => {
         <div className="flex items-center gap-12">
           {/* โลโก้ MyAPI */}
           <Link to="/" className="flex items-center">
-            <MyApiLogo className="h-8" />
+            <img src={logoDark} alt="MyAPI Logo" className="h-8 w-auto object-contain" />
           </Link>
 
+          {/* เอาเมนู "ผลิตภัณฑ์" ออกแล้ว */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-            {/* Products Dropdown */}
-            <div
-              className="relative py-2 cursor-pointer"
-              onMouseEnter={() => setActiveDropdown('products')}
-              onMouseLeave={() => setActiveDropdown(null)}
-            >
-              <span className={`hover:text-blue-600 transition-colors flex items-center gap-1 ${activeDropdown === 'products' ? 'text-blue-600' : ''}`}>
-                ผลิตภัณฑ์ <span className="text-[10px]">▾</span>
-              </span>
-
-              {activeDropdown === 'products' && (
-                <div className="absolute top-full left-0 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl p-4 grid gap-3 z-50">
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Label Generator</div>
-                      <div className="text-[11px] text-slate-400">สร้างใบปะหน้าและบาร์โค้ดพัสดุอัตโนมัติ</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Parcel Tracking API</div>
-                      <div className="text-[11px] text-slate-400">ติดตามสถานะจัดส่งแบบ Real-time ทุกขนส่ง</div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">Rate Calculator</div>
-                      <div className="text-[11px] text-slate-400">คำนวณและเปรียบเทียบค่าจัดส่งล่วงหน้า</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
             <button
               type="button"
               onClick={() => scrollToSection('features')}
@@ -292,12 +153,13 @@ export const Home: React.FC = () => {
           </nav>
         </div>
 
+       {/* ตัดปุ่ม "ลงทะเบียนใช้งาน" บน Navbar ออก เหลือเฉพาะ "เข้าสู่ระบบ" */}
         <div className="flex items-center gap-3">
-          <Link to="/login" className="text-sm font-bold text-blue-600 hover:text-blue-700 px-4 py-2 rounded-lg transition-colors">
+          <Link 
+            to="/login" 
+            className="text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 px-5 py-2.5 rounded-xl shadow-sm transition-all"
+          >
             เข้าสู่ระบบ
-          </Link>
-          <Link to="/signup" className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-sm transition-all">
-            เริ่มต้นใช้งานฟรี
           </Link>
         </div>
       </header>
@@ -313,11 +175,12 @@ export const Home: React.FC = () => {
           เชื่อมต่อระบบจัดการคำสั่งซื้อของคุณเข้ากับบริการขนส่ง ออกใบปะหน้า สร้างเลข Tracking และดึงสถานะ Real-time ครบจบในในที่เดียว
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-          <Link to="/signup" className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-200 transition-all text-center">
+        {/* คงปุ่ม "เริ่มต้นใช้งานฟรี" และ "คู่มือการใช้งาน" ไว้ตรงกลางตามเดิม */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+          <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all text-center">
             เริ่มต้นใช้งานฟรี
           </Link>
-          <Link to="/docs" className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-600 text-blue-600 font-bold text-sm rounded-xl border border-slate-200 shadow-sm transition-all text-center">
+          <Link to="/docs" className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-50 text-blue-600 font-bold text-sm rounded-xl border border-slate-200 shadow-sm transition-all text-center">
             คู่มือการใช้งาน
           </Link>
         </div>
@@ -385,8 +248,6 @@ export const Home: React.FC = () => {
       <section id="features" className="py-20 bg-slate-50/80 border-b border-slate-100 px-6 lg:px-16">
         <div className="max-w-6xl mx-auto space-y-12">
           <div className="text-center space-y-3">
-            <div className="text-xs font-bold text-blue-600 uppercase tracking-widest">
-            </div>
             <h2 className="text-3xl font-extrabold text-slate-900">
               ฟีเจอร์การใช้งานครบครัน ตอบโจทย์นักพัฒนา
             </h2>
@@ -642,7 +503,7 @@ export const Home: React.FC = () => {
       <footer className="bg-slate-900 text-slate-400 py-12 px-6 lg:px-16 border-t border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-3">
-            <MyApiLogo className="h-6" />
+            <img src={logoLight} alt="MyAPI Logo" className="h-6 w-auto object-contain" />
           </div>
           <div className="flex gap-6 text-xs">
             <a href="#features" className="hover:text-white transition-colors">ฟีเจอร์</a>
