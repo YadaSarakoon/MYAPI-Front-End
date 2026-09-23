@@ -14,12 +14,34 @@ import { Sidebar as AppSidebar } from '../components/layout/Sidebar';
 
 const PRODUCTION_BASE_URL = 'https://open-api.myexpress.ai';
 
-const NAV_LINKS = [
-    { to: '/docs', label: 'API Docs' },
-    { to: '/sandbox', label: 'Sandbox' },
-    { to: '/production', label: 'Production' },
-    { to: '/wallet', label: 'Wallet' },
-];
+const PRODUCTION_COPY = {
+    TH: {
+        apiDocs: 'API Docs',
+        sandbox: 'Sandbox',
+        production: 'Production',
+        billing: 'Billing',
+        logout: 'ออกจากระบบ',
+        title: 'Production API',
+        subtitle: 'เชื่อมต่อระบบของคุณกับ MyAPI เพื่อใช้งานจริง ทั้งการสร้างพัสดุ ติดตามสถานะ และรับ Webhook ผ่าน API',
+        active: 'Production Active',
+        activeTitle: 'Production API Active',
+        activeDescription: 'คุณสามารถใช้งาน Production API ได้แล้ว',
+        activeSince: 'เปิดใช้งานเมื่อ',
+    },
+    EN: {
+        apiDocs: 'API Docs',
+        sandbox: 'Sandbox',
+        production: 'Production',
+        billing: 'Billing',
+        logout: 'Log out',
+        title: 'Production API',
+        subtitle: 'Connect your system to MyAPI for live shipments, tracking, and webhooks through the API.',
+        active: 'Production Active',
+        activeTitle: 'Production API Active',
+        activeDescription: 'Your Production API is ready to use.',
+        activeSince: 'Active since',
+    },
+} as const;
 
 const RECENT_ACTIVITY = [
     {
@@ -1052,6 +1074,8 @@ export function Production() {
     const [lang, setLang] =
         useState<'TH' | 'EN'>('EN');
 
+    const copy = PRODUCTION_COPY[lang];
+
     const handleApply = () => {
         setProductionStatus('pending');
     };
@@ -1083,10 +1107,12 @@ export function Production() {
             ================================================== */}
 
             <AppSidebar
-                items={NAV_LINKS.map((link) => ({
-                    label: link.label,
-                    path: link.to,
-                }))}
+                items={[
+                    { label: copy.apiDocs, path: '/docs' },
+                    { label: copy.sandbox, path: '/sandbox' },
+                    { label: copy.production, path: '/production' },
+                    { label: copy.billing, path: '/billing' },
+                ]}
                 activePath="/production"
                 footer={
                     <Button
@@ -1097,7 +1123,7 @@ export function Production() {
                             // logout
                         }}
                     >
-                        ออกจากระบบ
+                        {copy.logout}
                     </Button>
                 }
             />
@@ -1108,8 +1134,8 @@ export function Production() {
 
             <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
                 <ConsoleHeader
-                    title="Production API"
-                    subtitle="เชื่อมต่อระบบของคุณกับ MyAPI เพื่อใช้งานจริง ทั้งการสร้างพัสดุ ติดตามสถานะ และรับ Webhook ผ่าน API"
+                    title={copy.title}
+                    subtitle={copy.subtitle}
                     badge={
                         productionStatus ===
                         'approved' ? (
@@ -1118,7 +1144,7 @@ export function Production() {
                                 className="inline-flex items-center gap-1.5"
                             >
                                 <StatusDot active />
-                                Production Active
+                                {copy.active}
                             </Badge>
                         ) : null
                     }
@@ -1200,12 +1226,11 @@ export function Production() {
 
                                     <div>
                                         <div className="text-sm font-bold text-emerald-700">
-                                            Production API Active
+                                            {copy.activeTitle}
                                         </div>
 
                                         <p className="mt-0.5 text-xs text-emerald-700/70">
-                                            คุณสามารถใช้งาน Production
-                                            API ได้แล้ว
+                                            {copy.activeDescription}
                                         </p>
                                     </div>
                                 </div>
@@ -1217,7 +1242,7 @@ export function Production() {
 
                                     <div className="hidden border-l border-emerald-200 pl-4 text-right sm:block">
                                         <div className="text-[10px] text-emerald-700/60">
-                                            เปิดใช้งานเมื่อ
+                                            {copy.activeSince}
                                         </div>
 
                                         <div className="mt-0.5 text-xs font-semibold text-emerald-800">
