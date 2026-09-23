@@ -18,9 +18,7 @@ const NAV_LINKS = [
     { to: '/docs', label: 'API Docs' },
     { to: '/sandbox', label: 'Sandbox' },
     { to: '/production', label: 'Production' },
-    { to: '/dashboard', label: 'Dashboard' },
     { to: '/wallet', label: 'Wallet' },
-    { to: '/webhook', label: 'Webhook' },
 ];
 
 const RECENT_ACTIVITY = [
