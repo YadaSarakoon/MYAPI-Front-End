@@ -159,13 +159,13 @@ const ENDPOINTS: Endpoint[] = [
         field: 'client_id',
         type: 'String',
         required: true,
-        desc: 'client_id ที่ได้รับจากระบบ MyExpress',
+        desc: 'client_id ที่ได้รับจากระบบ MyAPI',
       },
       {
         field: 'client_secret',
         type: 'String',
         required: true,
-        desc: 'client_secret ที่ได้รับจากระบบ MyExpress',
+        desc: 'client_secret ที่ได้รับจากระบบ MyAPI',
       },
       {
         field: 'grant_type',
@@ -1427,7 +1427,7 @@ function Sidebar({
 
           <div className="min-w-0">
             <div className="truncate text-xs font-bold text-slate-950">
-              MyExpress Open API
+              MyAPI Open API
             </div>
 
             <div className="mt-0.5 text-[10px] text-slate-400">
@@ -1688,19 +1688,19 @@ function Overview({
     [
       '01',
       'Partner submit Google Form',
-      'Partner ส่งแบบฟอร์มเพื่อสมัครใช้งาน MyExpress Open API.',
+      'Partner ส่งแบบฟอร์มเพื่อสมัครใช้งาน MyAPI Open API.',
       'https://forms.gle/FHuFkuTXCHW9kBTR9',
     ],
     [
       '02',
-      'MyExpress create Partner Account',
+      'MyAPI create Partner Account',
       'สร้าง account information, generate client_id / client_secret และ setup webhook.',
       '',
     ],
     [
       '03',
       'Receive Test Credentials',
-      'MyExpress ส่ง client_id และ client_secret สำหรับ Test Environment.',
+      'MyAPI ส่ง client_id และ client_secret สำหรับ Test Environment.',
       '',
     ],
     [
@@ -1718,27 +1718,27 @@ function Overview({
     [
       '06',
       'Receive Production Credentials',
-      'MyExpress ส่ง client_id และ client_secret สำหรับ Production Environment.',
+      'MyAPI ส่ง client_id และ client_secret สำหรับ Production Environment.',
       '',
     ],
   ];
 
   const quickStart = [
-    ['1', 'Sign Up', 'สมัคร Partner'],
+    ['1', 'Sign Up', 'กรอกแบบฟอร์มเพื่อสมัคร Partner'],
     [
       '2',
-      'Get Credentials',
-      'รับ client_id / client_secret',
+      'Get Sandbox Credentials',
+      'รับ client_id / client_secret สำหรับ Test Environment',
     ],
     [
       '3',
-      'Go to Sandbox',
-      'ขอ Test Credential และทดลองยิง API จริง',
+      'Read API Docs & Test',
+      'ศึกษาวิธีเรียก API และทดลองใช้งานผ่าน Sandbox',
     ],
     [
       '4',
       'Go Live',
-      'รับ Production Credentials',
+      'เตรียม Production และรับ Production Credentials เมื่อพร้อมใช้งานจริง',
     ],
   ];
 
@@ -1756,13 +1756,13 @@ function Overview({
               </div>
 
               <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">
-                MyExpress Open API
+                MyAPI Open API
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
                 Introduction and quick start guide for
                 integrating your application with
-                MyExpress Open API.
+                MyAPI Open API.
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
@@ -1794,16 +1794,15 @@ function Overview({
 
               <p className="mt-1 text-xs text-slate-500">
                 Everything you need to start integrating with
-                MyExpress.
+                MyAPI.
               </p>
             </div>
 
             <div className="p-6">
               <p className="text-sm leading-7 text-slate-600">
-                This documentation covers the steps required
-                to sign up as a Partner and use MyExpress Open
-                API, including authentication, parcel APIs,
-                and webhook integration.
+                This documentation covers the steps required to sign up as a Partner,
+                receive Sandbox Credentials, understand authentication,
+                and integrate MyAPI Open API with your application.
               </p>
 
               <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -1837,11 +1836,11 @@ function Overview({
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
               <h2 className="text-sm font-bold text-slate-950">
-                Signing Up
+                Signing Up & Getting Started
               </h2>
 
               <p className="mt-1 text-xs text-slate-500">
-                ขั้นตอนการสมัครและเตรียมพร้อมสำหรับการใช้งาน
+                ขั้นตอนการสมัคร รับ Credentials และเตรียมพร้อมสำหรับการใช้งาน
                 API
               </p>
             </div>
@@ -2098,7 +2097,7 @@ function Overview({
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <SectionTitle
               title="Quick Start"
-              description="เริ่มต้นใช้งาน MyExpress Open API ใน 4 ขั้นตอน"
+              description="เริ่มต้นใช้งาน MyAPI Open API ใน 4 ขั้นตอน"
             />
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
