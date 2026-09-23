@@ -48,7 +48,6 @@ const CREDIT_TERM_DAYS = 30;
 
 const BILLING_PERIOD_START = '1 Sep 2026';
 const BILLING_PERIOD_END = '30 Sep 2026';
-const INVOICE_ISSUE_DATE = '30 Sep 2026';
 
 const BILLING_HISTORY: BillingHistoryItem[] = [
     {
@@ -357,14 +356,14 @@ function StatusBadge({
               : t.processing;
 
     if (status === 'Paid') {
-        return <Badge variant="success">{label}</Badge>;
+        return <Badge tone="emerald">{label}</Badge>;
     }
 
     if (status === 'Pending') {
-        return <Badge variant="warning">{label}</Badge>;
+        return <Badge tone="amber">{label}</Badge>;
     }
 
-    return <Badge variant="warning">{label}</Badge>;
+    return <Badge tone="amber">{label}</Badge>;
 }
 
 function LineChart({
@@ -685,8 +684,28 @@ export default function Wallet() {
                             {t.aboutPostpaid}
                         </span>
                     }
-                    language={language}
-                    setLanguage={setLanguage}
+                    actions={
+                        <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
+                                {(['TH', 'EN'] as const).map((code) => (
+                                    <button
+                                        key={code}
+                                        type="button"
+                                        onClick={() =>
+                                            setLanguage(code === 'TH' ? 'th' : 'en')
+                                        }
+                                        className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${
+                                            language === (code === 'TH' ? 'th' : 'en')
+                                                ? 'bg-white text-indigo-700 shadow-sm'
+                                                : 'text-slate-400 hover:text-slate-600'
+                                        }`}
+                                    >
+                                        {code}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    }
                 />
 
                 <PageContainer>
@@ -767,7 +786,7 @@ export default function Wallet() {
                                                 {t.currentBilling}
                                             </h2>
 
-                                            <Badge variant="warning">
+                                            <Badge tone="amber">
                                                 {t.pending}
                                             </Badge>
                                         </div>
