@@ -4,7 +4,10 @@ import myImage from '../assets/pic2.png';
 import myImage3 from '../assets/pic3.png'; 
 import logoLight from '../assets/logoLight.png';
 import logoDark from '../assets/logoDark.png';
-
+import printImg from '../assets/print.png'; 
+import parcelImg from '../assets/parcel.png'; 
+import trackingImg from '../assets/tracking.png'; 
+import allImg from '../assets/all.png'; 
 
 // --- Interfaces & Types ---
 interface ContactFormState {
@@ -45,7 +48,7 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     q: 'ถ้ายังไม่มีระบบของตัวเอง สามารถใช้งาน MyAPI ผ่านหน้าเว็บไซต์ได้หรือไม่?',
-    a: 'ไม่จำเป็นต้องมีหน้าเว็บบไซต์ของตัวเอง แต่ แนะนำว่าควรมีระบบหลังบ้านไว้เชื่อมต่อกับ MyAPI เพื่อให้สามารถสร้างใบปะหน้าและติดตามพัสดุได้อย่างอัตโนมัติ',
+    a: 'ไม่จำเป็นต้องมีหน้าเว็บไซต์ของตัวเองแต่แนะนำว่าควรมีระบบหลังบ้านไว้เชื่อมต่อกับ MyAPI เพื่อให้สามารถสร้างใบปะหน้าและติดตามพัสดุได้อย่างอัตโนมัติ',
   },
   {
     q: 'MyAPI รองรับขนส่งอะไรบ้าง?',
@@ -99,11 +102,12 @@ export const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 font-['Prompt'] antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden">
+    /*  เปลี่ยนฟอนต์ของทั้งหน้าเป็น Kanit ตรงนี้  */
+    <div className="min-h-screen bg-white text-slate-800 font-['Kanit'] antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden">
       
-      {/* Import Google Fonts & Custom Keyframes */}
+      {/* Import Google Fonts */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap');
 
         @keyframes ticker {
           0% { transform: translateX(0); }
@@ -127,7 +131,6 @@ export const Home: React.FC = () => {
             <img src={logoDark} alt="MyAPI Logo" className="h-8 w-auto object-contain" />
           </Link>
 
-          {/* เอาเมนู "ผลิตภัณฑ์" ออกแล้ว */}
           <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
             <button
               type="button"
@@ -153,7 +156,6 @@ export const Home: React.FC = () => {
           </nav>
         </div>
 
-       {/* ตัดปุ่ม "ลงทะเบียนใช้งาน" บน Navbar ออก เหลือเฉพาะ "เข้าสู่ระบบ" */}
         <div className="flex items-center gap-3">
           <Link 
             to="/login" 
@@ -175,7 +177,6 @@ export const Home: React.FC = () => {
           เชื่อมต่อระบบจัดการคำสั่งซื้อของคุณเข้ากับบริการขนส่ง ออกใบปะหน้า สร้างเลข Tracking และดึงสถานะ Real-time ครบจบในในที่เดียว
         </p>
 
-        {/* คงปุ่ม "เริ่มต้นใช้งานฟรี" และ "คู่มือการใช้งาน" ไว้ตรงกลางตามเดิม */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all text-center">
             เริ่มต้นใช้งานฟรี
@@ -220,9 +221,9 @@ export const Home: React.FC = () => {
                     <path d="M 28 68 C 30 86 75 92 135 71 C 175 58 185 34 172 16 C 158 -2 108 1 68 26" fill="none" stroke="#F97316" strokeWidth="7" strokeLinecap="round" />
                     <path d="M 42 50 L 48 25 L 12 55 L 32 58 Z" fill="#EF4444" />
                     <path d="M 32 58 L 48 25 L 42 50 Z" fill="#B91C1C" />
-                    <text x="60" y="62" fill="#4B52B4" fontSize="52" fontFamily="Prompt, sans-serif" fontWeight="900">M</text>
-                    <text x="116" y="62" fill="#F97316" fontSize="52" fontFamily="Prompt, sans-serif" fontWeight="900">Y</text>
-                    <text x="180" y="62" fill="#334155" fontSize="44" fontFamily="Prompt, sans-serif" fontWeight="900" letterSpacing="-0.5">EXPRESS</text>
+                    <text x="60" y="62" fill="#4B52B4" fontSize="52" fontFamily="Kanit, sans-serif" fontWeight="900">M</text>
+                    <text x="116" y="62" fill="#F97316" fontSize="52" fontFamily="Kanit, sans-serif" fontWeight="900">Y</text>
+                    <text x="180" y="62" fill="#334155" fontSize="44" fontFamily="Kanit, sans-serif" fontWeight="900" letterSpacing="-0.5">EXPRESS</text>
                   </svg>
                 </div>
               </div>
@@ -303,17 +304,13 @@ export const Home: React.FC = () => {
                     สร้างไฟล์ PDF ใบปะหน้าได้ทันทีเมื่อคุณสร้างออเดอร์
                   </p>
                 </div>
-                <div className="bg-slate-100 p-6 rounded-2xl border border-slate-200 font-mono text-xs">
-                  <div className="bg-white p-4 rounded-xl border border-slate-300 space-y-2">
-                    <div className="border-b pb-2 flex justify-between font-bold">
-                      <span>PARCEL LABEL</span>
-                      <span className="text-red-600">EMS THAILAND POST</span>
-                    </div>
-                    <div className="text-[10px] text-slate-500">Tracking: EF901239845TH</div>
-                    <div className="h-10 bg-slate-900 text-white text-[10px] flex items-center justify-center tracking-widest">
-                      ||||||||||||||||||||||||||||||
-                    </div>
-                  </div>
+
+                <div className="flex justify-center items-center">
+                  <img
+                    src={parcelImg}
+                    alt="สร้างใบปะหน้าอัตโนมัติ PDF"
+                    className="w-full max-w-md h-auto rounded-2xl shadow-md border border-slate-100 object-cover"
+                  />
                 </div>
               </>
             )}
@@ -327,20 +324,12 @@ export const Home: React.FC = () => {
                     รองรับการสั่งพิมพ์ใบปะหน้าโดยตรงไปยังเครื่องพิมพ์สติกเกอร์ หรือเครื่องพิมพ์ความร้อน (Thermal Printer) ได้หลากหลายขนาด เช่น A6 หรือ Sticker Roll
                   </p>
                 </div>
-                <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col items-center justify-center gap-3">
-                  <div className="w-full max-w-xs bg-white p-4 rounded-xl border border-slate-300 shadow-sm space-y-3 text-xs">
-                    <div className="flex justify-between items-center border-b pb-2 font-bold text-slate-800">
-                      <span>PRINT PREVIEW</span>
-                      <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">Ready</span>
-                    </div>
-                    <div className="text-[11px] text-slate-600 space-y-1">
-                      <p><strong>ผู้รับ:</strong> คุณสมชาย ใจดี</p>
-                      <p><strong>ที่อยู่:</strong> 123/45 ถนนสุขุมวิท กทม. 10110</p>
-                    </div>
-                    <div className="h-10 bg-slate-900 text-white flex items-center justify-center rounded text-[10px] tracking-widest font-mono">
-                      ||||||||||||||||||||||||||||||
-                    </div>
-                  </div>
+                <div className="flex justify-center items-center">
+                  <img
+                    src={printImg}
+                    alt="พิมพ์ใบปะหน้าพัสดุ"
+                    className="w-full max-w-md h-auto rounded-2xl shadow-md border border-slate-100 object-cover"
+                  />
                 </div>
               </>
             )}
@@ -349,17 +338,17 @@ export const Home: React.FC = () => {
             {activeTab === 'tracking' && (
               <>
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900">ติดตามพัสดุ Real-time จากไปรษณีย์ไทย</h3>
+                  <h3 className="text-2xl font-bold text-slate-900">ติดตามพัสดุ Real-time</h3>
                   <p className="text-sm text-slate-500 leading-relaxed">
                     ระบบดึงสถานะพัสดุอัตโนมัติและแจ้งเตือนกลับผ่าน Webhooks เมื่อมีอัปเดต เช่น พัสดุเข้าระบบ, อยู่ระหว่างจัดส่ง, หรือจัดส่งสำเร็จ
                   </p>
                 </div>
-                <div className="bg-slate-900 text-white p-6 rounded-2xl font-mono text-xs space-y-2">
-                  <div className="text-emerald-400">// Webhook Payload Sent</div>
-                  <div>"event": "shipment.updated"</div>
-                  <div>"courier": "THAILAND_POST"</div>
-                  <div>"status": "DELIVERED"</div>
-                  <div>"timestamp": "2026-08-25T10:00:00Z"</div>
+                <div className="flex justify-center items-center">
+                  <img
+                    src={trackingImg}
+                    alt="ติดตามพัสดุ Real-time"
+                    className="w-full max-w-md h-auto rounded-2xl shadow-md border border-slate-100 object-cover"
+                  />
                 </div>
               </>
             )}
@@ -416,8 +405,17 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
+     {/* ALL-IN-ONE IMAGE */}
+<div className="py-8 px-6 lg:px-16 max-w-6xl mx-auto flex justify-center items-center">
+  <img 
+    src={allImg} 
+    alt="MyAPI Overview" 
+    className="w-full max-w-3xl h-auto rounded-3xl shadow-lg border border-slate-100 object-cover" 
+  />
+</div>
+
       {/* 8. CONTACT FORM */}
-      <div id="contact-us" className="max-w-3xl mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-100 font-sans mb-16">
+      <div id="contact-us" className="max-w-3xl mx-auto bg-white p-8 sm:p-10 rounded-2xl shadow-sm border border-slate-100 mb-16">
         <div className="text-center space-y-2 mb-8">
           <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 tracking-tight">
             เริ่มเชื่อมต่อ API กับ MyAPI ตอนนี้
