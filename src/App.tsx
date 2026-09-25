@@ -4,6 +4,8 @@ import { SignUp } from './pages/SignUp';
 import { Login } from './pages/Login';
 import { ApiDocs } from './pages/ApiDocs';
 import { Sandbox } from './pages/Sandbox';
+import { Production } from './pages/Production';
+import Billing from './pages/Billing';
 
 export default function App() {
   return (
@@ -16,6 +18,8 @@ export default function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/docs" element={<ApiDocs />} />
       <Route path="/sandbox" element={<Sandbox />} />
+      <Route path="/production" element={<Production />} />
+      <Route path="/billing" element={<Billing />} />
     </Routes>
   );
 }

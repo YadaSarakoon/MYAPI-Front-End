@@ -9,6 +9,13 @@ type Method = 'GET' | 'POST' | 'DELETE';
 type Env = 'test' | 'prod';
 type BodyType = 'json' | 'formdata' | 'none';
 type AuthType = 'none' | 'bearer';
+type ClientLibraryLanguage =
+  | 'C# - HttpClient' | 'C# - RestSharp' | 'cURL - cURL' | 'Dart - http' | 'Go - Native'
+  | 'HTTP - HTTP' | 'Java - OkHttp' | 'Java - Unirest' | 'JavaScript - Fetch'
+  | 'JavaScript - jQuery' | 'JavaScript - XHR' | 'C - libcurl' | 'NodeJs - Axios'
+  | 'NodeJs - Native' | 'NodeJs - Request' | 'NodeJs - Unirest' | 'Objective-C - NSURLSession'
+  | 'OCaml - Cohttp' | 'PHP - cURL' | 'PHP - Guzzle' | 'PHP - HTTP_Request2' | 'PHP - pecl_http'
+  | 'PowerShell - RestMethod' | 'Python - http.client' | 'Python - Requests' | 'R - httr' | 'R - RCurl';
 type DocsPage = 'overview' | 'docs';
 
 interface HeaderItem {
@@ -63,9 +70,11 @@ interface Endpoint {
 }
 
 type StringMap = Record<string, string>;
-interface FormField {
-  key: string;
-  value: string;
+
+interface SandboxCredentials {
+  clientId: string;
+  clientSecret: string;
+  createdAt: string;
 }
 
 type ApiResponseState =
@@ -91,15 +100,16 @@ const METHOD_STYLE: Record<
   DELETE: { text: 'text-rose-700', bg: 'bg-rose-50', border: 'border-rose-200', solid: 'bg-rose-600' },
 };
 
-const GROUP_ORDER = ['Authentication', 'Parcel', 'Webhook', 'Print Label', 'Verify COD Account'] as const;
-
-const STATUS_TABLE: { code: number; detail: string }[] = [
-  { code: 200, detail: 'Request is successful.' },
-  { code: 400, detail: 'Error bad request' },
-  { code: 401, detail: 'Error an access token is missing or unauthorized' },
-  { code: 403, detail: 'Error find an account forbidden' },
-  { code: 500, detail: 'Error internal server http request' },
+const CLIENT_LIBRARY_LANGUAGES: ClientLibraryLanguage[] = [
+  'C# - HttpClient', 'C# - RestSharp', 'cURL - cURL', 'Dart - http', 'Go - Native',
+  'HTTP - HTTP', 'Java - OkHttp', 'Java - Unirest', 'JavaScript - Fetch',
+  'JavaScript - jQuery', 'JavaScript - XHR', 'C - libcurl', 'NodeJs - Axios',
+  'NodeJs - Native', 'NodeJs - Request', 'NodeJs - Unirest', 'Objective-C - NSURLSession',
+  'OCaml - Cohttp', 'PHP - cURL', 'PHP - Guzzle', 'PHP - HTTP_Request2', 'PHP - pecl_http',
+  'PowerShell - RestMethod', 'Python - http.client', 'Python - Requests', 'R - httr', 'R - RCurl',
 ];
+
+const GROUP_ORDER = ['Authentication', 'Parcel', 'Webhook', 'Print Label', 'Verify COD Account'] as const;
 
 /* ============================================================
    DATA — extracted from MyExpress Open API Postman collection
@@ -119,8 +129,8 @@ const ENDPOINTS: Endpoint[] = [
     queryParams: [],
     bodyType: 'json',
     bodyFields: [
-      { field: 'client_id', type: 'String', required: true, desc: 'client_id ที่ได้รับจากระบบ MyExpress' },
-      { field: 'client_secret', type: 'String', required: true, desc: 'client_secret ที่ได้รับจากระบบ MyExpress' },
+      { field: 'client_id', type: 'String', required: true, desc: 'client_id ที่ได้รับจากระบบ MyAPI' },
+      { field: 'client_secret', type: 'String', required: true, desc: 'client_secret ที่ได้รับจากระบบ MyAPI' },
       { field: 'grant_type', type: 'String', required: true, desc: 'ค่าคงที่ = client_credentials' },
       { field: 'scope', type: 'String', required: true, desc: 'ขอบเขตการเข้าถึง เช่น parcel' },
     ],
@@ -526,6 +536,32 @@ function buildQueryString(endpoint: Endpoint, queryValues: StringMap): string {
   return '?' + active.map((qp) => `${qp.key}=${encodeURIComponent(queryValues[qp.key])}`).join('&');
 }
 
+function randomToken(length: number): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let out = '';
+  const cryptoObj = typeof window !== 'undefined' ? window.crypto : undefined;
+  if (cryptoObj?.getRandomValues) {
+    const values = new Uint32Array(length);
+    cryptoObj.getRandomValues(values);
+    for (let i = 0; i < length; i++) out += chars[values[i] % chars.length];
+  } else {
+    for (let i = 0; i < length; i++) out += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return out;
+}
+
+function generateSandboxCredentials(): SandboxCredentials {
+  return { clientId: randomToken(32), clientSecret: randomToken(32), createdAt: new Date().toISOString() };
+}
+
+function authBodyFromCredentials(creds: SandboxCredentials): string {
+  return JSON.stringify(
+    { client_id: creds.clientId, client_secret: creds.clientSecret, grant_type: 'client_credentials', scope: 'parcel' },
+    null,
+    2
+  );
+}
+
 function buildCurl(
   endpoint: Endpoint,
   env: Env,
@@ -546,6 +582,50 @@ function buildCurl(
     lines[lines.length - 1] = lines[lines.length - 1].replace(/ \\$/, '');
   }
   return lines.join('\n');
+}
+
+function buildCodeExample(
+  language: ClientLibraryLanguage,
+  endpoint: Endpoint,
+  env: Env,
+  token: string,
+  pathValues: StringMap,
+  queryValues: StringMap,
+  bodyText: string
+): string {
+  const url = BASE_URLS[env] + buildResolvedPath(endpoint, pathValues) + buildQueryString(endpoint, queryValues);
+  const headers = endpoint.headers.map((h) => {
+    const value = h.key === 'Authorization' ? `Bearer ${token || '{access_token}'}` : h.value;
+    return { key: h.key, value };
+  });
+  const body = bodyText || '';
+  const jsonBody = body.replace(/`/g, '\\`');
+  const headerLines = headers.map((h) => `    '${h.key}': '${h.value}'`).join(',\n');
+
+  switch (language) {
+    case 'cURL - cURL':
+      return buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
+    case 'JavaScript - Fetch':
+      return `const response = await fetch('${url}', {\n  method: '${endpoint.method}',\n  headers: {\n${headerLines}\n  }${endpoint.bodyType !== 'none' ? `,\n  body: JSON.stringify(${jsonBody})` : ''}\n});\n\nconst data = await response.json();`;
+    case 'NodeJs - Axios':
+      return `const axios = require('axios');\n\nconst response = await axios({\n  method: '${endpoint.method.toLowerCase()}',\n  url: '${url}',\n  headers: {\n${headerLines}\n  }${endpoint.bodyType !== 'none' ? `,\n  data: ${jsonBody}` : ''}\n});\n\nconsole.log(response.data);`;
+    case 'Python - Requests':
+      return `import requests\n\nresponse = requests.request(\n    '${endpoint.method}',\n    '${url}',\n    headers={\n${headers.map((h) => `        '${h.key}': '${h.value}'`).join(',\n')}\n    }${endpoint.bodyType !== 'none' ? `,\n    json=${body}` : ''}\n)\n\nprint(response.json())`;
+    case 'Python - http.client':
+      return `import http.client\nimport json\n\nconn = http.client.HTTPSConnection('${new URL(url).host}')\nheaders = {\n${headers.map((h) => `    '${h.key}': '${h.value}'`).join(',\n')}\n}\n${endpoint.bodyType !== 'none' ? `body = json.dumps(${body})\nconn.request('${endpoint.method}', '${new URL(url).pathname}${new URL(url).search}', body, headers)` : `conn.request('${endpoint.method}', '${new URL(url).pathname}${new URL(url).search}', headers=headers)`}\nresponse = conn.getresponse()\nprint(response.read().decode())`;
+    case 'PowerShell - RestMethod':
+      return `$headers = @{\n${headers.map((h) => `  '${h.key}' = '${h.value}'`).join('\n')}\n}\n${endpoint.bodyType !== 'none' ? `$body = @'\n${body}\n'@\n\nInvoke-RestMethod -Uri '${url}' -Method ${endpoint.method} -Headers $headers -Body $body` : `Invoke-RestMethod -Uri '${url}' -Method ${endpoint.method} -Headers $headers`}`;
+    case 'Java - OkHttp':
+      return `OkHttpClient client = new OkHttpClient();\n\nRequest request = new Request.Builder()\n    .url("${url}")\n${headers.map((h) => `    .addHeader("${h.key}", "${h.value}")`).join('\n')}\n${endpoint.bodyType !== 'none' ? `    .post(RequestBody.create(\n        "${jsonBody.replace(/"/g, '\\"')}",\n        MediaType.parse("application/json")\n    ))\n` : ''}    .build();\n\nResponse response = client.newCall(request).execute();`;
+    case 'PHP - cURL':
+      return `$ch = curl_init('${url}');\n\ncurl_setopt_array($ch, [\n    CURLOPT_CUSTOMREQUEST => '${endpoint.method}',\n    CURLOPT_HTTPHEADER => [\n${headers.map((h) => `        '${h.key}: ${h.value}'`).join(',\n')}\n    ],${endpoint.bodyType !== 'none' ? `\n    CURLOPT_POSTFIELDS => '${body.replace(/'/g, "\\'")}',` : ''}\n]);\n\n$response = curl_exec($ch);\ncurl_close($ch);`;
+    case 'Go - Native':
+      return `req, _ := http.NewRequest("${endpoint.method}", "${url}", ${endpoint.bodyType !== 'none' ? `strings.NewReader(${JSON.stringify(body)})` : 'nil'})\n${headers.map((h) => `req.Header.Set("${h.key}", "${h.value}")`).join('\n')}\n\nclient := &http.Client{}\nresp, err := client.Do(req)`;
+    case 'C - libcurl':
+      return `CURL *curl = curl_easy_init();\nif (curl) {\n  curl_easy_setopt(curl, CURLOPT_URL, "${url}");\n  curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "${endpoint.method}");\n${headers.map((h) => `  /* Header: ${h.key}: ${h.value} */`).join('\n')}\n  curl_easy_perform(curl);\n  curl_easy_cleanup(curl);\n}`;
+    default:
+      return buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
+  }
 }
 
 /* ============================================================
@@ -573,15 +653,6 @@ function SectionTitle({ title, description }: { title: string; description?: str
     <div className="mb-3">
       <h2 className="text-sm font-bold text-slate-900">{title}</h2>
       {description && <p className="mt-1 text-xs leading-5 text-slate-500">{description}</p>}
-    </div>
-  );
-}
-
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0 space-y-2">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{label}</div>
-      <div className="min-w-0">{children}</div>
     </div>
   );
 }
@@ -713,10 +784,10 @@ function Sidebar({
           className="flex min-w-0 items-center gap-3 text-left transition-opacity hover:opacity-80"
         >
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm">
-            <img src={logo} alt="MyExpress" className="h-7 w-7 object-contain" />
+            <img src={logo} alt="MyAPI" className="h-7 w-7 object-contain" />
           </div>
           <div className="min-w-0">
-            <div className="truncate text-xs font-bold text-slate-950">MyExpress Open API</div>
+            <div className="truncate text-xs font-bold text-slate-950">MyAPI Open API</div>
             <div className="mt-0.5 text-[10px] text-slate-400">Sandbox</div>
           </div>
         </button>
@@ -835,10 +906,179 @@ function Sidebar({
 }
 
 /* ============================================================
+   SANDBOX CREDENTIALS
+   ============================================================ */
+
+interface CredentialsCardProps {
+  loggedIn: boolean;
+  credentials: SandboxCredentials | null;
+  onLogin: () => void;
+  onGenerate: () => void;
+  onRegenerate: () => void;
+  onGenerateAccessToken: () => void;
+}
+
+function CredentialsCard({
+  loggedIn,
+  credentials,
+  onLogin,
+  onGenerate,
+  onRegenerate,
+  onGenerateAccessToken,
+}: CredentialsCardProps) {
+  const [secretVisible, setSecretVisible] = useState(false);
+  const [confirmingRegenerate, setConfirmingRegenerate] = useState(false);
+
+  const handleRegenerateClick = () => {
+    if (!confirmingRegenerate) {
+      setConfirmingRegenerate(true);
+      return;
+    }
+    setConfirmingRegenerate(false);
+    setSecretVisible(false);
+    onRegenerate();
+  };
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-emerald-50 blur-3xl" />
+      <div className="relative p-6 lg:p-7">
+        <h2 className="text-base font-bold text-slate-950">Sandbox Credentials</h2>
+        <p className="mt-1 max-w-lg text-xs leading-6 text-slate-500">
+          สร้าง client_id / client_secret สำหรับ Sandbox ได้ทันที ไม่ต้องรออนุมัติ ต่างจาก Production ที่ต้องผ่านการตรวจสอบก่อนใช้งาน
+        </p>
+
+        <div className="mt-5">
+          {!loggedIn && (
+            <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-6 text-slate-500">
+                เข้าสู่ระบบก่อน เพื่อสร้าง credentials ของท่านเอง (ป้องกันการสุ่มสร้างจำนวนมาก)
+              </p>
+              <button
+                type="button"
+                onClick={onLogin}
+                className="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-slate-800"
+              >
+                เข้าสู่ระบบ
+              </button>
+            </div>
+          )}
+
+          {loggedIn && !credentials && (
+            <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-xs leading-6 text-slate-500">
+                ยังไม่มี credentials — กดสร้างเพื่อรับ client_id และ client_secret ทันที
+              </p>
+              <button
+                type="button"
+                onClick={onGenerate}
+                className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-indigo-200 transition-colors hover:bg-indigo-700"
+              >
+                Generate Sandbox Credentials
+              </button>
+            </div>
+          )}
+
+          {loggedIn && credentials && (
+            <div className="space-y-3">
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">client_id</span>
+                  <CopyButton text={credentials.clientId} />
+                </div>
+                <div className="px-3 py-2.5">
+                  <code className="break-all font-mono text-[11px] text-slate-700">{credentials.clientId}</code>
+                </div>
+              </div>
+
+              <div className="overflow-hidden rounded-xl border border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50 px-3 py-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">client_secret</span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setSecretVisible((v) => !v)}
+                      className="rounded-md px-2 py-1 text-[10px] font-semibold text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+                    >
+                      {secretVisible ? 'ซ่อน' : 'แสดง'}
+                    </button>
+                    <CopyButton text={credentials.clientSecret} />
+                  </div>
+                </div>
+                <div className="px-3 py-2.5">
+                  <code className="break-all font-mono text-[11px] text-slate-700">
+                    {secretVisible ? credentials.clientSecret : '•'.repeat(32)}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-[10px] text-slate-400">
+                  สร้างเมื่อ {new Date(credentials.createdAt).toLocaleString('th-TH')}
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  {confirmingRegenerate && (
+                    <>
+                      <span className="text-[10px] font-semibold text-rose-600">secret เดิมจะใช้งานไม่ได้ทันที ยืนยันหรือไม่?</span>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingRegenerate(false)}
+                        className="rounded-lg px-3 py-1.5 text-[11px] font-semibold text-slate-500 hover:bg-slate-100"
+                      >
+                        ยกเลิก
+                      </button>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={onGenerateAccessToken}
+                    disabled={confirmingRegenerate}
+                    className="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-[11px] font-bold text-white shadow-sm shadow-indigo-200 transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Generate Access Token →
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleRegenerateClick}
+                    className={`rounded-lg px-3.5 py-1.5 text-[11px] font-bold transition-colors ${
+                      confirmingRegenerate
+                        ? 'bg-rose-600 text-white hover:bg-rose-500'
+                        : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    {confirmingRegenerate ? 'ยืนยัน Regenerate' : 'Regenerate'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================
    OVERVIEW
    ============================================================ */
 
-function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: string) => void }) {
+function Overview({
+  onNavigate,
+  loggedIn,
+  credentials,
+  onLogin,
+  onGenerateCredentials,
+  onRegenerateCredentials,
+  onGenerateAccessToken,
+}: {
+  onNavigate: (page: DocsPage, endpointId?: string) => void;
+  loggedIn: boolean;
+  credentials: SandboxCredentials | null;
+  onLogin: () => void;
+  onGenerateCredentials: () => void;
+  onRegenerateCredentials: () => void;
+  onGenerateAccessToken: () => void;
+}) {
   const overviewCards = [
     ['Authentication', 'สร้าง Access Token ด้วย client_id / client_secret แล้วเริ่มยิงคำขอทดสอบ'],
     ['Parcel API', 'ทดลองสร้าง ค้นหา ลบพัสดุ และตรวจสอบสถานะการชำระเงิน COD'],
@@ -857,9 +1097,9 @@ function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: st
               <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
                 Sandbox
               </div>
-              <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">MyExpress API Sandbox</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">MyAPI API Sandbox</h1>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                ทดลองยิง MyExpress Open API แบบ interactive พร้อมดูตัวอย่าง request และ response แบบ real-time
+                ทดลองยิง MyAPI Open API แบบ interactive พร้อมดูตัวอย่าง request และ response แบบ real-time
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">REST API</span>
@@ -869,6 +1109,15 @@ function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: st
               </div>
             </div>
           </section>
+
+          <CredentialsCard
+            loggedIn={loggedIn}
+            credentials={credentials}
+            onLogin={onLogin}
+            onGenerate={onGenerateCredentials}
+            onRegenerate={onRegenerateCredentials}
+            onGenerateAccessToken={onGenerateAccessToken}
+          />
 
           {/* What you can test */}
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -931,18 +1180,38 @@ function Overview({ onNavigate }: { onNavigate: (page: DocsPage, endpointId?: st
 export function Sandbox() {
   const [page, setPage] = useState<DocsPage>('overview');
   const [activeId, setActiveId] = useState<string>(ENDPOINTS[0].id);
-  const [env, setEnv] = useState<Env>('test');
   const [search, setSearch] = useState('');
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [credentials, setCredentials] = useState<SandboxCredentials | null>(null);
+  const [issuedAccessToken, setIssuedAccessToken] = useState<string | null>(null);
 
-  const endpoint = useMemo(() => ENDPOINTS.find((e) => e.id === activeId) || ENDPOINTS[0], [activeId]);
+  // Sandbox ใช้ Dev URL เท่านั้น — ไม่มีตัวเลือก Production ในหน้านี้
+  const env: Env = 'test';
+  const endpoint = useMemo(
+    () => ENDPOINTS.find((e) => e.id === activeId) || ENDPOINTS[0],
+    [activeId],
+  );
 
-  const initFor = (ep: Endpoint): { pv: StringMap; qv: StringMap; body: string } => {
+  const initFor = (
+    ep: Endpoint,
+    creds: SandboxCredentials | null = credentials,
+  ): { pv: StringMap; qv: StringMap; body: string } => {
     const pv: StringMap = {};
     ep.pathParams.forEach((p) => (pv[p.key] = p.example));
+
     const qv: StringMap = {};
     ep.queryParams.forEach((q) => (qv[q.key] = q.required ? q.example : ''));
-    return { pv, qv, body: ep.bodyExample != null ? JSON.stringify(ep.bodyExample, null, 2) : '' };
+
+    if (ep.id === 'generate-access-token' && creds) {
+      return { pv, qv, body: authBodyFromCredentials(creds) };
+    }
+
+    return {
+      pv,
+      qv,
+      body: ep.bodyExample != null ? JSON.stringify(ep.bodyExample, null, 2) : '',
+    };
   };
 
   const [token, setToken] = useState('');
@@ -954,6 +1223,7 @@ export function Sandbox() {
   const selectEndpoint = (id: string) => {
     const ep = ENDPOINTS.find((e) => e.id === id);
     if (!ep) return;
+
     const { pv, qv, body } = initFor(ep);
     setActiveId(id);
     setPage('docs');
@@ -970,26 +1240,146 @@ export function Sandbox() {
   const handleSend = () => {
     setResponse({ loading: true });
     const delay = 500 + Math.random() * 400;
+
     setTimeout(() => {
-      const hasToken = token.trim().length > 0;
-      if (endpoint.auth === 'bearer' && !hasToken) {
+      if (endpoint.id === 'generate-access-token') {
+        let parsed: { client_id?: string; client_secret?: string } = {};
+
+        try {
+          parsed = JSON.parse(bodyText || '{}');
+        } catch {
+          setResponse({
+            status: 400,
+            ms: Math.round(delay),
+            body: { status: 400, message: 'Invalid JSON body', name: 'BadRequestException' },
+            demo: true,
+          });
+          return;
+        }
+
+        const matches =
+          credentials != null &&
+          parsed.client_id === credentials.clientId &&
+          parsed.client_secret === credentials.clientSecret;
+
+        if (!matches) {
+          setResponse({
+            status: 400,
+            ms: Math.round(delay),
+            body:
+              (endpoint.errors[0]?.body as Record<string, unknown>) ??
+              { error: 'invalid_client', error_description: 'Invalid client authentication' },
+            demo: true,
+          });
+          return;
+        }
+
+        const issued = randomToken(32);
+        setIssuedAccessToken(issued);
+        setToken(issued);
         setResponse({
-          status: 401,
+          status: 200,
           ms: Math.round(delay),
-          body: { status: 401, message: 'Access token is missing or unauthorized', name: 'UnauthorizedException' },
+          body: { expires_in: 7200, token_type: 'bearer', access_token: issued },
           demo: true,
         });
         return;
       }
-      setResponse({ status: endpoint.successCode, ms: Math.round(delay), body: endpoint.successExample, demo: true });
+
+      const typedToken = token.trim();
+
+      if (endpoint.auth === 'bearer') {
+        if (!typedToken) {
+          setResponse({
+            status: 401,
+            ms: Math.round(delay),
+            body: {
+              status: 401,
+              message: 'Access token is missing or unauthorized',
+              name: 'UnauthorizedException',
+            },
+            demo: true,
+          });
+          return;
+        }
+
+        if (typedToken !== issuedAccessToken) {
+          setResponse({
+            status: 401,
+            ms: Math.round(delay),
+            body: {
+              status: 401,
+              message: 'Access token is invalid or expired',
+              name: 'UnauthorizedException',
+            },
+            demo: true,
+          });
+          return;
+        }
+      }
+
+      setResponse({
+        status: endpoint.successCode,
+        ms: Math.round(delay),
+        body: endpoint.successExample,
+        demo: true,
+      });
     }, delay);
   };
 
-  const curl = buildCurl(endpoint, env, token, pathValues, queryValues, bodyText);
-  const resolvedUrl = BASE_URLS[env] + buildResolvedPath(endpoint, pathValues) + buildQueryString(endpoint, queryValues);
+  const handleLogin = () => setLoggedIn(true);
+
+  const handleGenerateCredentials = () => {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    setActiveId('generate-access-token');
+    setPage('docs');
+    setBodyText(authBodyFromCredentials(creds));
+    setResponse(null);
+  };
+
+  const handleRegenerateCredentials = () => {
+    const creds = generateSandboxCredentials();
+    setCredentials(creds);
+    setIssuedAccessToken(null);
+    setToken('');
+    if (activeId === 'generate-access-token') {
+      setBodyText(authBodyFromCredentials(creds));
+      setResponse(null);
+    }
+  };
+
+  const handleGenerateAccessToken = () => {
+    selectEndpoint('generate-access-token');
+  };
+
+  const handleUseIssuedToken = () => {
+    if (issuedAccessToken) setToken(issuedAccessToken);
+  };
+
+  const [codeLanguage, setCodeLanguage] =
+    useState<ClientLibraryLanguage>('cURL - cURL');
+
+  const codeExample = buildCodeExample(
+    codeLanguage,
+    endpoint,
+    env,
+    token,
+    pathValues,
+    queryValues,
+    bodyText
+  );
+  const resolvedUrl =
+    BASE_URLS[env] +
+    buildResolvedPath(endpoint, pathValues) +
+    buildQueryString(endpoint, queryValues);
 
   const goLanding = () => window.location.assign('/');
   const goDocs = () => window.location.assign('/docs');
+
+  const hasToken = Boolean(token || issuedAccessToken);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-sans text-sm text-slate-800">
@@ -1015,32 +1405,62 @@ export function Sandbox() {
             }
             setPage(target);
           }}
+          loggedIn={loggedIn}
+          credentials={credentials}
+          onLogin={handleLogin}
+          onGenerateCredentials={handleGenerateCredentials}
+          onRegenerateCredentials={handleRegenerateCredentials}
+          onGenerateAccessToken={handleGenerateAccessToken}
         />
       ) : (
         <main className="min-w-0 flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1440px] px-6 py-7 lg:px-10">
-            <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-12">
-              {/* Main documentation column */}
-              <section className="min-w-0 space-y-7 xl:col-span-7">
-                <header className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <div className="p-6 lg:p-7">
+          <div className="mx-auto max-w-[1480px] px-5 py-6 lg:px-8">
+            {/* Environment */}
+            <section className="mb-5 rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    <h1 className="text-sm font-bold text-slate-950">Sandbox Environment</h1>
+                  </div>
+                  <code className="mt-1.5 block font-mono text-xs text-slate-500">
+                    {BASE_URLS.test}
+                  </code>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                  <span>REST API</span>
+                  <span>•</span>
+                  <span>JSON</span>
+                  <span>•</span>
+                  <span>Bearer Auth</span>
+                </div>
+              </div>
+            </section>
+
+            <div className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(420px,560px)]">
+              {/* Documentation */}
+              <section className="min-w-0 space-y-5">
+                <header className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="p-5">
                     <div className="flex flex-wrap items-center gap-2">
                       <MethodChip method={endpoint.method} size="md" />
-                      <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                      <span className="rounded-md bg-slate-100 px-2 py-1 text-[10px] font-bold text-slate-500">
                         {endpoint.group}
                       </span>
                     </div>
-                    <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">{endpoint.name}</h1>
-                    <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-500">{endpoint.summary}</p>
-                  </div>
-                  <div className="border-t border-slate-100 bg-slate-50/70 px-6 py-3 lg:px-7">
-                    <div className="flex min-w-0 items-center gap-2">
+                    <h2 className="mt-3 text-xl font-bold tracking-tight text-slate-950">
+                      {endpoint.name}
+                    </h2>
+                    <p className="mt-1.5 max-w-3xl text-xs leading-6 text-slate-500">
+                      {endpoint.summary}
+                    </p>
+                    <div className="mt-4 flex min-w-0 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">
                       <span
-                        className={`shrink-0 rounded-md px-2.5 py-1 text-[10px] font-bold text-white ${METHOD_STYLE[endpoint.method].solid}`}
+                        className={`shrink-0 rounded px-2 py-1 text-[10px] font-bold text-white ${METHOD_STYLE[endpoint.method].solid}`}
                       >
                         {endpoint.method}
                       </span>
-                      <code className="min-w-0 flex-1 truncate rounded-md px-1 font-mono text-xs text-slate-700">
+                      <code className="min-w-0 flex-1 truncate font-mono text-xs text-slate-700">
                         {endpoint.path}
                       </code>
                       <CopyButton text={endpoint.path} />
@@ -1048,399 +1468,390 @@ export function Sandbox() {
                   </div>
                 </header>
 
-                {endpoint.auth === 'bearer' && (
-                  <div className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-6 text-amber-800">
-                    <span>🔒</span>
-                    <span>
-                      ต้องแนบ{' '}
-                      <code className="rounded border border-amber-200 bg-white px-1 font-mono">
-                        Authorization: Bearer &#123;access_token&#125;
-                      </code>{' '}
-                      ใน Header ทุกครั้ง
-                    </span>
-                  </div>
-                )}
-
+                {/* Headers */}
                 {endpoint.headers.length > 0 && (
-                  <section>
-                    <SectionTitle title="Headers" description="HTTP headers required for this request." />
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="overflow-x-auto">
-                        <table className="w-full min-w-[500px] text-left text-xs">
-                          <thead className="border-b border-slate-100 bg-slate-50">
-                            <tr className="text-slate-500">
-                              <th className="px-4 py-3 font-semibold">Key</th>
-                              <th className="px-4 py-3 font-semibold">Value</th>
-                              <th className="w-28 px-4 py-3 font-semibold">Required</th>
+                  <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-100 px-5 py-4">
+                      <h3 className="text-sm font-bold text-slate-950">Headers</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[520px] text-left text-xs">
+                        <thead className="bg-slate-50 text-slate-500">
+                          <tr>
+                            <th className="px-5 py-2.5 font-semibold">Key</th>
+                            <th className="px-5 py-2.5 font-semibold">Value</th>
+                            <th className="px-5 py-2.5 font-semibold">Required</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {endpoint.headers.map((h) => (
+                            <tr key={h.key}>
+                              <td className="px-5 py-3">
+                                <code className="font-mono font-semibold text-indigo-700">{h.key}</code>
+                              </td>
+                              <td className="px-5 py-3">
+                                <code className="font-mono text-[11px] text-slate-500">{h.value}</code>
+                              </td>
+                              <td className="px-5 py-3">
+                                <RequiredBadge required={h.required} />
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {endpoint.headers.map((h) => (
-                              <tr key={h.key} className="transition-colors hover:bg-slate-50/70">
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono font-semibold text-indigo-700">{h.key}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono text-[11px] text-slate-500">{h.value}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <RequiredBadge required={h.required} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </section>
                 )}
 
-                {endpoint.pathParams.length > 0 && (
-                  <section>
-                    <SectionTitle title="Path Params" description="Parameters included directly in the URL path." />
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="overflow-x-auto">
-                        <table className="w-full min-w-[500px] text-left text-xs">
-                          <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3 font-semibold">Name</th>
-                              <th className="px-4 py-3 font-semibold">Example</th>
-                              <th className="px-4 py-3 font-semibold">Description</th>
+                {/* Parameters */}
+                {(endpoint.pathParams.length > 0 || endpoint.queryParams.length > 0) && (
+                  <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-100 px-5 py-4">
+                      <h3 className="text-sm font-bold text-slate-950">Parameters</h3>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[620px] text-left text-xs">
+                        <thead className="bg-slate-50 text-slate-500">
+                          <tr>
+                            <th className="px-5 py-2.5 font-semibold">Name</th>
+                            <th className="px-5 py-2.5 font-semibold">Type</th>
+                            <th className="px-5 py-2.5 font-semibold">Example</th>
+                            <th className="px-5 py-2.5 font-semibold">Required</th>
+                            <th className="px-5 py-2.5 font-semibold">Description</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {endpoint.pathParams.map((p) => (
+                            <tr key={`path-${p.key}`} className="align-top">
+                              <td className="px-5 py-3"><code className="font-mono font-semibold text-indigo-700">{p.key}</code></td>
+                              <td className="px-5 py-3 text-slate-500">Path</td>
+                              <td className="px-5 py-3"><code className="font-mono text-[10px] text-slate-500">{p.example}</code></td>
+                              <td className="px-5 py-3"><RequiredBadge required /></td>
+                              <td className="px-5 py-3 leading-5 text-slate-600">{p.desc}</td>
                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {endpoint.pathParams.map((p) => (
-                              <tr key={p.key}>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono font-semibold text-indigo-700">{p.key}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono text-[10px] text-slate-500">{p.example}</code>
-                                </td>
-                                <td className="px-4 py-3.5 leading-5 text-slate-600">{p.desc}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                          {endpoint.queryParams.map((p) => (
+                            <tr key={`query-${p.key}`} className="align-top">
+                              <td className="px-5 py-3"><code className="font-mono font-semibold text-indigo-700">{p.key}</code></td>
+                              <td className="px-5 py-3 text-slate-500">Query</td>
+                              <td className="px-5 py-3"><code className="font-mono text-[10px] text-slate-500">{p.example}</code></td>
+                              <td className="px-5 py-3"><RequiredBadge required={p.required} /></td>
+                              <td className="px-5 py-3 leading-5 text-slate-600">{p.desc}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </section>
                 )}
 
-                {endpoint.queryParams.length > 0 && (
-                  <section>
-                    <SectionTitle title="Query Params" description="Optional or required parameters appended to the URL." />
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="overflow-x-auto">
-                        <table className="w-full min-w-[560px] text-left text-xs">
-                          <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3 font-semibold">Name</th>
-                              <th className="px-4 py-3 font-semibold">Example</th>
-                              <th className="w-28 px-4 py-3 font-semibold">Required</th>
-                              <th className="px-4 py-3 font-semibold">Description</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {endpoint.queryParams.map((p) => (
-                              <tr key={p.key}>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono font-semibold text-indigo-700">{p.key}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono text-[10px] text-slate-500">{p.example}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <RequiredBadge required={p.required} />
-                                </td>
-                                <td className="px-4 py-3.5 leading-5 text-slate-600">{p.desc}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </section>
-                )}
-
+                {/* Request fields */}
                 {endpoint.bodyFields.length > 0 && (
-                  <section>
-                    <SectionTitle title="Request Body" description="Fields accepted in the request payload." />
-                    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                      <div className="overflow-x-auto">
-                        <table className="w-full min-w-[620px] text-left text-xs">
-                          <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
-                            <tr>
-                              <th className="px-4 py-3 font-semibold">Field</th>
-                              <th className="w-28 px-4 py-3 font-semibold">Type</th>
-                              <th className="w-28 px-4 py-3 font-semibold">Required</th>
-                              <th className="px-4 py-3 font-semibold">Description</th>
+                  <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-100 px-5 py-4">
+                      <h3 className="text-sm font-bold text-slate-950">Request Body</h3>
+                      <p className="mt-1 text-[11px] text-slate-400">Fields accepted by this endpoint.</p>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[680px] text-left text-xs">
+                        <thead className="bg-slate-50 text-slate-500">
+                          <tr>
+                            <th className="px-5 py-2.5 font-semibold">Field</th>
+                            <th className="px-5 py-2.5 font-semibold">Type</th>
+                            <th className="px-5 py-2.5 font-semibold">Required</th>
+                            <th className="px-5 py-2.5 font-semibold">Description</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {endpoint.bodyFields.map((f) => (
+                            <tr key={f.field} className="align-top">
+                              <td className="px-5 py-3"><code className="font-mono font-semibold text-indigo-700">{f.field}</code></td>
+                              <td className="px-5 py-3"><code className="font-mono text-[10px] text-slate-500">{f.type}</code></td>
+                              <td className="px-5 py-3"><RequiredBadge required={f.required} /></td>
+                              <td className="px-5 py-3 leading-5 text-slate-600">{f.desc}</td>
                             </tr>
-                          </thead>
-                          <tbody className="divide-y divide-slate-100">
-                            {endpoint.bodyFields.map((f) => (
-                              <tr key={f.field} className="align-top">
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono font-semibold text-indigo-700">{f.field}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono text-[10px] text-slate-400">{f.type}</code>
-                                </td>
-                                <td className="px-4 py-3.5">
-                                  <RequiredBadge required={f.required} />
-                                </td>
-                                <td className="px-4 py-3.5 leading-6 text-slate-600">{f.desc}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </section>
                 )}
 
+                {/* Errors */}
                 {endpoint.errors.length > 0 && (
-                  <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                      <div>
-                        <h3 className="text-sm font-bold text-slate-950">Error Response</h3>
-                        <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">JSON</div>
-                      </div>
-                      <span className="text-[10px] text-slate-400">
-                        {endpoint.errors.length} {endpoint.errors.length === 1 ? 'Example' : 'Examples'}
-                      </span>
+                  <section className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                    <div className="border-b border-slate-100 px-5 py-4">
+                      <h3 className="text-sm font-bold text-slate-950">Error Response</h3>
                     </div>
-                    <div className="space-y-4 p-4">
+                    <div className="space-y-3 p-4">
                       {endpoint.errors.map((e) => (
-                        <div key={`${e.code}-${e.name}`} className="overflow-hidden rounded-xl border border-rose-100">
-                          <div className="flex items-center justify-between bg-rose-50 px-3 py-2.5">
-                            <div className="flex items-center gap-2">
-                              <span className="rounded-md bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-rose-600 shadow-sm">
-                                {e.code}
-                              </span>
-                              <span className="text-[10px] font-semibold text-rose-700">{e.name}</span>
-                            </div>
+                        <div key={`${e.code}-${e.name}`} className="overflow-hidden rounded-lg border border-rose-100">
+                          <div className="flex items-center gap-2 bg-rose-50 px-3 py-2">
+                            <span className="rounded bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-rose-600">{e.code}</span>
+                            <span className="text-[10px] font-semibold text-rose-700">{e.name}</span>
                           </div>
-                          <div className="p-3">
-                            <CodeBlock>{JSON.stringify(e.body, null, 2)}</CodeBlock>
-                          </div>
+                          <div className="p-3"><CodeBlock>{JSON.stringify(e.body, null, 2)}</CodeBlock></div>
                         </div>
                       ))}
                     </div>
                   </section>
                 )}
-
-                <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <div className="border-b border-slate-100 px-6 py-4">
-                    <h2 className="text-sm font-bold text-slate-950">HTTP Status Codes</h2>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <tbody className="divide-y divide-slate-100">
-                        {STATUS_TABLE.map((s) => (
-                          <tr key={s.code}>
-                            <td className="w-20 px-6 py-3">
-                              <span
-                                className={`inline-flex rounded-md px-2 py-1 font-mono text-[10px] font-bold ${
-                                  s.code === 200
-                                    ? 'bg-emerald-50 text-emerald-600'
-                                    : s.code >= 400
-                                    ? 'bg-rose-50 text-rose-600'
-                                    : 'bg-slate-50 text-slate-600'
-                                }`}
-                              >
-                                {s.code}
-                              </span>
-                            </td>
-                            <td className="px-6 py-3 text-slate-600">{s.detail}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </section>
               </section>
 
-              {/* Try it out column */}
-              <aside className="min-w-0 space-y-5 xl:sticky xl:top-6 xl:col-span-5">
-                <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-bold text-slate-950">Try it out</h3>
-                    <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                      {(['test', 'prod'] as Env[]).map((e) => (
-                        <button
-                          key={e}
-                          type="button"
-                          onClick={() => setEnv(e)}
-                          className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition-colors ${
-                            env === e ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'
-                          }`}
-                        >
-                          {e === 'test' ? 'Sandbox' : 'Production'}
-                        </button>
-                      ))}
+              {/* Developer playground */}
+              <aside className="min-w-0 space-y-4 xl:sticky xl:top-5">
+                <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                  <div className="border-b border-slate-100 px-5 py-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h3 className="text-sm font-bold text-slate-950">Try it out</h3>
+                        <p className="mt-1 text-[11px] text-slate-400">ส่ง Request และดู Response ได้จากจุดเดียว</p>
+                      </div>
+                      <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-[9px] text-slate-500">DEV</span>
                     </div>
                   </div>
 
                   <div className="space-y-5 p-5">
-                    <div className="flex items-stretch overflow-hidden rounded-lg border border-slate-200">
-                      <span
-                        className={`px-2.5 py-2 text-[11px] font-bold text-white font-mono ${METHOD_STYLE[endpoint.method].solid}`}
-                      >
-                        {endpoint.method}
-                      </span>
-                      <input
-                        readOnly
-                        value={resolvedUrl}
-                        title={resolvedUrl}
-                        className="min-w-0 flex-1 px-2 py-2 text-[11px] font-mono text-slate-600 outline-none"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleSend}
-                        className="shrink-0 bg-indigo-600 px-4 text-xs font-bold text-white transition-colors hover:bg-indigo-500"
-                      >
-                        Send
-                      </button>
-                    </div>
+                    {/* Authentication */}
+                    <section>
+                      <div className="mb-2 flex items-center justify-between">
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900">Authentication</h4>
+                          <p className="mt-0.5 text-[10px] text-slate-400">Access Token สำหรับ endpoint ที่ใช้ Bearer Authentication</p>
+                        </div>
+                        {hasToken ? (
+                          <span className="rounded-md bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-700">Token Ready</span>
+                        ) : (
+                          <span className="rounded-md bg-slate-100 px-2 py-1 text-[9px] font-bold text-slate-500">No Token</span>
+                        )}
+                      </div>
 
-                    <Field label="Credentials">
-                      <input
-                        type="password"
-                        value={token}
-                        onChange={(e) => setToken(e.target.value)}
-                        placeholder="วาง access_token ที่นี่"
-                        className="w-full rounded-lg border border-slate-200 px-2.5 py-1.5 font-mono text-xs outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
-                      />
-                      {endpoint.id === 'generate-access-token' && (
-                        <p className="mt-1.5 text-[10px] text-slate-400">
-                          endpoint นี้ไม่ต้องใช้ token — ใช้ client_id / client_secret ใน body แทน
-                        </p>
+                      {endpoint.id === 'generate-access-token' ? (
+                        <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                          {credentials ? (
+                            <>
+                              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                <div>
+                                  <label className="mb-1 block text-[9px] font-bold text-slate-400">client_id</label>
+                                  <code className="block truncate rounded-md border border-slate-200 bg-white px-2 py-2 font-mono text-[10px] text-slate-600">{credentials.clientId}</code>
+                                </div>
+                                <div>
+                                  <label className="mb-1 block text-[9px] font-bold text-slate-400">client_secret</label>
+                                  <code className="block truncate rounded-md border border-slate-200 bg-white px-2 py-2 font-mono text-[10px] text-slate-600">{credentials.clientSecret}</code>
+                                </div>
+                              </div>
+                              <button type="button" onClick={handleRegenerateCredentials} className="text-[10px] font-semibold text-indigo-600 hover:text-indigo-700">
+                                สร้าง Credentials ใหม่
+                              </button>
+                            </>
+                          ) : (
+                            <div className="flex items-center justify-between gap-3">
+                              <span className="text-[10px] text-slate-500">ยังไม่มี Sandbox Credentials</span>
+                              <button type="button" onClick={handleGenerateCredentials} className="rounded-md bg-indigo-600 px-3 py-2 text-[10px] font-bold text-white hover:bg-indigo-700">
+                                Generate Credentials
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ) : endpoint.auth === 'bearer' ? (
+                        <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
+                          <div className="flex items-center justify-between gap-3">
+                            <code className="min-w-0 truncate font-mono text-[10px] text-emerald-800">
+                              Bearer {token ? `${token.slice(0, 16)}...` : '—'}
+                            </code>
+                            {issuedAccessToken && (
+                              <button type="button" onClick={handleUseIssuedToken} className="shrink-0 rounded-md border border-emerald-200 bg-white px-2 py-1.5 text-[9px] font-bold text-emerald-700 hover:bg-emerald-50">
+                                Use latest token
+                              </button>
+                            )}
+                          </div>
+                          {!token && (
+                            <button type="button" onClick={handleGenerateAccessToken} className="mt-2 text-[10px] font-semibold text-indigo-600 hover:text-indigo-700">
+                              Generate Access Token →
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[10px] text-slate-500">
+                          This endpoint does not require authentication.
+                        </div>
                       )}
-                    </Field>
+                    </section>
 
-                    {endpoint.pathParams.length > 0 && (
-                      <Field label="Path Params">
-                        <div className="space-y-2">
+                    {/* Request */}
+                    <section>
+                      <div className="mb-2 flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-slate-900">Request</h4>
+                        <span className="font-mono text-[9px] text-slate-400">{endpoint.method}</span>
+                      </div>
+
+                      <div className="mb-3 flex min-w-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-50">
+                        <span className={`shrink-0 px-2.5 py-2 text-[10px] font-bold text-white ${METHOD_STYLE[endpoint.method].solid}`}>
+                          {endpoint.method}
+                        </span>
+                        <input readOnly value={resolvedUrl} title={resolvedUrl} className="min-w-0 flex-1 bg-transparent px-2.5 py-2 font-mono text-[10px] text-slate-600 outline-none" />
+                        <CopyButton text={resolvedUrl} />
+                        <button
+                          type="button"
+                          onClick={handleSend}
+                          disabled={endpoint.id === 'generate-access-token' && !credentials}
+                          className="shrink-0 bg-indigo-600 px-4 py-2 text-[10px] font-bold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+                        >
+                          Send
+                        </button>
+                      </div>
+
+                      {endpoint.pathParams.length > 0 && (
+                        <div className="mb-3 space-y-2">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Path Parameters</div>
                           {endpoint.pathParams.map((p) => (
-                            <div key={p.key} className="flex items-center gap-2">
-                              <span className="w-24 shrink-0 truncate font-mono text-[11px] text-slate-500">{p.key}</span>
+                            <label key={p.key} className="block">
+                              <span className="mb-1 block text-[10px] font-semibold text-slate-600">{p.key}</span>
                               <input
                                 value={pathValues[p.key] ?? ''}
                                 onChange={(e) => setPathValues((v) => ({ ...v, [p.key]: e.target.value }))}
-                                className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 font-mono text-[11px] outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                                className="w-full rounded-md border border-slate-200 bg-white px-2.5 py-2 font-mono text-[10px] text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                               />
-                            </div>
+                            </label>
                           ))}
                         </div>
-                      </Field>
-                    )}
+                      )}
 
-                    {endpoint.queryParams.length > 0 && (
-                      <Field label="Query Params">
-                        <div className="space-y-2">
-                          {endpoint.queryParams.map((p) => (
-                            <div key={p.key} className="flex items-center gap-2">
-                              <span
-                                className="w-24 shrink-0 truncate font-mono text-[11px] text-slate-500"
-                                title={p.key}
-                              >
-                                {p.key}
-                                {p.required && <span className="text-rose-500">*</span>}
+                      {endpoint.queryParams.length > 0 && (
+                        <div className="mb-3 space-y-2">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Query Parameters</div>
+                          {endpoint.queryParams.map((q) => (
+                            <label key={q.key} className="block">
+                              <span className="mb-1 flex items-center gap-1 text-[10px] font-semibold text-slate-600">
+                                {q.key}
+                                {q.required && <span className="text-rose-500">*</span>}
                               </span>
                               <input
-                                value={queryValues[p.key] ?? ''}
-                                onChange={(e) => setQueryValues((v) => ({ ...v, [p.key]: e.target.value }))}
-                                placeholder={p.example}
-                                className="min-w-0 flex-1 rounded-md border border-slate-200 px-2 py-1 font-mono text-[11px] outline-none focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100"
+                                value={queryValues[q.key] ?? ''}
+                                onChange={(e) => setQueryValues((v) => ({ ...v, [q.key]: e.target.value }))}
+                                placeholder={q.example}
+                                className="w-full rounded-md border border-slate-200 bg-white px-2.5 py-2 font-mono text-[10px] text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                               />
-                            </div>
+                            </label>
                           ))}
                         </div>
-                      </Field>
-                    )}
+                      )}
 
-                    {endpoint.bodyType === 'json' && (
-                      <Field label="Body (JSON)">
-                        <textarea
-                          value={bodyText}
-                          onChange={(e) => setBodyText(e.target.value)}
-                          rows={10}
-                          spellCheck={false}
-                          className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 font-mono text-[11px] outline-none focus:border-indigo-300 focus:bg-white focus:ring-2 focus:ring-indigo-100"
-                        />
-                      </Field>
-                    )}
+                      {endpoint.bodyType !== 'none' && (
+                        <div>
+                          <div className="mb-1 flex items-center justify-between">
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Request Body</div>
+                            <span className="font-mono text-[9px] text-slate-400">{endpoint.bodyType === 'json' ? 'JSON' : endpoint.bodyType}</span>
+                          </div>
+                          <textarea
+                            value={bodyText}
+                            onChange={(e) => setBodyText(e.target.value)}
+                            spellCheck={false}
+                            className="min-h-[260px] w-full resize-y rounded-lg border border-slate-200 bg-slate-950 px-3 py-3 font-mono text-[10px] leading-5 text-slate-100 outline-none focus:border-indigo-400"
+                          />
+                        </div>
+                      )}
 
-                    {endpoint.bodyType === 'formdata' && (
-                      <Field label="Body (form-data)">
-                        <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-2.5">
-                          {(endpoint.bodyExample as FormField[]).map((f) => (
-                            <div key={f.key} className="flex items-center gap-2 font-mono text-[11px]">
-                              <span className="w-14 shrink-0 text-slate-500">{f.key}</span>
-                              <span className="flex-1 truncate text-slate-700">{f.value}</span>
+                    </section>
+
+                    {/* Response */}
+                    <section>
+                      <div className="mb-2 flex items-center justify-between">
+                        <h4 className="text-xs font-bold text-slate-900">Response</h4>
+                        <div className="flex items-center gap-2">
+                          {response && !response.loading && (
+                            <span className={`rounded-md px-2 py-1 font-mono text-[9px] font-bold ${response.status >= 200 && response.status < 300 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
+                              {response.status} · {response.ms} ms
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {!response && (
+                        <div className="rounded-lg border border-dashed border-slate-200 px-4 py-8 text-center text-[10px] text-slate-400">
+                          Response จะแสดงที่นี่หลังจากกด Send Request
+                        </div>
+                      )}
+
+                      {response?.loading && (
+                        <div className="flex items-center justify-center gap-2 rounded-lg border border-slate-200 py-10 text-slate-400">
+                          <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                          </svg>
+                          <span className="text-[10px]">Sending request...</span>
+                        </div>
+                      )}
+
+                      {response && !response.loading && (
+                        <>
+                          {endpoint.id === 'generate-access-token' && response.status === 200 && typeof response.body === 'object' && response.body !== null && 'access_token' in response.body && (
+                            <div className="mb-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-3">
+                              <div className="mb-1 text-[9px] font-bold uppercase tracking-wider text-emerald-700">Access Token</div>
+                              <div className="flex items-center gap-2 rounded-md border border-emerald-100 bg-white px-2.5 py-2">
+                                <code className="min-w-0 flex-1 break-all font-mono text-[10px] text-slate-700">
+                                  {(response.body as { access_token: string }).access_token}
+                                </code>
+                                <CopyButton text={(response.body as { access_token: string }).access_token} />
+                              </div>
                             </div>
-                          ))}
-                          <p className="pt-1 font-sans text-[10px] text-slate-400">
-                            อัปโหลดไฟล์จริงได้จากแอปฝั่งของท่าน — ที่นี่แสดงตัวอย่างค่าที่ต้องส่ง
+                          )}
+
+                          <CodeBlock label="JSON">{JSON.stringify(response.body, null, 2)}</CodeBlock>
+
+                          {endpoint.id === 'generate-access-token' && response.status === 200 && (
+                            <button
+                              type="button"
+                              onClick={() => selectEndpoint('create-parcel-non-cod')}
+                              className="mt-3 w-full rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100"
+                            >
+                              Open Parcel API →
+                            </button>
+                          )}
+
+                          {response.demo && (
+                            <p className="mt-2 text-[9px] leading-5 text-slate-400">
+                              Demo response — ตัวอย่างการตอบกลับจากข้อมูล endpoint ที่มีอยู่ใน Sandbox
+                            </p>
+                          )}
+                        </>
+                      )}
+                    </section>
+
+                    {/* Code Example */}
+                    <section className="rounded-lg border border-slate-200 bg-slate-50">
+                      <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-3 py-2.5">
+                        <div className="min-w-0">
+                          <h4 className="text-[10px] font-bold text-slate-700">
+                            Code Example
+                          </h4>
+                          <p className="mt-0.5 text-[9px] text-slate-400">
+                            ตัวอย่างโค้ดสำหรับส่ง Request ในภาษาที่เลือก
                           </p>
                         </div>
-                      </Field>
-                    )}
 
-                    <Field label="cURL">
-                      <CodeBlock>{curl}</CodeBlock>
-                    </Field>
-                  </div>
-                </section>
-
-                <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                    <h3 className="text-sm font-bold text-slate-950">Response</h3>
-                    {response && !response.loading && (
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`inline-flex rounded-md px-2 py-0.5 font-mono text-[10px] font-bold ${
-                            response.status < 300 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
-                          }`}
+                        <select
+                          value={codeLanguage}
+                          onChange={(e) =>
+                            setCodeLanguage(e.target.value as ClientLibraryLanguage)
+                          }
+                          aria-label="Code example language"
+                          className="shrink-0 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-[9px] font-medium text-slate-700 outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
                         >
-                          {response.status}
-                        </span>
-                        <span className="text-[10px] text-slate-400">{response.ms} ms</span>
+                          {CLIENT_LIBRARY_LANGUAGES.map((language) => (
+                            <option key={language} value={language}>
+                              {language}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                    )}
-                  </div>
 
-                  <div className="p-5">
-                    {!response && (
-                      <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 py-10 text-slate-400">
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        <span className="text-[11px]">กด Send เพื่อดูตัวอย่างการตอบกลับ</span>
+                      <div className="p-3">
+                        <CodeBlock label={codeLanguage}>
+                          {codeExample}
+                        </CodeBlock>
                       </div>
-                    )}
-
-                    {response?.loading && (
-                      <div className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 py-10 text-slate-400">
-                        <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                        </svg>
-                        <span className="text-[11px]">กำลังส่งคำขอ...</span>
-                      </div>
-                    )}
-
-                    {response && !response.loading && (
-                      <>
-                        <CodeBlock>{JSON.stringify(response.body, null, 2)}</CodeBlock>
-                        {response.demo && (
-                          <p className="mt-2 text-[10px] text-slate-400">
-                            * โหมดสาธิต — แสดงตัวอย่างการตอบกลับสำหรับ endpoint นี้ ยังไม่ได้เชื่อมต่อกับเซิร์ฟเวอร์จริง
-                          </p>
-                        )}
-                      </>
-                    )}
+                    </section>
                   </div>
                 </section>
               </aside>
