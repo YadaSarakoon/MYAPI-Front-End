@@ -1,9 +1,9 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Badge } from '../../../components/common/Badge';
 import { Button } from '../../../components/common/Button';
 import { Card } from '../../../components/common/Card';
-import { PRODUCTION_BASE_URL, RECENT_ACTIVITY } from '../data';
+import { PRODUCTION_BASE_URL, PRODUCTION_USAGE_DEMO, RECENT_ACTIVITY_DEMO } from '../data';
 import type { Method } from '../types';
 export function StatusDot({
     active = false,
@@ -798,22 +798,22 @@ export function UsageSummary() {
             <div className="mt-5 grid divide-y divide-slate-100 md:grid-cols-3 md:divide-x md:divide-y-0">
                 <UsageItem
                     label="Total Requests"
-                    value="8,421"
-                    change="+12%"
+                    value={PRODUCTION_USAGE_DEMO.totalRequests.value}
+                    change={PRODUCTION_USAGE_DEMO.totalRequests.change}
                     description="จากเดือนก่อน"
                 />
 
                 <UsageItem
                     label="Success Rate"
-                    value="99.8%"
-                    change="+0.2%"
+                    value={PRODUCTION_USAGE_DEMO.successRate.value}
+                    change={PRODUCTION_USAGE_DEMO.successRate.change}
                     description="จากเดือนก่อน"
                 />
 
                 <UsageItem
                     label="Total Shipment"
-                    value="1,284"
-                    change="+18%"
+                    value={PRODUCTION_USAGE_DEMO.totalShipments.value}
+                    change={PRODUCTION_USAGE_DEMO.totalShipments.change}
                     description="จากเดือนก่อน"
                 />
             </div>
@@ -917,7 +917,7 @@ export function RecentActivity({
                     </thead>
 
                     <tbody>
-                        {RECENT_ACTIVITY.map((item) => (
+                        {RECENT_ACTIVITY_DEMO.map((item) => (
                             <tr
                                 key={item.id}
                                 className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50"

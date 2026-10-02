@@ -349,7 +349,7 @@ function CredentialsCard({
       <div className="relative p-6 lg:p-7">
         <h2 className="text-base font-bold text-slate-950">Sandbox Credentials</h2>
         <p className="mt-1 max-w-lg text-xs leading-6 text-slate-500">
-          สร้าง client_id / client_secret สำหรับ Sandbox ได้ทันที ไม่ต้องรออนุมัติ ต่างจาก Production ที่ต้องผ่านการตรวจสอบก่อนใช้งาน
+          สร้างข้อมูลตัวอย่าง client_id / client_secret ภายใน Browser สำหรับทดลอง UI เท่านั้น ไม่สามารถใช้ยืนยันตัวตนกับ MyExpress API ได้
         </p>
 
         <div className="mt-5">
@@ -371,14 +371,14 @@ function CredentialsCard({
           {loggedIn && !credentials && (
             <div className="flex flex-col items-start gap-3 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs leading-6 text-slate-500">
-                ยังไม่มี credentials — กดสร้างเพื่อรับ client_id และ client_secret ทันที
+                ยังไม่มีข้อมูลตัวอย่าง — กดสร้าง Demo credentials เพื่อทดลอง Sandbox จำลอง
               </p>
               <button
                 type="button"
                 onClick={onGenerate}
                 className="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-indigo-200 transition-colors hover:bg-indigo-700"
               >
-                Generate Sandbox Credentials
+                Generate Demo Credentials
               </button>
             </div>
           )}
@@ -509,7 +509,7 @@ function Overview({
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">REST API</span>
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">OAuth 2.0</span>
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">JSON</span>
-                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">Try it out</span>
+                <span className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 font-mono text-[10px] text-amber-700">Mock responses</span>
               </div>
             </div>
           </section>
@@ -649,6 +649,20 @@ export function Sandbox() {
       return;
     }
 
+    if (endpoint.bodyType === 'json' && bodyText.trim()) {
+      try {
+        JSON.parse(bodyText);
+      } catch {
+        setResponse({
+          status: 400,
+          ms: 0,
+          body: { message: 'Invalid JSON request body' },
+          demo: true,
+        });
+        return;
+      }
+    }
+
     setResponse({ loading: true });
     const result = await simulateSandboxRequest({
       endpoint,
@@ -664,6 +678,14 @@ export function Sandbox() {
     }
 
     setResponse(result.response);
+  };
+
+  const handleResetRequest = () => {
+    const { pv, qv, body } = initFor(endpoint);
+    setPathValues(pv);
+    setQueryValues(qv);
+    setBodyText(body);
+    setResponse(null);
   };
 
   const handleLogin = () => navigate('/login', { state: { from: '/sandbox' } });
@@ -1042,6 +1064,13 @@ export function Sandbox() {
                         <CopyButton text={resolvedUrl} />
                         <button
                           type="button"
+                          onClick={handleResetRequest}
+                          className="shrink-0 border-l border-slate-200 px-3 py-2 text-[10px] font-semibold text-slate-500 transition-colors hover:bg-white hover:text-indigo-700"
+                        >
+                          Reset
+                        </button>
+                        <button
+                          type="button"
                           onClick={handleSend}
                           disabled={endpoint.id === 'generate-access-token' && !credentials}
                           className="shrink-0 bg-indigo-600 px-4 py-2 text-[10px] font-bold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
@@ -1108,6 +1137,11 @@ export function Sandbox() {
                       <div className="mb-2 flex items-center justify-between">
                         <h4 className="text-xs font-bold text-slate-900">Response</h4>
                         <div className="flex items-center gap-2">
+                          {response && !response.loading && (
+                            <button type="button" onClick={() => setResponse(null)} className="text-[10px] font-semibold text-slate-400 hover:text-indigo-600">
+                              Clear response
+                            </button>
+                          )}
                           {response && !response.loading && (
                             <span className={`rounded-md px-2 py-1 font-mono text-[9px] font-bold ${response.status >= 200 && response.status < 300 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>
                               {response.status} · {response.ms} ms

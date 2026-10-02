@@ -1,5 +1,5 @@
-import { Badge } from '../components/common/Badge';
-import { Button } from '../components/common/Button';
+﻿import { Badge } from '../components/common/Badge';
+import { SidebarLogoutButton } from '../components/layout/SidebarLogoutButton';
 import { Card } from '../components/common/Card';
 import { Header as ConsoleHeader } from '../components/layout/Header';
 import { PageContainer } from '../components/layout/PageContainer';
@@ -29,18 +29,15 @@ export function Production() {
                     { label: copy.apiDocs, path: '/docs' },
                     { label: copy.sandbox, path: '/sandbox' },
                     { label: copy.production, path: '/production' },
+                    { label: 'Webhook', path: '/webhook' },
                     { label: copy.billing, path: '/billing' },
                 ]}
                 activePath="/production"
                 footer={
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        className="w-full"
+                    <SidebarLogoutButton
+                        label={copy.logout}
                         onClick={() => void handleLogout()}
-                    >
-                        {copy.logout}
-                    </Button>
+                    />
                 }
             />
 
@@ -55,13 +52,16 @@ export function Production() {
                     badge={
                         productionStatus ===
                         'approved' ? (
-                            <Badge
-                                tone="emerald"
-                                className="inline-flex items-center gap-1.5"
-                            >
-                                <StatusDot active />
-                                {copy.active}
-                            </Badge>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Badge
+                                    tone="emerald"
+                                    className="inline-flex items-center gap-1.5"
+                                >
+                                    <StatusDot active />
+                                    {copy.active}
+                                </Badge>
+                                <Badge tone="amber">Demo</Badge>
+                            </div>
                         ) : null
                     }
                     actions={

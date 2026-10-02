@@ -4,6 +4,7 @@ import type { User } from 'firebase/auth';
 export type AuthContextValue = {
   user: User | null;
   loading: boolean;
+  error: string | null;
   logout: () => Promise<void>;
 };
 

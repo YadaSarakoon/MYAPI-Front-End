@@ -1,35 +1,11 @@
-export type Language = 'th' | 'en';
-export type HistoryRange = 1 | 3 | 6 | 12;
-
-export interface BillingHistoryItem {
-    month: string;
-    monthEn: string;
-    amount: number;
-    shipments: number;
-}
-
-export interface Payment {
-    id: string;
-    date: string;
-    reference: string;
-    amount: number;
-    status: 'Paid' | 'Processing';
-}
-
-export interface BillingDocument {
-    id: string;
-    type: 'statement' | 'tax';
-    period: string;
-    issueDate: string;
-    amount: number;
-    status: 'Paid' | 'Pending';
-    reference?: string;
-}
+import type { BillingDocument, BillingHistoryItem, Payment } from './types';
+export type { BillingDocument, BillingHistoryItem, HistoryRange, Language, Payment } from './types';
 
 export const NAV_LINKS = [
     { to: '/docs', label: 'API Docs' },
     { to: '/sandbox', label: 'Sandbox' },
     { to: '/production', label: 'Production' },
+    { to: '/webhook', label: 'Webhook' },
     { to: '/billing', label: 'Billing' },
 ];
 
@@ -39,7 +15,7 @@ export const CREDIT_TERM_DAYS = 30;
 export const BILLING_PERIOD_START = '1 Sep 2026';
 export const BILLING_PERIOD_END = '30 Sep 2026';
 
-export const BILLING_HISTORY: BillingHistoryItem[] = [
+export const BILLING_HISTORY_DEMO: BillingHistoryItem[] = [
     {
         month: 'ต.ค.',
         monthEn: 'Oct',
@@ -114,7 +90,7 @@ export const BILLING_HISTORY: BillingHistoryItem[] = [
     },
 ];
 
-export const BILLING_DOCUMENTS: BillingDocument[] = [
+export const BILLING_DOCUMENTS_DEMO: BillingDocument[] = [
     {
         id: 'BL-2026-09-0001',
         type: 'statement',
@@ -151,7 +127,7 @@ export const BILLING_DOCUMENTS: BillingDocument[] = [
     },
 ];
 
-export const PAYMENTS: Payment[] = [
+export const PAYMENTS_DEMO: Payment[] = [
     {
         id: 'PAY-001',
         date: '15 Sep 2026',
@@ -234,6 +210,9 @@ export const translations = {
             'ยอดค่าขนส่งจะถูกรวมและเรียกเก็บตามรอบบิลและเครดิตเทอมที่กำหนดไว้ในบัญชีของคุณ',
 
         logout: 'ออกจากระบบ',
+        logoutError: 'ออกจากระบบไม่สำเร็จ กรุณาลองอีกครั้ง',
+        demoData: 'ข้อมูลตัวอย่าง',
+        documentUnavailable: 'ยังเปิดหรือดาวน์โหลดเอกสารจริงไม่ได้ จนกว่าจะเชื่อมต่อ Billing API',
 
         opening: 'กำลังเปิดเอกสาร',
         downloading: 'กำลังดาวน์โหลด',
@@ -304,6 +283,9 @@ export const translations = {
             'Shipping charges are consolidated and billed according to your assigned billing cycle and credit term.',
 
         logout: 'Log out',
+        logoutError: 'Could not log out. Please try again.',
+        demoData: 'Demo data',
+        documentUnavailable: 'Real document preview and download are unavailable until the Billing API is connected.',
 
         opening: 'Opening document',
         downloading: 'Downloading',

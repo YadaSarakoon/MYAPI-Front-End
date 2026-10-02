@@ -3,7 +3,7 @@ import { appRoutes } from './config/routes';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { GuestOnly, RequireAuth } from './features/auth/RouteGuards';
 
-const protectedPaths = new Set(['/dashboard', '/production', '/billing', '/settings']);
+const protectedPaths = new Set(['/dashboard', '/production', '/billing', '/settings', '/webhook', '/activity']);
 const guestOnlyPaths = new Set(['/login', '/signup']);
 
 export default function App() {

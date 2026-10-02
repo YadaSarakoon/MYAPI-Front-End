@@ -18,6 +18,10 @@ export function signInWithEmail(email: string, password: string): Promise<UserCr
 
 export async function signUpWithEmail(name: string, email: string, password: string): Promise<UserCredential> {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
-  await updateProfile(credential.user, { displayName: name });
+  try {
+    await updateProfile(credential.user, { displayName: name });
+  } catch {
+    // Account creation succeeded; a profile update can be retried separately.
+  }
   return credential;
 }

@@ -29,7 +29,7 @@ export function randomToken(length: number): string {
 }
 
 export function generateSandboxCredentials(): SandboxCredentials {
-  return { clientId: randomToken(32), clientSecret: randomToken(32), createdAt: new Date().toISOString() };
+  return { clientId: `demo_client_${randomToken(12)}`, clientSecret: `demo_secret_${randomToken(12)}`, createdAt: new Date().toISOString() };
 }
 
 export function authBodyFromCredentials(creds: SandboxCredentials): string {

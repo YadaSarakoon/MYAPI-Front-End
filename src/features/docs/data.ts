@@ -110,8 +110,8 @@ export const ENDPOINTS: Endpoint[] = [
       },
     ],
     bodyExample: {
-      client_id: 'maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7',
-      client_secret: 'fQbMMUd3EcP9HjTaakrxvWjugMuuremA',
+      client_id: '<SANDBOX_CLIENT_ID>',
+      client_secret: '<SANDBOX_CLIENT_SECRET>',
       grant_type: 'client_credentials',
       scope: 'parcel',
     },
@@ -119,7 +119,7 @@ export const ENDPOINTS: Endpoint[] = [
     successExample: {
       expires_in: 7200,
       token_type: 'bearer',
-      access_token: 'Zznl0qTp3p75ceFIntT1XXQcVS44ZCl3',
+      access_token: '<SANDBOX_ACCESS_TOKEN>',
     },
     errors: [
       {

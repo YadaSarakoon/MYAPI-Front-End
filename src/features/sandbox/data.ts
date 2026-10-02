@@ -48,13 +48,13 @@ export const ENDPOINTS: Endpoint[] = [
       { field: 'scope', type: 'String', required: true, desc: 'ขอบเขตการเข้าถึง เช่น parcel' },
     ],
     bodyExample: {
-      client_id: 'maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7',
-      client_secret: 'fQbMMUd3EcP9HjTaakrxvWjugMuuremA',
+      client_id: '<SANDBOX_CLIENT_ID>',
+      client_secret: '<SANDBOX_CLIENT_SECRET>',
       grant_type: 'client_credentials',
       scope: 'parcel',
     },
     successCode: 200,
-    successExample: { expires_in: 7200, token_type: 'bearer', access_token: 'Zznl0qTp3p75ceFIntT1XXQcVS44ZCl3' },
+    successExample: { expires_in: 7200, token_type: 'bearer', access_token: '<DEMO_ACCESS_TOKEN>' },
     errors: [
       { code: 400, name: 'invalid_client', body: { error: 'invalid_client', error_description: 'Invalid client authentication' } },
     ],

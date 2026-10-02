@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { signInWithEmail, signInWithGoogle } from '../features/auth/services/firebaseAuth';
+import { getPostAuthDestination } from '../features/auth/authRedirect';
+import { useAuth } from '../features/auth/useAuth';
 
 // --- Component: MyAPI SVG Logo ---
 const MyApiLogo: React.FC<{ className?: string }> = ({
@@ -98,6 +100,9 @@ const MyApiLogo: React.FC<{ className?: string }> = ({
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { error: authStateError } = useAuth();
+  const postAuthDestination = getPostAuthDestination(location.state);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -116,7 +121,7 @@ export const Login: React.FC = () => {
     setFormError('');
     try {
       await signInWithEmail(email, password);
-      navigate('/dashboard');
+      navigate(postAuthDestination, { replace: true });
     } catch {
       setFormError('Unable to sign in. Check your email and password.');
     } finally {
@@ -140,11 +145,9 @@ export const Login: React.FC = () => {
       await signInWithGoogle();
       // ข้อมูล User ที่ Login สำเร็จ
       // Login สำเร็จ → ไปหน้า Docs
-      navigate('/dashboard');
+      navigate(postAuthDestination, { replace: true });
 
-    } catch (error) {
-      console.error('Google Login Error:', error);
-
+    } catch {
       setGoogleError(
         'ไม่สามารถเข้าสู่ระบบด้วย Google ได้ กรุณาลองใหม่อีกครั้ง'
       );
@@ -210,6 +213,8 @@ export const Login: React.FC = () => {
             onSubmit={handleSubmit}
             className="space-y-4"
           >
+
+            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{authStateError}</div>}
 
             {formError && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{formError}</div>}
 

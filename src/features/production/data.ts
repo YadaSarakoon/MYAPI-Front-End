@@ -1,5 +1,11 @@
 ﻿export const PRODUCTION_BASE_URL = 'https://open-api.myexpress.ai';
 
+export const PRODUCTION_USAGE_DEMO = {
+    totalRequests: { value: '8,421', change: '+12%' },
+    successRate: { value: '99.8%', change: '+0.2%' },
+    totalShipments: { value: '1,284', change: '+18%' },
+} as const;
+
 export const PRODUCTION_COPY = {
     TH: {
         apiDocs: 'API Docs',
@@ -33,7 +39,7 @@ export const PRODUCTION_COPY = {
 
 
 
-export const RECENT_ACTIVITY = [
+export const RECENT_ACTIVITY_DEMO = [
     {
         id: '1',
         method: 'POST',

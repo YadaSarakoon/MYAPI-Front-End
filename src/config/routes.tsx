@@ -7,6 +7,8 @@ import { Production } from '../pages/Production';
 import Billing from '../pages/Billing';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
+import { WebhookPage } from '../features/webhook/WebhookPage';
+import { ActivityPage } from '../features/production/ActivityPage';
 
 export type AppRoute = {
   path: string;
@@ -23,4 +25,6 @@ export const appRoutes: AppRoute[] = [
   { path: '/billing', element: <Billing /> },
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/settings', element: <SettingsPage /> },
+  { path: '/webhook', element: <WebhookPage /> },
+  { path: '/activity', element: <ActivityPage /> },
 ];

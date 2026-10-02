@@ -1,8 +1,9 @@
-export const DASHBOARD_MOCK = {
+import type { DashboardData } from './types';
+
+export const DASHBOARD_MOCK: DashboardData = {
   totalRequests: '8,421',
   monthRequests: '1,284',
   walletBalance: '—',
-  apiStatus: 'Demo active',
   usage: {
     '7': [38, 55, 43, 72, 62, 85, 68],
     '30': [24, 48, 41, 66, 52, 78, 68],
@@ -20,6 +21,4 @@ export const DASHBOARD_MOCK = {
     { label: 'Request Production access', done: false, href: '/production' },
     { label: 'Configure billing details', done: false, href: '/billing' },
   ],
-} as const;
-
-export type UsageRange = '7' | '30' | '90';
+};

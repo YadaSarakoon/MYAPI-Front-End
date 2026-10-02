@@ -65,7 +65,7 @@ export async function simulateSandboxRequest({
       };
     }
 
-    const accessToken = randomToken(32);
+    const accessToken = `demo_access_token_${randomToken(12)}`;
     return {
       issuedAccessToken: accessToken,
       response: {

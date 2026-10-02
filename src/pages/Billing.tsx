@@ -1,31 +1,28 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signOut } from 'firebase/auth';
-import { auth } from '../config/firebase';
 
 import { Badge } from '../components/common/Badge';
-import { Button } from '../components/common/Button';
+import { SidebarLogoutButton } from '../components/layout/SidebarLogoutButton';
 import { Card } from '../components/common/Card';
 import { Header as ConsoleHeader } from '../components/layout/Header';
 import { PageContainer } from '../components/layout/PageContainer';
 import { Sidebar as AppSidebar } from '../components/layout/Sidebar';
 
 import {
-    BILLING_DOCUMENTS,
-    BILLING_HISTORY,
     BILLING_PERIOD_END,
     BILLING_PERIOD_START,
     CREDIT_TERM_DAYS,
     NAV_LINKS,
-    PAYMENTS,
     translations,
 } from '../features/billing/data';
 import type {
     BillingHistoryItem,
     HistoryRange,
     Language,
-} from '../features/billing/data';
+} from '../features/billing/types';
 import { calculateDueDate, formatCurrency } from '../features/billing/billingLogic';
+import { useAuth } from '../features/auth/useAuth';
+import { demoBillingService } from '../features/billing/services/billingService';
 
 function StatusBadge({
     status,
@@ -246,6 +243,12 @@ function LineChart({
 
 export default function Wallet() {
     const navigate = useNavigate();
+    const { logout } = useAuth();
+    const {
+        documents: BILLING_DOCUMENTS,
+        history: BILLING_HISTORY,
+        payments: PAYMENTS,
+    } = demoBillingService.getSnapshot();
 
     const [language, setLanguage] =
         useState<Language>('th');
@@ -261,6 +264,15 @@ export default function Wallet() {
 
     const t = translations[language];
 
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/', { replace: true });
+        } catch {
+            window.alert(t.logoutError);
+        }
+    };
+
     const creditTermDays = CREDIT_TERM_DAYS;
 
     const billingPeriod = `${BILLING_PERIOD_START} – ${BILLING_PERIOD_END}`;
@@ -274,40 +286,16 @@ export default function Wallet() {
      * ยอดปัจจุบัน
      * ใช้ข้อมูลเดียวกับ Billing History เดือน ก.ย. 2026
      */
-    const currentBilling = useMemo(() => {
-        const current =
-            BILLING_HISTORY[BILLING_HISTORY.length - 1];
-
-        return {
-            shipments: current.shipments,
-            amount: current.amount,
-        };
-    }, []);
-
-    const filteredHistory = useMemo(() => {
-        return BILLING_HISTORY.slice(-historyRange);
-    }, [historyRange]);
-
-    const historySummary = useMemo(() => {
-        const totalCharges = filteredHistory.reduce(
-            (sum, item) => sum + item.amount,
-            0,
-        );
-
-        const totalShipments = filteredHistory.reduce(
-            (sum, item) => sum + item.shipments,
-            0,
-        );
-
-        return {
-            totalCharges,
-            totalShipments,
-            average:
-                filteredHistory.length > 0
-                    ? totalCharges / filteredHistory.length
-                    : 0,
-        };
-    }, [filteredHistory]);
+    const current = BILLING_HISTORY[BILLING_HISTORY.length - 1];
+    const currentBilling = { shipments: current.shipments, amount: current.amount };
+    const filteredHistory = BILLING_HISTORY.slice(-historyRange);
+    const totalCharges = filteredHistory.reduce((sum, item) => sum + item.amount, 0);
+    const totalShipments = filteredHistory.reduce((sum, item) => sum + item.shipments, 0);
+    const historySummary = {
+        totalCharges,
+        totalShipments,
+        average: filteredHistory.length > 0 ? totalCharges / filteredHistory.length : 0,
+    };
 
     const latestPayment = PAYMENTS[0];
 
@@ -327,17 +315,13 @@ export default function Wallet() {
     const handleOpenDocument = (
         documentId: string,
     ) => {
-        window.alert(
-            `${t.opening}: ${documentId}`,
-        );
+        window.alert(`${t.documentUnavailable}: ${documentId}`);
     };
 
     const handleDownloadDocument = (
         documentId: string,
     ) => {
-        window.alert(
-            `${t.downloading}: ${documentId}`,
-        );
+        window.alert(`${t.documentUnavailable}: ${documentId}`);
     };
 
     return (
@@ -349,15 +333,10 @@ export default function Wallet() {
                 }))}
                 activePath="/billing"
                 footer={
-                    <Button
-                        type="button"
-                        variant="secondary"
-                        size="sm"
-                        className="w-full border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
-                        onClick={() => void signOut(auth).then(() => navigate('/'))}
-                    >
-                        {t.logout}
-                    </Button>
+                    <SidebarLogoutButton
+                        label={t.logout}
+                        onClick={() => void handleLogout()}
+                    />
                 }
             />
 
@@ -366,9 +345,12 @@ export default function Wallet() {
                     title={t.billing}
                     subtitle={t.aboutPostpaidDesc}
                     badge={
-                        <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
-                            {t.aboutPostpaid}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
+                                {t.aboutPostpaid}
+                            </span>
+                            <Badge tone="amber">{t.demoData}</Badge>
+                        </div>
                     }
                     actions={
                         <div className="flex items-center gap-3">

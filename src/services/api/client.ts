@@ -3,11 +3,10 @@ import { ApiError } from './errors';
 export { ApiError } from './errors';
 
 const DEFAULT_TIMEOUT_MS = 15_000;
-const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL;
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
-export const API_BASE_URL = (
-  configuredBaseUrl || 'https://open-api.myexpress.ai'
-).replace(/\/+$/, '');
+// No production fallback: callers must explicitly configure an environment URL.
+export const API_BASE_URL = configuredBaseUrl?.replace(/\/+$/, '') ?? '';
 
 export interface ApiRequestOptions extends RequestInit {
   accessToken?: string;
@@ -25,6 +24,9 @@ export async function request<TResponse>(
     signal: callerSignal,
     ...requestOptions
   } = options;
+  if (!API_BASE_URL) {
+    throw new ApiError('VITE_API_BASE_URL is not configured', 0);
+  }
   const headers = new Headers(requestHeaders);
   const isFormData =
     typeof FormData !== 'undefined' && requestOptions.body instanceof FormData;
@@ -94,6 +96,14 @@ export async function request<TResponse>(
   } catch (error) {
     if (didTimeout) {
       throw new ApiError('The API request timed out', 408);
+    }
+
+    if (callerSignal?.aborted) {
+      throw error;
+    }
+
+    if (error instanceof TypeError) {
+      throw new ApiError('Unable to reach the API. Check the network or API URL.', 0, error);
     }
 
     throw error;

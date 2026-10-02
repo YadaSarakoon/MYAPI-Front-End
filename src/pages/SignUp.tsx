@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signInWithGoogle, signUpWithEmail } from '../features/auth/services/firebaseAuth';
+import { getPostAuthDestination } from '../features/auth/authRedirect';
+import { useAuth } from '../features/auth/useAuth';
 
 // --- Component: MyAPI SVG Logo (ใช้ตัว A ทรงเส้นมนโค้งตรงตามธีมหลัก) ---
 const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
@@ -76,6 +78,9 @@ const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
 
 export const SignUp: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { error: authStateError } = useAuth();
+  const postAuthDestination = getPostAuthDestination(location.state);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -88,7 +93,7 @@ export const SignUp: React.FC = () => {
     setError('');
     try {
       await signInWithGoogle();
-      navigate('/dashboard');
+      navigate(postAuthDestination, { replace: true });
     } catch {
       setError('Unable to sign up with Google. Please try again.');
     } finally {
@@ -102,7 +107,7 @@ export const SignUp: React.FC = () => {
     setError('');
     try {
       await signUpWithEmail(name, email, password);
-      navigate('/dashboard');
+      navigate(postAuthDestination, { replace: true });
     } catch {
       setError('Unable to create account. Check your details or try another email.');
     } finally {
@@ -142,6 +147,7 @@ export const SignUp: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{authStateError}</div>}
             {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{error}</div>}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">ชื่อ - นามสกุล หรือชื่อบริษัท</label>
