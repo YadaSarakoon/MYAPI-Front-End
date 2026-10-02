@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signInWithGoogle, signUpWithEmail } from '../features/auth/services/firebaseAuth';
 
 // --- Component: MyAPI SVG Logo (ใช้ตัว A ทรงเส้นมนโค้งตรงตามธีมหลัก) ---
 const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
@@ -78,11 +79,35 @@ export const SignUp: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    setError('');
+    try {
+      await signInWithGoogle();
+      navigate('/dashboard');
+    } catch {
+      setError('Unable to sign up with Google. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // เมื่อสมัครสมาชิกสำเร็จ ให้พาไปหน้า Docs
-    navigate('/docs');
+    setLoading(true);
+    setError('');
+    try {
+      await signUpWithEmail(name, email, password);
+      navigate('/dashboard');
+    } catch {
+      setError('Unable to create account. Check your details or try another email.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -117,6 +142,7 @@ export const SignUp: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{error}</div>}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">ชื่อ - นามสกุล หรือชื่อบริษัท</label>
               <input
@@ -146,6 +172,7 @@ export const SignUp: React.FC = () => {
               <input
                 type="password"
                 required
+                minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="อย่างน้อย 8 ตัวอักษร"
@@ -155,6 +182,7 @@ export const SignUp: React.FC = () => {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all text-center mt-2 cursor-pointer"
             >
               ลงทะเบียนใช้งานฟรี
@@ -170,9 +198,11 @@ export const SignUp: React.FC = () => {
 
           <button
             type="button"
+            onClick={() => void handleGoogleSignUp()}
+            disabled={googleLoading}
             className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
-            <span></span> สมัครด้วย Google Account
+            <span></span> {googleLoading ? 'กำลังเชื่อมต่อ…' : 'สมัครด้วย Google Account'}
           </button>
 
         </div>

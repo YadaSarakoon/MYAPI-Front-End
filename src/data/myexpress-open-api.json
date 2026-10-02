@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "ace83ae4-27fd-4d40-b0d0-3af661d854e1",
     "name": "MyExpress Open API Document",
-    "description": "## Introduction\n\n- Signing Up\n    \n- API Use Suggestion\n    \n- Authentication/​Authorization\n    \n- Parcel API\n    \n- Webhook\n    \n\n---\n\n### Signing Up\n\n<img src=\"https://content.pstmn.io/529bcdc4-4c9e-46ea-87f1-0b4d67e74a2e/QVBJLTIuanBn\">\n\nstep 1: Partner submit google form follow this url\n\n- [Google Form Link](https://forms.gle/FHuFkuTXCHW9kBTR9)\n    \n\nstep 2: MyExpress create Partner Account\n\n- create account information\n    \n- generate client_id & client_secret\n    \n- setup webhook\n    \n\nstep 3: MyExpress sent client_id & client_secret for Test Environment\n\nExample client_id & client_secret\n\n``` json\n{\n  \"client_id\": \"maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7\",\n  \"client_secret\": \"fQbMMUd3EcP9HjTaakrxvWjugMuuremA\"\n}\n\n ```\n\nstep 4: Partner sef-test in Test Environment\n\n- API Use Suggestion\n    \n- Authentication/​Authorization\n    \n- Create & Delete Parcel\n    \n- Webhook\n    \n\nstep 5: Partner plan go-live ...\n\nstep: 6: MyExpress sent client_id , client_secret for Production Environment\n\n---\n\n### API Suggestion\n\n- URL\n    \n\n| **Environment** | **Url** |\n| --- | --- |\n| Test | [https://dev-open-api.myexpress.ai](https://dev-open-api.myexpress.aiURL) |\n| Production | [https://open-api.myexpress.ai](https://open-api.myexpress.aiAPI) |\n\n- Response Status Code\n    \n\n| **Status** | **Detail** |\n| --- | --- |\n| 200 | Request is successful. |\n| 400 | Error bad request |\n| 401 | Error an access token is missing or unauthorized |\n| 403 | Error find an account forbidden |\n| 500 | Error internal server http request |\n\n- Error Response Detail\n    \n\n| Name | Description | Type |\n| --- | --- | --- |\n| status | status error code | Number |\n| error_description | error description | String |\n| name | error name from Bad request | String |\n| error | error name | String |\n| message | detail error | String |",
+    "description": "## Introduction\n\n- Signing Up\n    \n- API Use Suggestion\n    \n- Authentication/​Authorization\n    \n- Parcel API\n    \n- Webhook\n    \n\n---\n\n### Signing Up\n\n<img src=\"https://content.pstmn.io/529bcdc4-4c9e-46ea-87f1-0b4d67e74a2e/QVBJLTIuanBn\">\n\nstep 1: Partner submit google form follow this url\n\n- [Google Form Link](https://forms.gle/FHuFkuTXCHW9kBTR9)\n    \n\nstep 2: MyExpress create Partner Account\n\n- create account information\n    \n- generate client_id & client_secret\n    \n- setup webhook\n    \n\nstep 3: MyExpress sent client_id & client_secret for Test Environment\n\nExample client_id & client_secret\n\n``` json\n{\n  \"client_id\": \"<CLIENT_ID>\",\n  \"client_secret\": \"<CLIENT_SECRET>\"\n}\n\n ```\n\nstep 4: Partner sef-test in Test Environment\n\n- API Use Suggestion\n    \n- Authentication/​Authorization\n    \n- Create & Delete Parcel\n    \n- Webhook\n    \n\nstep 5: Partner plan go-live ...\n\nstep: 6: MyExpress sent client_id , client_secret for Production Environment\n\n---\n\n### API Suggestion\n\n- URL\n    \n\n| **Environment** | **Url** |\n| --- | --- |\n| Test | [https://dev-open-api.myexpress.ai](https://dev-open-api.myexpress.aiURL) |\n| Production | [https://open-api.myexpress.ai](https://open-api.myexpress.aiAPI) |\n\n- Response Status Code\n    \n\n| **Status** | **Detail** |\n| --- | --- |\n| 200 | Request is successful. |\n| 400 | Error bad request |\n| 401 | Error an access token is missing or unauthorized |\n| 403 | Error find an account forbidden |\n| 500 | Error internal server http request |\n\n- Error Response Detail\n    \n\n| Name | Description | Type |\n| --- | --- | --- |\n| status | status error code | Number |\n| error_description | error description | String |\n| name | error name from Bad request | String |\n| error | error name | String |\n| message | detail error | String |",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "47557935",
     "_collection_link": "https://go.postman.co/collection/47557935-ace83ae4-27fd-4d40-b0d0-3af661d854e1?source=collection_link"
@@ -24,7 +24,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n    \"client_id\": \"maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7\",\n    \"client_secret\": \"fQbMMUd3EcP9HjTaakrxvWjugMuuremA\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
+              "raw": "{\n    \"client_id\": \"<CLIENT_ID>\",\n    \"client_secret\": \"<CLIENT_SECRET>\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -59,7 +59,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"client_id\": \"maF8xqVVCnz0Z4mgXQnvuWHHddC33RN7\",\n    \"client_secret\": \"fQbMMUd3EcP9HjTaakrxvWjugMuuremA\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
+                  "raw": "{\n    \"client_id\": \"<CLIENT_ID>\",\n    \"client_secret\": \"<CLIENT_SECRET>\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -141,7 +141,7 @@
                 }
               ],
               "cookie": [],
-              "body": "{\n    \"expires_in\": 7200,\n    \"token_type\": \"bearer\",\n    \"access_token\": \"Zznl0qTp3p75ceFIntT1XXQcVS44ZCl3\"\n}"
+              "body": "{\n    \"expires_in\": 7200,\n    \"token_type\": \"bearer\",\n    \"access_token\": \"<ACCESS_TOKEN>\"\n}"
             },
             {
               "name": "Error 400",
@@ -156,7 +156,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n    \"client_id\": \"xxx\",\n    \"client_secret\": \"xxx\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
+                  "raw": "{\n    \"client_id\": \"<CLIENT_ID>\",\n    \"client_secret\": \"<CLIENT_SECRET>\",\n    \"grant_type\": \"client_credentials\",\n    \"scope\": \"parcel\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -251,7 +251,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "description": "Add Access token here",
                 "type": "text"
               },
@@ -290,7 +290,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -423,7 +423,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -556,7 +556,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer vnD3xG1tkeikcF6pac1DBWmBIIRbfE6H",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text",
                     "disabled": true
@@ -609,7 +609,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   }
@@ -655,7 +655,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer vnD3xG1tkeikcF6pac1DBWmBIIRbfE6H",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -706,7 +706,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer vnD3xG1tkeikcF6pac1DBWmBIIRbfE6H",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -757,7 +757,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -834,7 +834,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -911,7 +911,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -988,7 +988,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1067,7 +1067,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer xQU8EINWroYN7Hkhz51AADk91TOwVkIU",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "description": "Add Access token here",
                 "type": "text"
               },
@@ -1106,7 +1106,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1242,7 +1242,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1378,7 +1378,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text",
                     "disabled": true
@@ -1473,7 +1473,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   }
@@ -1519,7 +1519,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1648,7 +1648,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1777,7 +1777,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -1906,7 +1906,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2035,7 +2035,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2164,7 +2164,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2293,7 +2293,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2422,7 +2422,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2551,7 +2551,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2680,7 +2680,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2809,7 +2809,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer Sn5qQQm3NJk5pSoxz02pSRWOqmafA3H8",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -2940,7 +2940,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -2974,7 +2974,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3029,7 +3029,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3082,7 +3082,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3137,7 +3137,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "description": "Add Access token here",
                 "type": "text"
               }
@@ -3170,7 +3170,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   }
@@ -3297,7 +3297,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   }
@@ -3426,7 +3426,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer C6xrMhHs6q1bVVCEXEkO1NuLzYarxxHH",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -3463,7 +3463,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer oyGUXLH6yz1eiDFQFK413X1xboSUXu1n",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3598,7 +3598,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer C6xrMhHs6q1bVVCEXEkO1NuLzYarxxHH",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3733,7 +3733,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer C6xrMhHs6q1bVVCEXEkO1NuLzYarxxHH",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -3868,7 +3868,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer C6xrMhHs6q1bVVCEXEkO1NuLzYarxxHH",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4003,7 +4003,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer C6xrMhHs6q1bVVCEXEkO1NuLzYarxxHH",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4146,7 +4146,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer MVp6426WQIuHmKiwwhnGX4dIjkZVjiCT",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -4186,7 +4186,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer MVp6426WQIuHmKiwwhnGX4dIjkZVjiCT",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4329,7 +4329,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "description": "Add Access token here",
                 "type": "text"
               },
@@ -4368,7 +4368,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -4425,7 +4425,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -4476,7 +4476,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -4525,7 +4525,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "description": "Add Access token here",
                     "type": "text"
                   },
@@ -4584,7 +4584,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -4631,7 +4631,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4693,7 +4693,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4755,7 +4755,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4817,7 +4817,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4879,7 +4879,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4938,7 +4938,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -4997,7 +4997,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -5056,7 +5056,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -5117,7 +5117,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               }
             ],
@@ -5152,7 +5152,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -5281,7 +5281,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -5406,7 +5406,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -5531,7 +5531,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -5656,7 +5656,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -5783,7 +5783,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer IKZwEZaEf8dyAgbSDkWWVxx7xLVu21FX",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               }
             ],
@@ -5820,7 +5820,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -5859,7 +5859,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -5910,7 +5910,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -5959,7 +5959,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -6008,7 +6008,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -6057,7 +6057,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -6106,7 +6106,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   },
                   {
@@ -6159,7 +6159,7 @@
             "header": [
               {
                 "key": "Authorization",
-                "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                "value": "Bearer <ACCESS_TOKEN>",
                 "type": "text"
               },
               {
@@ -6203,7 +6203,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6248,7 +6248,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6290,7 +6290,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6332,7 +6332,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6387,7 +6387,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6430,7 +6430,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],
@@ -6479,7 +6479,7 @@
                 "header": [
                   {
                     "key": "Authorization",
-                    "value": "Bearer TM251ddJa38nmnXWttlpFcRVSFFBRmj9",
+                    "value": "Bearer <ACCESS_TOKEN>",
                     "type": "text"
                   }
                 ],

@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-import {
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth';
-
-import { auth } from '../config/firebase';
+import { signInWithEmail, signInWithGoogle } from '../features/auth/services/firebaseAuth';
 
 // --- Component: MyAPI SVG Logo ---
 const MyApiLogo: React.FC<{ className?: string }> = ({
@@ -109,16 +104,25 @@ export const Login: React.FC = () => {
 
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleError, setGoogleError] = useState('');
+  const [formError, setFormError] = useState('');
+  const [formLoading, setFormLoading] = useState(false);
 
   // ==========================================
   // Login ด้วย Email / Password
   // ==========================================
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormLoading(true);
+    setFormError('');
+    try {
+      await signInWithEmail(email, password);
+      navigate('/dashboard');
+    } catch {
+      setFormError('Unable to sign in. Check your email and password.');
+    } finally {
+      setFormLoading(false);
+    }
 
-    // ตอนนี้ยังเป็น Mock Login
-    // สามารถเชื่อม Backend จริงภายหลังได้
-    navigate('/docs');
   };
 
   // ==========================================
@@ -130,22 +134,13 @@ export const Login: React.FC = () => {
       setGoogleError('');
 
       // สร้าง Google Provider
-      const provider = new GoogleAuthProvider();
+
 
       // เปิด Google Login Popup
-      const result = await signInWithPopup(auth, provider);
-
+      await signInWithGoogle();
       // ข้อมูล User ที่ Login สำเร็จ
-      const user = result.user;
-
-      console.log('Google Login สำเร็จ');
-      console.log('User:', user);
-      console.log('Email:', user.email);
-      console.log('Name:', user.displayName);
-      console.log('Photo:', user.photoURL);
-
       // Login สำเร็จ → ไปหน้า Docs
-      navigate('/docs');
+      navigate('/dashboard');
 
     } catch (error) {
       console.error('Google Login Error:', error);
@@ -216,6 +211,8 @@ export const Login: React.FC = () => {
             className="space-y-4"
           >
 
+            {formError && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{formError}</div>}
+
             {/* Email */}
             <div className="space-y-1.5">
 
@@ -266,7 +263,8 @@ export const Login: React.FC = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all text-center mt-2 cursor-pointer"
+              disabled={formLoading}
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all text-center mt-2 cursor-pointer disabled:opacity-60"
             >
               เข้าสู่ระบบ
             </button>

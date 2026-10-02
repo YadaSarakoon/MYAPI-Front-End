@@ -1,39 +1,104 @@
-export class ApiError extends Error {
-  status: number;
-  details?: unknown;
+import { ApiError } from './errors';
 
-  constructor(message: string, status: number, details?: unknown) {
-    super(message);
-    this.name = 'ApiError';
-    this.status = status;
-    this.details = details;
-  }
+export { ApiError } from './errors';
+
+const DEFAULT_TIMEOUT_MS = 15_000;
+const configuredBaseUrl = import.meta.env.VITE_API_BASE_URL;
+
+export const API_BASE_URL = (
+  configuredBaseUrl || 'https://open-api.myexpress.ai'
+).replace(/\/+$/, '');
+
+export interface ApiRequestOptions extends RequestInit {
+  accessToken?: string;
+  timeoutMs?: number;
 }
 
-export const API_BASE_URL = 'https://open-api.myexpress.ai';
-
-export async function request<T>(
+export async function request<TResponse>(
   endpoint: string,
-  options: RequestInit = {},
-): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers ?? {}),
-    },
-    ...options,
-  });
+  options: ApiRequestOptions = {},
+): Promise<TResponse> {
+  const {
+    accessToken,
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+    headers: requestHeaders,
+    signal: callerSignal,
+    ...requestOptions
+  } = options;
+  const headers = new Headers(requestHeaders);
+  const isFormData =
+    typeof FormData !== 'undefined' && requestOptions.body instanceof FormData;
 
-  const contentType = response.headers.get('content-type') ?? '';
-  const payload = contentType.includes('application/json') ? await response.json() : await response.text();
-
-  if (!response.ok) {
-    throw new ApiError(
-      `Request failed with status ${response.status}`,
-      response.status,
-      payload,
-    );
+  if (!isFormData && requestOptions.body != null && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
   }
 
-  return payload as T;
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`);
+  }
+
+  const controller = new AbortController();
+  let didTimeout = false;
+  const timeoutId = window.setTimeout(() => {
+    didTimeout = true;
+    controller.abort();
+  }, timeoutMs);
+  const abortFromCaller = () => controller.abort(callerSignal?.reason);
+
+  if (callerSignal?.aborted) {
+    abortFromCaller();
+  } else {
+    callerSignal?.addEventListener('abort', abortFromCaller, { once: true });
+  }
+
+  try {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${API_BASE_URL}${path}`, {
+      ...requestOptions,
+      headers,
+      signal: controller.signal,
+    });
+
+    if (response.status === 204) {
+      return undefined as TResponse;
+    }
+
+    const contentType = response.headers.get('content-type') ?? '';
+    let payload: unknown;
+
+    if (contentType.includes('application/json')) {
+      try {
+        payload = await response.json();
+      } catch {
+        throw new ApiError('The API returned invalid JSON', response.status);
+      }
+    } else {
+      payload = await response.text();
+    }
+
+    if (!response.ok) {
+      const message =
+        typeof payload === 'object' && payload !== null
+          ? 'message' in payload && typeof payload.message === 'string'
+            ? payload.message
+            : 'error_description' in payload &&
+                typeof payload.error_description === 'string'
+              ? payload.error_description
+              : `Request failed with status ${response.status}`
+          : `Request failed with status ${response.status}`;
+
+      throw new ApiError(message, response.status, payload);
+    }
+
+    return payload as TResponse;
+  } catch (error) {
+    if (didTimeout) {
+      throw new ApiError('The API request timed out', 408);
+    }
+
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+    callerSignal?.removeEventListener('abort', abortFromCaller);
+  }
 }

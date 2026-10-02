@@ -3,6 +3,10 @@ import { LandingPage } from '../features/landing';
 import { LoginPage, SignUpPage } from '../features/auth';
 import { ApiDocsPage } from '../features/docs';
 import { SandboxPage } from '../features/sandbox';
+import { Production } from '../pages/Production';
+import Billing from '../pages/Billing';
+import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { SettingsPage } from '../features/settings/SettingsPage';
 
 export type AppRoute = {
   path: string;
@@ -15,4 +19,8 @@ export const appRoutes: AppRoute[] = [
   { path: '/login', element: <LoginPage /> },
   { path: '/docs', element: <ApiDocsPage /> },
   { path: '/sandbox', element: <SandboxPage /> },
+  { path: '/production', element: <Production /> },
+  { path: '/billing', element: <Billing /> },
+  { path: '/dashboard', element: <DashboardPage /> },
+  { path: '/settings', element: <SettingsPage /> },
 ];

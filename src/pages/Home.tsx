@@ -10,13 +10,6 @@ import trackingImg from '../assets/tracking.png';
 import allImg from '../assets/all.png'; 
 
 // --- Interfaces & Types ---
-interface ContactFormState {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
 interface RegisterFormState {
   company: string;
   fullName: string;
@@ -178,7 +171,7 @@ export const Home: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-          <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all text-center">
+          <Link to="/signup" className="w-full sm:w-auto px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md hover:shadow-lg transition-all text-center">
             เริ่มต้นใช้งานฟรี
           </Link>
           <Link to="/docs" className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-slate-50 text-blue-600 font-bold text-sm rounded-xl border border-slate-200 shadow-sm transition-all text-center">
