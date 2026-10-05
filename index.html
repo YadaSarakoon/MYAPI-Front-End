@@ -4,6 +4,35 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyAPI Open API</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Prompt:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script>
+      tailwind = {
+        config: {
+          theme: {
+            extend: {
+              fontFamily: {
+                sans: ['Prompt', 'system-ui', 'sans-serif'],
+                mono: ['JetBrains Mono', 'monospace'],
+              },
+              fontSize: {
+                display: ['3rem', { lineHeight: '1.15', fontWeight: '800' }],
+                h1: ['1.875rem', { lineHeight: '2.25rem', fontWeight: '700' }],
+                h2: ['1.5rem', { lineHeight: '2rem', fontWeight: '700' }],
+                h3: ['1.25rem', { lineHeight: '1.75rem', fontWeight: '600' }],
+                h4: ['1.125rem', { lineHeight: '1.75rem', fontWeight: '600' }],
+                body: ['0.875rem', { lineHeight: '1.5rem', fontWeight: '400' }],
+                'body-lg': ['1rem', { lineHeight: '1.75rem', fontWeight: '400' }],
+                label: ['0.75rem', { lineHeight: '1rem', fontWeight: '600' }],
+                caption: ['0.6875rem', { lineHeight: '1rem', fontWeight: '500' }],
+                code: ['0.75rem', { lineHeight: '1.5rem', fontWeight: '400' }],
+              },
+            },
+          },
+        },
+      };
+    </script>
     <!-- บรรทัดสำคัญสำหรับดึงสีและ Layout -->
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
