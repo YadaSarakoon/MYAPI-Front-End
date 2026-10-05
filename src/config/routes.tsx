@@ -1,14 +1,14 @@
 import type { ReactNode } from 'react';
-import { LandingPage } from '../features/landing';
 import { LoginPage, SignUpPage } from '../features/auth';
-import { ApiDocsPage } from '../features/docs';
-import { SandboxPage } from '../features/sandbox';
-import { Production } from '../pages/Production';
-import Billing from '../pages/Billing';
+import Billing from '../features/billing/Billing';
 import { DashboardPage } from '../features/dashboard/DashboardPage';
+import { ApiDocs } from '../features/docs/ApiDocs';
+import { LandingPage } from '../features/landing';
+import { ActivityPage } from '../features/production/ActivityPage';
+import { Production } from '../features/production/Production';
+import { Sandbox } from '../features/sandbox/Sandbox';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { WebhookPage } from '../features/webhook/WebhookPage';
-import { ActivityPage } from '../features/production/ActivityPage';
 
 export type AppRoute = {
   path: string;
@@ -19,8 +19,8 @@ export const appRoutes: AppRoute[] = [
   { path: '/', element: <LandingPage /> },
   { path: '/signup', element: <SignUpPage /> },
   { path: '/login', element: <LoginPage /> },
-  { path: '/docs', element: <ApiDocsPage /> },
-  { path: '/sandbox', element: <SandboxPage /> },
+  { path: '/docs', element: <ApiDocs /> },
+  { path: '/sandbox', element: <Sandbox /> },
   { path: '/production', element: <Production /> },
   { path: '/billing', element: <Billing /> },
   { path: '/dashboard', element: <DashboardPage /> },

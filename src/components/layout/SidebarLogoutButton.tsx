@@ -12,7 +12,7 @@ export function SidebarLogoutButton({
       type="button"
       variant="secondary"
       size="sm"
-      className="w-full border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 hover:text-slate-800"
+      className="w-full border-slate-200 bg-slate-100 text-slate-800 font-semibold hover:bg-slate-100 hover:text-slate-800"
       onClick={onClick}
     >
       {label}

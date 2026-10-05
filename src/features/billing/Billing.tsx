@@ -1,37 +1,39 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Badge } from '../components/common/Badge';
-import { SidebarLogoutButton } from '../components/layout/SidebarLogoutButton';
-import { Card } from '../components/common/Card';
-import { Header as ConsoleHeader } from '../components/layout/Header';
-import { PageContainer } from '../components/layout/PageContainer';
-import { Sidebar as AppSidebar } from '../components/layout/Sidebar';
+import { Badge } from '../../components/common/Badge';
+import { Card } from '../../components/common/Card';
+import { Header as ConsoleHeader } from '../../components/layout/Header';
+import { PageContainer } from '../../components/layout/PageContainer';
+import { Sidebar as AppSidebar } from '../../components/layout/Sidebar';
+import { SidebarLogoutButton } from '../../components/layout/SidebarLogoutButton';
+import LanguageSwitcher, {
+    type Language as SwitcherLanguage,
+} from '../../components/common/LanguageSwitcher';
 
+import { useAuth } from '../auth/useAuth';
+import { calculateDueDate, formatCurrency } from './billingLogic';
 import {
     BILLING_PERIOD_END,
     BILLING_PERIOD_START,
     CREDIT_TERM_DAYS,
     NAV_LINKS,
     translations,
-} from '../features/billing/data';
+} from './data';
+import { demoBillingService } from './services/billingService';
 import type {
     BillingHistoryItem,
     HistoryRange,
-    Language,
-} from '../features/billing/types';
-import { calculateDueDate, formatCurrency } from '../features/billing/billingLogic';
-import { useAuth } from '../features/auth/useAuth';
-import { demoBillingService } from '../features/billing/services/billingService';
+} from './types';
 
 function StatusBadge({
     status,
     language,
 }: {
     status: 'Paid' | 'Pending' | 'Processing';
-    language: Language;
+    language: SwitcherLanguage;
 }) {
-    const t = translations[language];
+    const t = translations[language === 'TH' ? 'th' : 'en'];
 
     const label =
         status === 'Paid'
@@ -56,7 +58,7 @@ function LineChart({
     language,
 }: {
     data: BillingHistoryItem[];
-    language: Language;
+    language: SwitcherLanguage;
 }) {
     const width = 760;
     const height = 250;
@@ -119,7 +121,7 @@ function LineChart({
                 className="h-[250px] w-full min-w-[650px]"
                 role="img"
                 aria-label={
-                    language === 'th'
+                    language === 'TH'
                         ? 'กราฟยอดค่าขนส่งย้อนหลัง'
                         : 'Shipping charge history chart'
                 }
@@ -209,7 +211,7 @@ function LineChart({
                             fontSize="10"
                             fill="#94a3b8"
                         >
-                            {language === 'th'
+                            {language === 'TH'
                                 ? point.item.month
                                 : point.item.monthEn}
                         </text>
@@ -251,7 +253,7 @@ export default function Billing() {
     } = demoBillingService.getSnapshot();
 
     const [language, setLanguage] =
-        useState<Language>('th');
+        useState<SwitcherLanguage>('TH');
 
     const [historyRange, setHistoryRange] =
         useState<HistoryRange>(6);
@@ -262,7 +264,7 @@ export default function Billing() {
     const [showPaymentHistory, setShowPaymentHistory] =
         useState(false);
 
-    const t = translations[language];
+    const t = translations[language === 'TH' ? 'th' : 'en'];
 
     const handleLogout = async () => {
         try {
@@ -346,31 +348,17 @@ export default function Billing() {
                     subtitle={t.aboutPostpaidDesc}
                     badge={
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
+                            <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
                                 {t.aboutPostpaid}
                             </span>
                         </div>
                     }
                     actions={
                         <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
-                                {(['TH', 'EN'] as const).map((code) => (
-                                    <button
-                                        key={code}
-                                        type="button"
-                                        onClick={() =>
-                                            setLanguage(code === 'TH' ? 'th' : 'en')
-                                        }
-                                        className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${
-                                            language === (code === 'TH' ? 'th' : 'en')
-                                                ? 'bg-white text-indigo-700 shadow-sm'
-                                                : 'text-slate-400 hover:text-slate-600'
-                                        }`}
-                                    >
-                                        {code}
-                                    </button>
-                                ))}
-                            </div>
+                            <LanguageSwitcher
+                                lang={language}
+                                onChange={setLanguage}
+                            />
                         </div>
                     }
                 />
@@ -606,7 +594,7 @@ export default function Billing() {
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
-                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                                                 {t.totalCharges}
                                             </p>
 
@@ -619,7 +607,7 @@ export default function Billing() {
                                         </div>
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
-                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                                                 {t.totalShipments}
                                             </p>
 
@@ -629,7 +617,7 @@ export default function Billing() {
                                         </div>
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
-                                            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                                            <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                                                 {t.averagePerMonth}
                                             </p>
 
@@ -675,15 +663,15 @@ export default function Billing() {
                                                 <table className="w-full min-w-[600px] text-left">
                                                     <thead>
                                                         <tr className="border-b border-slate-100">
-                                                            <th className="px-3 py-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                            <th className="px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">
                                                                 {t.billingPeriod}
                                                             </th>
 
-                                                            <th className="px-3 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                            <th className="px-3 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-400">
                                                                 {t.totalShipments}
                                                             </th>
 
-                                                            <th className="px-3 py-3 text-right text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                                                            <th className="px-3 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-400">
                                                                 {t.totalCharges}
                                                             </th>
                                                         </tr>
@@ -704,7 +692,7 @@ export default function Billing() {
                                                                     >
                                                                         <td className="px-3 py-3 text-xs font-semibold text-slate-700">
                                                                             {language ===
-                                                                            'th'
+                                                                            'TH'
                                                                                 ? item.month
                                                                                 : item.monthEn}{' '}
                                                                             2026
@@ -802,7 +790,7 @@ export default function Billing() {
                                                         )}
                                                     </p>
 
-                                                    <p className="mt-0.5 text-[10px] text-slate-400">
+                                                    <p className="mt-0.5 text-xs text-slate-400">
                                                         {
                                                             billingStatement.issueDate
                                                         }
@@ -897,7 +885,7 @@ export default function Billing() {
                                                         )}
                                                     </p>
 
-                                                    <p className="mt-0.5 text-[10px] text-slate-400">
+                                                    <p className="mt-0.5 text-xs text-slate-400">
                                                         {
                                                             taxInvoice.issueDate
                                                         }
@@ -1018,7 +1006,7 @@ export default function Billing() {
                                                                 }
                                                             </p>
 
-                                                            <p className="mt-0.5 text-[10px] text-slate-400">
+                                                            <p className="mt-0.5 text-xs text-slate-400">
                                                                 {
                                                                     payment.date
                                                                 }

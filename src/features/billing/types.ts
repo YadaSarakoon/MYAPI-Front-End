@@ -1,4 +1,3 @@
-export type Language = 'th' | 'en';
 export type HistoryRange = 1 | 3 | 6 | 12;
 
 export interface BillingHistoryItem {

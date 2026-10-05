@@ -1,5 +1,5 @@
 import type { BillingDocument, BillingHistoryItem, Payment } from './types';
-export type { BillingDocument, BillingHistoryItem, HistoryRange, Language, Payment } from './types';
+export type { BillingDocument, BillingHistoryItem, HistoryRange, Payment } from './types';
 
 export const NAV_LINKS = [
     { to: '/docs', label: 'API Docs' },

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { demoDashboardService } from './services/dashboardService';
 import type { DashboardData, UsageRange } from './types';
 import { Card } from '../../components/common/Card';
-import { Badge } from '../../components/common/Badge';
 import { Header } from '../../components/layout/Header';
 import { PageContainer } from '../../components/layout/PageContainer';
 import { Sidebar } from '../../components/layout/Sidebar';
@@ -22,7 +21,7 @@ const mainLinks = [
 const COPY = {
   EN: {
     welcome: 'Welcome', subtitle: 'Your API activity and account overview.', developer: 'Developer Account', overview: 'Overview',
-    snapshot: 'A snapshot of your developer account.', demo: 'Demo data', total: 'Total API Requests', month: 'Requests This Month', wallet: 'Wallet Balance',
+    snapshot: 'A snapshot of your developer account.', total: 'Total API Requests', month: 'Requests This Month', wallet: 'Wallet Balance',
     sample: 'Illustrative sample', walletDetail: 'Not available in current client data', api: 'API Status', apiDetail: 'Example status only; verify with service', active: 'Demo active',
     loadError: 'Could not load dashboard data.', retry: 'Retry', empty: 'No dashboard data is available.', noActivity: 'No API activity yet.', noUsage: 'No usage data for this period.', noChecklist: 'No setup steps are available.',
     usage: 'API Usage', volume: 'Request volume · sample values', daysAgo: '7 days ago', last: 'Last', today: 'Today', activity: 'Recent API Activity',
@@ -32,7 +31,7 @@ const COPY = {
   },
   TH: {
     welcome: 'ยินดีต้อนรับ', subtitle: 'ภาพรวมบัญชีและการใช้งาน API ของคุณ', developer: 'บัญชีนักพัฒนา', overview: 'ภาพรวม',
-    snapshot: 'สรุปข้อมูลบัญชีนักพัฒนาของคุณ', demo: 'ข้อมูลตัวอย่าง', total: 'คำขอ API ทั้งหมด', month: 'คำขอในเดือนนี้', wallet: 'ยอดเงินในกระเป๋า',
+    snapshot: 'สรุปข้อมูลบัญชีนักพัฒนาของคุณ', total: 'คำขอ API ทั้งหมด', month: 'คำขอในเดือนนี้', wallet: 'ยอดเงินในกระเป๋า',
     sample: 'ข้อมูลจำลอง', walletDetail: 'ยังไม่มีข้อมูลในฝั่ง Client', api: 'สถานะ API', apiDetail: 'ตัวอย่างเท่านั้น กรุณาตรวจสอบกับบริการจริง', active: 'เปิดใช้งาน (ตัวอย่าง)',
     loadError: 'โหลดข้อมูล Dashboard ไม่สำเร็จ', retry: 'ลองอีกครั้ง', empty: 'ไม่มีข้อมูล Dashboard', noActivity: 'ยังไม่มีกิจกรรม API', noUsage: 'ไม่มีข้อมูลการใช้งานในช่วงนี้', noChecklist: 'ไม่มีขั้นตอนการตั้งค่า',
     usage: 'การใช้งาน API', volume: 'ปริมาณคำขอ · ข้อมูลตัวอย่าง', daysAgo: '7 วันที่แล้ว', last: 'ย้อนหลัง', today: 'วันนี้', activity: 'กิจกรรม API ล่าสุด',
@@ -133,7 +132,7 @@ export function DashboardPage() {
       />
       <PageContainer className="!px-6 !py-7 lg:!px-10">
         <div className="mx-auto max-w-[1440px] space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-950">{copy.overview}</h2><p className="mt-1 text-xs text-slate-500">{copy.snapshot}</p></div><Badge tone="amber">{copy.demo}</Badge></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-950">{copy.overview}</h2><p className="mt-1 text-xs text-slate-500">{copy.snapshot}</p></div></div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <Metric label={copy.total} value={dashboardData.totalRequests} detail={copy.sample} />
             <Metric label={copy.month} value={dashboardData.monthRequests} detail={copy.sample} />

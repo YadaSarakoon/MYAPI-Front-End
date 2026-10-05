@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Badge } from '../../../components/common/Badge';
 import { Button } from '../../../components/common/Button';
@@ -697,7 +697,7 @@ export function WebhookCard({
 }: {
     onManage: () => void;
 }) {
-    const [enabled, setEnabled] = useState(true);
+    const [enabled, setEnabled] = useState(false);
 
     return (
         <Card>

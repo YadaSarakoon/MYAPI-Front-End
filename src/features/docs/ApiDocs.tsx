@@ -1,17 +1,18 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../../assets/logo.png';
+
 
 /* ============================================================
    TYPES
    ============================================================ */
 
-import { ENDPOINTS, GROUPS, METHOD_STYLE, STATUS_TABLE } from '../features/docs/data';
+import { ENDPOINTS, GROUPS, METHOD_STYLE, STATUS_TABLE } from './data';
 import type {
   DocsPage,
   Endpoint,
   FormField,
   Method,
-} from '../features/docs/types';
+} from './types';
 function MethodChip({
   method,
   size = 'sm',
@@ -29,7 +30,7 @@ function MethodChip({
         ${style.bg} ${style.text} ${style.border}
         ${
           size === 'sm'
-            ? 'px-2 py-0.5 text-[10px]'
+            ? 'px-2 py-0.5 text-xs'
             : 'px-2.5 py-1 text-[11px]'
         }
       `}
@@ -68,7 +69,7 @@ function Field({
 }) {
   return (
     <div className="min-w-0 space-y-2">
-      <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+      <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
         {label}
       </div>
 
@@ -101,7 +102,7 @@ function CopyButton({ text }: { text: string }) {
       onClick={handleCopy}
       className="
         shrink-0 rounded-md px-2 py-1
-        text-[10px] font-semibold text-slate-400
+        text-xs font-semibold text-slate-400
         transition-colors hover:bg-slate-100 hover:text-slate-700
       "
     >
@@ -147,7 +148,7 @@ function CodeBlock({
         >
           <span
             className={`
-              text-[10px] font-bold uppercase tracking-wider
+              text-xs font-bold uppercase tracking-wider
               ${
                 tone === 'dark'
                   ? 'text-slate-400'
@@ -185,11 +186,11 @@ function RequiredBadge({
   required?: boolean;
 }) {
   return required ? (
-    <span className="inline-flex rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-rose-600">
+    <span className="inline-flex rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-600">
       required
     </span>
   ) : (
-    <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide text-slate-400">
+    <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
       optional
     </span>
   );
@@ -248,12 +249,8 @@ function Sidebar({
           onClick={onLanding}
           className="flex min-w-0 items-center gap-3 text-left transition-opacity hover:opacity-80"
         >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-sm">
-            <img
-              src={logo}
-              alt="MyExpress"
-              className="h-7 w-7 object-contain"
-            />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center">
+            <img src={logo} alt="MyAPI" className="h-8 w-8 object-contain" />
           </div>
 
           <div className="min-w-0">
@@ -261,7 +258,7 @@ function Sidebar({
               MyAPI Open API
             </div>
 
-            <div className="mt-0.5 text-[10px] text-slate-400">
+            <div className="mt-0.5 text-xs text-slate-400">
               API Documentation
             </div>
           </div>
@@ -307,7 +304,7 @@ function Sidebar({
       <nav className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
         {/* Getting Started */}
         <div className="mb-4">
-          <div className="px-2.5 pb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">
+          <div className="px-2.5 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
             Getting Started
           </div>
 
@@ -365,7 +362,7 @@ function Sidebar({
                   className="
                     flex w-full items-center justify-between
                     px-2.5 pb-1.5
-                    text-[9px] font-bold uppercase
+                    text-xs font-bold uppercase
                     tracking-[0.14em] text-slate-400
                     transition-colors hover:text-slate-600
                   "
@@ -582,7 +579,7 @@ function Overview({
             <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-indigo-50 blur-3xl" />
 
             <div className="relative p-7 lg:p-8">
-              <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
+              <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
                 Getting Started
               </div>
 
@@ -597,19 +594,19 @@ function Overview({
               </p>
 
               <div className="mt-6 flex flex-wrap gap-2">
-                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
                   REST API
                 </span>
 
-                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
                   OAuth 2.0
                 </span>
 
-                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
                   JSON
                 </span>
 
-                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-[10px] text-slate-500">
+                <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
                   Sandbox
                 </span>
               </div>
@@ -685,7 +682,7 @@ function Overview({
                         key={num}
                         className="relative"
                       >
-                        <span className="absolute -left-[45px] top-0 flex h-7 w-7 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-[9px] font-bold text-white shadow-sm">
+                        <span className="absolute -left-[45px] top-0 flex h-7 w-7 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-xs font-bold text-white shadow-sm">
                           {num}
                         </span>
 
@@ -827,7 +824,7 @@ function Overview({
                             <span
                               className={`
                                 inline-flex rounded-md px-2 py-1
-                                font-mono text-[10px] font-bold
+                                font-mono text-xs font-bold
                                 ${
                                   status.code === 200
                                     ? 'bg-emerald-50 text-emerald-600'
@@ -942,7 +939,7 @@ function Overview({
                     hover:border-indigo-200 hover:shadow-sm
                   "
                 >
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600">
+                  <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
                     Step {num}
                   </span>
 
@@ -996,7 +993,7 @@ function Overview({
                     hover:shadow-sm
                   "
                 >
-                  <div className="text-[9px] font-bold uppercase tracking-[0.12em] text-slate-400">
+                  <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
                     {group}
                   </div>
 
@@ -1004,7 +1001,7 @@ function Overview({
                     {title}
                   </div>
 
-                  <div className="mt-3 inline-flex items-center gap-1 text-[10px] font-semibold text-indigo-600 transition-transform group-hover:translate-x-0.5">
+                  <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 transition-transform group-hover:translate-x-0.5">
                     View API
                     <span>→</span>
                   </div>
@@ -1064,7 +1061,7 @@ function Documentation({
                     size="md"
                   />
 
-                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
+                  <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
                     {endpoint.group}
                   </span>
                 </div>
@@ -1084,7 +1081,7 @@ function Documentation({
                   <span
                     className={`
                       shrink-0 rounded-md px-2.5 py-1
-                      text-[10px] font-bold text-white
+                      text-xs font-bold text-white
                       ${METHOD_STYLE[endpoint.method].solid}
                     `}
                   >
@@ -1118,7 +1115,7 @@ function Documentation({
 
                 <Field label="Authentication">
                   {endpoint.auth === 'bearer' ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1.5 text-[10px] font-semibold text-emerald-700">
+                    <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                       Bearer Access Token
                     </span>
@@ -1247,7 +1244,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5">
-                                <code className="font-mono text-[10px] text-slate-500">
+                                <code className="font-mono text-xs text-slate-500">
                                   {param.example}
                                 </code>
                               </td>
@@ -1304,7 +1301,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5">
-                                <code className="font-mono text-[10px] text-slate-500">
+                                <code className="font-mono text-xs text-slate-500">
                                   {param.example}
                                 </code>
                               </td>
@@ -1372,7 +1369,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5">
-                                <code className="font-mono text-[10px] text-slate-400">
+                                <code className="font-mono text-xs text-slate-400">
                                   {field.type}
                                 </code>
                               </td>
@@ -1413,7 +1410,7 @@ function Documentation({
                     <div className="mt-1 flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
 
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                         {endpoint.bodyType ===
                         'formdata'
                           ? 'FORM DATA'
@@ -1442,11 +1439,11 @@ function Documentation({
                   </h3>
 
                   <div className="mt-1 flex items-center gap-1.5">
-                    <span className="inline-flex rounded-md bg-emerald-50 px-2 py-0.5 font-mono text-[9px] font-bold text-emerald-600">
+                    <span className="inline-flex rounded-md bg-emerald-50 px-2 py-0.5 font-mono text-xs font-bold text-emerald-600">
                       {endpoint.successCode}
                     </span>
 
-                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                       JSON
                     </span>
                   </div>
@@ -1471,12 +1468,12 @@ function Documentation({
                       Error Response
                     </h3>
 
-                    <div className="mt-1 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                    <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">
                       JSON
                     </div>
                   </div>
 
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-slate-400">
                     {endpoint.errors.length}{' '}
                     {endpoint.errors.length === 1
                       ? 'Example'
@@ -1492,11 +1489,11 @@ function Documentation({
                     >
                       <div className="flex items-center justify-between bg-rose-50 px-3 py-2.5">
                         <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-rose-600 shadow-sm">
+                          <span className="rounded-md bg-white px-2 py-0.5 font-mono text-xs font-bold text-rose-600 shadow-sm">
                             {error.code}
                           </span>
 
-                          <span className="text-[10px] font-semibold text-rose-700">
+                          <span className="text-xs font-semibold text-rose-700">
                             {error.name}
                           </span>
                         </div>
