@@ -8,7 +8,7 @@ import type { ProductionLanguage, ProductionStatus } from './types';
 export function useProductionDashboard() {
     const navigate = useNavigate();
     const [productionStatus, setProductionStatus] = useState<ProductionStatus>('approved');
-    const [lang, setLang] = useState<ProductionLanguage>('EN');
+    const [lang, setLang] = useState<ProductionLanguage>('TH');
 
     const handleApply = () => setProductionStatus('pending');
     const approveDemo = () => setProductionStatus('approved');

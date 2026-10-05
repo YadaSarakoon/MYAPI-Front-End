@@ -34,7 +34,7 @@ export function SettingsPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [preferences, setPreferences] = useState<AccountPreferences>({ productUpdateNotifications: false });
-  const [lang, setLang] = useState<'TH' | 'EN'>('EN');
+  const [lang, setLang] = useState<'TH' | 'EN'>('TH');
   const copy = COPY[lang];
   const provider = user?.providerData.map(({ providerId }) => providerId).join(', ') || 'Unknown';
   const handleLogout = async () => {

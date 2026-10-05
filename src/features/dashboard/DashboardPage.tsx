@@ -50,7 +50,7 @@ export function DashboardPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [range, setRange] = useState<UsageRange>('7');
-  const [lang, setLang] = useState<'TH' | 'EN'>('EN');
+  const [lang, setLang] = useState<'TH' | 'EN'>('TH');
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);

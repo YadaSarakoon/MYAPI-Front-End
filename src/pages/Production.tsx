@@ -60,7 +60,6 @@ export function Production() {
                                     <StatusDot active />
                                     {copy.active}
                                 </Badge>
-                                <Badge tone="amber">Demo</Badge>
                             </div>
                         ) : null
                     }

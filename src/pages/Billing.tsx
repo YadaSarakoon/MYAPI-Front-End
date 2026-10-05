@@ -241,7 +241,7 @@ function LineChart({
     );
 }
 
-export default function Wallet() {
+export default function Billing() {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const {

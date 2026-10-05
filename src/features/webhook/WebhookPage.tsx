@@ -117,7 +117,7 @@ function JsonPanel({ label, value, copyLabel = 'Copy JSON', copiedLabel = 'Copie
 
 export function WebhookPage() {
   const { user, logout } = useAuth();
-  const [language, setLanguage] = useState<'TH' | 'EN'>('EN');
+  const [language, setLanguage] = useState<'TH' | 'EN'>('TH');
   const copy = COPY[language];
   const [endpoints, setEndpoints] = useState<WebhookEndpoint[]>([]);
   const [deliveries, setDeliveries] = useState<WebhookDelivery[]>([]);
