@@ -31,7 +31,6 @@ const EMPTY_FORM: WebhookEndpointInput = {
 const COPY = {
   EN: {
     title: 'Webhook Management', subtitle: 'Configure event notifications and inspect example delivery activity.', logout: 'Log out', logoutError: 'Could not log out', retry: 'Retry',
-    demoTitle: 'Demo mode · Backend not connected', demoText: 'Endpoints and delivery logs are local examples. Add, edit, enable, and delete only change this browser session; no real webhook request is sent.', mockData: 'Mock data',
     totalEndpoints: 'Total Endpoints', activeEndpoints: 'Active Endpoints', successful: 'Successful Deliveries', failed: 'Failed Deliveries', exampleEndpoints: 'Example endpoints', enabledDemo: 'Enabled in this demo', exampleLogs: 'Example log records',
     endpoints: 'Endpoints', endpointsDesc: 'Manage subscribed event destinations.', addEndpoint: '＋ Add Endpoint', loadingEndpoints: 'Loading example endpoints…', noEndpoints: 'No endpoints configured', noEndpointsHint: 'Add an HTTPS endpoint to see how endpoint management works in this demo.',
     subscribedEvents: 'Subscribed events', lastDelivery: 'Last delivery', noneYet: 'No delivery yet', enabled: 'Enabled', disabled: 'Disabled', view: 'View', edit: 'Edit', disable: 'Disable', enable: 'Enable', test: 'Test', delete: 'Delete',
@@ -47,7 +46,6 @@ const COPY = {
   },
   TH: {
     title: 'จัดการ Webhook', subtitle: 'ตั้งค่าการแจ้งเตือนเหตุการณ์และตรวจสอบตัวอย่างประวัติการส่ง', logout: 'ออกจากระบบ', logoutError: 'ออกจากระบบไม่สำเร็จ', retry: 'ลองอีกครั้ง',
-    demoTitle: 'โหมดตัวอย่าง · ยังไม่เชื่อมต่อ Backend', demoText: 'Endpoint และประวัติการส่งเป็นข้อมูลตัวอย่าง การเพิ่ม แก้ไข เปิดใช้ หรือลบมีผลเฉพาะใน session นี้ และไม่มีการส่ง Webhook จริง', mockData: 'ข้อมูลตัวอย่าง',
     totalEndpoints: 'Endpoint ทั้งหมด', activeEndpoints: 'Endpoint ที่เปิดใช้', successful: 'ส่งสำเร็จ', failed: 'ส่งไม่สำเร็จ', exampleEndpoints: 'Endpoint ตัวอย่าง', enabledDemo: 'เปิดใช้ในตัวอย่างนี้', exampleLogs: 'รายการตัวอย่าง',
     endpoints: 'Endpoints', endpointsDesc: 'จัดการปลายทางที่สมัครรับเหตุการณ์', addEndpoint: '＋ เพิ่ม Endpoint', loadingEndpoints: 'กำลังโหลด Endpoint ตัวอย่าง…', noEndpoints: 'ยังไม่มี Endpoint', noEndpointsHint: 'เพิ่ม HTTPS endpoint เพื่อทดลองการจัดการในหน้านี้',
     subscribedEvents: 'เหตุการณ์ที่สมัครรับ', lastDelivery: 'ส่งล่าสุด', noneYet: 'ยังไม่มีประวัติการส่ง', enabled: 'เปิดใช้', disabled: 'ปิดใช้', view: 'ดู', edit: 'แก้ไข', disable: 'ปิดใช้', enable: 'เปิดใช้', test: 'ทดสอบ', delete: 'ลบ',
@@ -268,13 +266,6 @@ export function WebhookPage() {
         <Header title={copy.title} subtitle={copy.subtitle} userName={user?.displayName || user?.email || 'My Company'} userMeta="Developer Account" actions={<div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">{(['TH', 'EN'] as const).map((code) => <button key={code} type="button" onClick={() => setLanguage(code)} aria-pressed={language === code} className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${language === code ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{code}</button>)}</div>} />
         <PageContainer className="!px-6 !py-7 lg:!px-10">
           <div className="mx-auto max-w-[1440px] space-y-5">
-            <div className="flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 font-bold text-amber-700">!</span>
-                <div><div className="text-xs font-bold text-amber-900">{copy.demoTitle}</div><p className="mt-1 text-[10px] leading-5 text-amber-800/80">{copy.demoText}</p></div>
-              </div>
-              <Badge tone="amber" className="shrink-0 self-start">{copy.mockData}</Badge>
-            </div>
 
             {notice && (
               <div role="status" className={`flex flex-col gap-2 rounded-xl border px-4 py-3 sm:flex-row sm:items-start sm:justify-between ${notice.tone === 'emerald' ? 'border-emerald-200 bg-emerald-50' : notice.tone === 'rose' ? 'border-rose-200 bg-rose-50' : 'border-amber-200 bg-amber-50'}`}>
