@@ -349,7 +349,6 @@ export default function Wallet() {
                             <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-indigo-600">
                                 {t.aboutPostpaid}
                             </span>
-                            <Badge tone="amber">{t.demoData}</Badge>
                         </div>
                     }
                     actions={

@@ -211,7 +211,6 @@ export const translations = {
 
         logout: 'ออกจากระบบ',
         logoutError: 'ออกจากระบบไม่สำเร็จ กรุณาลองอีกครั้ง',
-        demoData: 'ข้อมูลตัวอย่าง',
         documentUnavailable: 'ยังเปิดหรือดาวน์โหลดเอกสารจริงไม่ได้ จนกว่าจะเชื่อมต่อ Billing API',
 
         opening: 'กำลังเปิดเอกสาร',
@@ -284,7 +283,6 @@ export const translations = {
 
         logout: 'Log out',
         logoutError: 'Could not log out. Please try again.',
-        demoData: 'Demo data',
         documentUnavailable: 'Real document preview and download are unavailable until the Billing API is connected.',
 
         opening: 'Opening document',
