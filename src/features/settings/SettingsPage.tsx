@@ -60,11 +60,10 @@ export function SettingsPage() {
                   key={code}
                   type="button"
                   onClick={() => setLang(code)}
-                  className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${
-                    lang === code
+                  className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${lang === code
                       ? 'bg-white text-indigo-700 shadow-sm'
                       : 'text-slate-400 hover:text-slate-600'
-                  }`}
+                    }`}
                 >
                   {code}
                 </button>
@@ -77,7 +76,7 @@ export function SettingsPage() {
       />
       <PageContainer className="!px-6 !py-7 lg:!px-10"><div className="mx-auto max-w-3xl space-y-5">
         <Card><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-sm font-bold text-slate-950">{copy.profile}</h2><p className="mt-1 text-xs text-slate-500">{copy.profileHint}</p></div><Badge tone="emerald">Firebase Auth</Badge></div><div className="mt-5 divide-y divide-slate-100">{[{ label: copy.displayName, value: user?.displayName || copy.notProvided }, { label: copy.email, value: user?.email || copy.notAvailable }, { label: copy.provider, value: provider }].map((field) => <div key={field.label} className="flex flex-wrap justify-between gap-2 py-3 first:pt-0"><span className="text-xs text-slate-500">{field.label}</span><span className="text-xs font-semibold text-slate-800">{field.value}</span></div>)}</div></Card>
-        <Card><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-bold text-slate-950">{copy.preferences}</h2><Badge tone="amber">Local demo</Badge></div><p className="mt-1 text-xs text-slate-500">{copy.preferencesHint}</p><label className="mt-5 flex items-center justify-between gap-4"><span><span className="block text-xs font-semibold text-slate-800">{copy.notifications}</span><span className="mt-1 block text-[10px] text-slate-400">{copy.notificationHint}</span></span><input type="checkbox" checked={preferences.productUpdateNotifications} onChange={(event) => setPreferences({ productUpdateNotifications: event.target.checked })} className="h-4 w-4 accent-indigo-600" /></label></Card>
+        <Card><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-bold text-slate-950">{copy.preferences}</h2></div><p className="mt-1 text-xs text-slate-500">{copy.preferencesHint}</p><label className="mt-5 flex items-center justify-between gap-4"><span><span className="block text-xs font-semibold text-slate-800">{copy.notifications}</span><span className="mt-1 block text-[10px] text-slate-400">{copy.notificationHint}</span></span><input type="checkbox" checked={preferences.productUpdateNotifications} onChange={(event) => setPreferences({ productUpdateNotifications: event.target.checked })} className="h-4 w-4 accent-indigo-600" /></label></Card>
       </div></PageContainer>
     </main>
   </div>;
