@@ -1,7 +1,7 @@
 import { useLandingLanguage } from './landing-language-context';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import logo from '../../assets/logoDark.png';
 import labelArt from '../../assets/landing/feature-label.png';
 import printArt from '../../assets/landing/feature-print.png';
@@ -39,7 +39,7 @@ export function PastelSections() {
       <p className="pastel-subtitle">{t("เครื่องมือที่ทีมปฏิบัติการและทีมพัฒนาใช้ร่วมกันได้")}</p>
       <div className="pastel-feature-grid">{features.map(({ title, image, description }) => <article key={t(title)}>
         <img src={image} alt={t(title)} width="600" height="450" loading="lazy" />
-        <div className="pastel-feature-copy"><h3>{t(title)}</h3><p>{t(description)}</p><Link to="/docs" aria-label={`${t("ดูรายละเอียด")} ${t(title)}`}>{t("ดูรายละเอียด")}<ArrowRight size={20} aria-hidden="true" /></Link></div>
+        <div className="pastel-feature-copy"><h3>{t(title)}</h3><p>{t(description)}</p></div>
       </article>)}</div>
     </div></section>
     <section id="faq" className="pastel-faq" aria-labelledby="pastel-faq-title"><div className="pastel-faq-inner">

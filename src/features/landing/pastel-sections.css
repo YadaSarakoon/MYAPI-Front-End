@@ -46,7 +46,7 @@
 .pastel-footer { background: white; padding: 20px 0; }
 .pastel-footer .pastel-container { display: flex; align-items: center; justify-content: space-between; gap: 30px; }
 .pastel-footer img { width: 112px; height: 38px; object-fit: contain; }
-.pastel-footer nav { display: flex; gap: 32px; }
+.pastel-footer nav { display: flex; gap: 32px; margin-right: auto; }
 .pastel-footer a,.pastel-footer p { color: #25375c; font-size: 14px; text-decoration: none; }
 .pastel-footer a:hover { color: #087dff; }
 @media(max-width:1000px) { .pastel-container { width: calc(100% - 48px); }.pastel-feature-grid { gap: 14px; }.pastel-feature-copy { padding: 0; }.pastel-feature-copy h3 { font-size: 23px; }.pastel-feature-copy p { font-size: 16px; min-height: 78px; }.pastel-faq-heading { padding-left: 100px; padding-right: 100px; }.pastel-faq-heading img { width: 130px; right: -15px; }.pastel-faq-heading .pastel-subtitle { max-width: 560px; margin-left: auto; margin-right: auto; }.pastel-form-grid { gap: 20px; }.pastel-contact h2 { font-size: 36px; } }
@@ -67,3 +67,5 @@
   .pastel-form-grid input { min-height: 42px; }
   .pastel-faq-inner { max-width: 1000px; width: 92%; }
 }
+
+@media(max-width:650px) { .pastel-footer .pastel-container { align-items: flex-start; }.pastel-footer nav { justify-content: flex-start; gap: 14px 20px; } }

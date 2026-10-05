@@ -33,8 +33,8 @@ export function ParcelLanding() {
         <a href="#features">{t("ฟีเจอร์")}</a><a href="#workflow">{t("วิธีใช้งาน")}</a><Link to="/docs">{t("เอกสาร API")}</Link>
       </nav>
       <div className="parcel-header-actions">
-        <div className="parcel-language" role="group" aria-label={language === "th" ? "เลือกภาษา" : "Select language"}>{(["th", "en"] as const).map((value) => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)}>{value.toUpperCase()}</button>)}</div>
         <Link className="parcel-login" to="/login">{t("เข้าสู่ระบบ")}</Link>
+        <div className="parcel-language" role="group" aria-label={language === "th" ? "เลือกภาษา" : "Select language"}>{(["th", "en"] as const).map((value) => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)}>{value.toUpperCase()}</button>)}</div>
         <Link className="parcel-button parcel-header-cta" to="/signup">{t("เริ่มใช้งานฟรี")}<ArrowRight size={18} aria-hidden="true" /></Link>
         <button className="parcel-menu-toggle" type="button" aria-label={t(menuOpen ? 'ปิดเมนู' : 'เปิดเมนู')} aria-expanded={menuOpen} aria-controls="parcel-mobile-nav" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X /> : <Menu />}</button>
       </div>
