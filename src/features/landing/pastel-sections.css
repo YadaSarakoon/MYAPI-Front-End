@@ -43,6 +43,13 @@
 .pastel-submit { display: inline-flex; align-items: center; justify-content: center; min-height: 54px; min-width: 350px; max-width: 100%; padding: 12px 35px; background: #087dff; border: 0; border-radius: 100px; color: white; font: 500 18px 'Kanit',sans-serif; cursor: pointer; margin-top: 27px; transition: background .2s,transform .2s; }
 .pastel-submit:hover { background: #0667d4; transform: translateY(-2px); }
 .pastel-form-notice { background: white; color: #304667; padding: 14px; border-radius: 10px; margin-top: 16px; font-size: 16px; }
+.contact-fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.contact-trap { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.contact-data-note { font-size: 14px; color: #526987; margin-top: 18px; }
+.pastel-submit:disabled { opacity: .65; cursor: wait; transform: none; }
+.contact-success { color: #166534; border: 1px solid #86efac; }
+.contact-error { color: #9f1239; border: 1px solid #fda4af; }
+.contact-error a { color: #075eb7; text-decoration: underline; }
 .pastel-footer { background: white; padding: 20px 0; }
 .pastel-footer .pastel-container { display: flex; align-items: center; justify-content: space-between; gap: 30px; }
 .pastel-footer img { width: 112px; height: 38px; object-fit: contain; }

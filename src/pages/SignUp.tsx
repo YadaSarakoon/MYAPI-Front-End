@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { signInWithGoogle, signUpWithEmail } from '../features/auth/services/firebaseAuth';
+import { signInWithGoogle, signUpWithEmail } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
 
@@ -84,16 +84,21 @@ export const SignUp: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmTouched, setConfirmTouched] = useState(false);
+  const passwordError = !confirmTouched ? '' : !confirmPassword
+    ? 'กรุณายืนยันรหัสผ่าน'
+    : password !== confirmPassword ? 'รหัสผ่านทั้งสองช่องไม่ตรงกัน กรุณาตรวจสอบอีกครั้ง' : '';
   const [error, setError] = useState('');
+  const [confirmation, setConfirmation] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleGoogleSignUp = async () => {
     setGoogleLoading(true);
-    setError('');
+    setError(''); setConfirmation('');
     try {
-      await signInWithGoogle();
-      navigate(postAuthDestination, { replace: true });
+      await signInWithGoogle(postAuthDestination);
     } catch {
       setError('Unable to sign up with Google. Please try again.');
     } finally {
@@ -103,11 +108,14 @@ export const SignUp: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setConfirmTouched(true);
+    setError(''); setConfirmation('');
+    if (!confirmPassword || password !== confirmPassword) return;
     setLoading(true);
-    setError('');
     try {
-      await signUpWithEmail(name, email, password);
-      navigate(postAuthDestination, { replace: true });
+      const result = await signUpWithEmail(name, email, password);
+      if (result.session) navigate(postAuthDestination, { replace: true });
+      else setConfirmation('กรุณาตรวจสอบอีเมลและกดยืนยันบัญชีก่อนเข้าสู่ระบบ');
     } catch {
       setError('Unable to create account. Check your details or try another email.');
     } finally {
@@ -148,6 +156,7 @@ export const SignUp: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{authStateError}</div>}
+            {confirmation && <p role="status" className="text-green-700">{confirmation}</p>}
             {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{error}</div>}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">ชื่อ - นามสกุล หรือชื่อบริษัท</label>
@@ -174,9 +183,11 @@ export const SignUp: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">รหัสผ่าน (Password)</label>
+              <label htmlFor="signup-password" className="text-xs font-bold text-slate-700">รหัสผ่าน (Password)</label>
               <input
+                id="signup-password"
                 type="password"
+                autoComplete="new-password"
                 required
                 minLength={8}
                 value={password}
@@ -184,6 +195,24 @@ export const SignUp: React.FC = () => {
                 placeholder="อย่างน้อย 8 ตัวอักษร"
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
               />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="signup-confirm-password" className="text-xs font-bold text-slate-700">ยืนยันรหัสผ่าน (Confirm Password)</label>
+              <input
+                id="signup-confirm-password"
+                type="password"
+                autoComplete="new-password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                onBlur={() => setConfirmTouched(true)}
+                aria-invalid={Boolean(passwordError)}
+                aria-describedby={passwordError ? 'signup-password-error' : undefined}
+                placeholder="กรอกรหัสผ่านอีกครั้ง"
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs focus:outline-none focus:bg-white transition-colors ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-blue-600'}`}
+              />
+              {passwordError && <p id="signup-password-error" role="alert" className="text-xs text-red-600">{passwordError}</p>}
             </div>
 
             <button

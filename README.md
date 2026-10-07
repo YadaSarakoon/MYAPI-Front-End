@@ -1,5 +1,9 @@
 # React + TypeScript + Vite
 
+## Contact requests
+
+Authentication and contact requests use Supabase. Landing-page submissions are saved atomically with an email outbox; authorized MyAPI staff use `/admin/leads` and receive an in-app count of new requests. Email delivery requires Resend secrets and a scheduled worker. See [setup and deployment](docs/contact-leads-setup.md). Run `npm test`, `npm run build`, and `npm run lint`; database integration checks are documented in the guide.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:
