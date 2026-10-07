@@ -23,7 +23,7 @@ export function ActivityPage() {
         <Header
           title="API Activity"
           subtitle="Review requests made by your account."
-          userName={user?.displayName || user?.email || 'My Company'}
+          userName={user?.user_metadata?.full_name || user?.email || 'My Company'}
           userMeta="Developer Account"
         />
         <PageContainer className="!px-6 !py-7 lg:!px-10">

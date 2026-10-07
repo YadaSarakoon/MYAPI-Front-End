@@ -82,8 +82,8 @@ export function SettingsPage() {
   const copy = COPY[lang];
 
   const provider =
-    user?.providerData
-      .map(({ providerId }) => providerId)
+    user?.identities
+      ?.map(({ provider }) => provider)
       .join(', ') || 'Unknown';
 
   const handleLogout = async () => {
@@ -119,7 +119,7 @@ export function SettingsPage() {
             />
           }
           userName={
-            user?.displayName ||
+            user?.user_metadata?.full_name ||
             user?.email ||
             'My Company'
           }
@@ -141,7 +141,7 @@ export function SettingsPage() {
                 </div>
 
                 <Badge tone="emerald">
-                  Firebase Auth
+                  Supabase Auth
                 </Badge>
               </div>
 
@@ -150,7 +150,7 @@ export function SettingsPage() {
                   {
                     label: copy.displayName,
                     value:
-                      user?.displayName ||
+                      user?.user_metadata?.full_name ||
                       copy.notProvided,
                   },
                   {

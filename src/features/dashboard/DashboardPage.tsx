@@ -54,7 +54,7 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const copy = COPY[lang];
-  const firstName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || '';
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || '';
   const loadDashboard = useCallback(async () => {
     setLoading(true);
     setLoadError(false);
@@ -127,7 +127,7 @@ export function DashboardPage() {
             </div>
           </div>
         }
-        userName={user?.displayName || user?.email || 'My Company'}
+        userName={user?.user_metadata?.full_name || user?.email || 'My Company'}
         userMeta={copy.developer}
       />
       <PageContainer className="!px-6 !py-7 lg:!px-10">

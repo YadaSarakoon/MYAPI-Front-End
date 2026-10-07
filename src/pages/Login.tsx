@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { signInWithEmail, signInWithGoogle } from '../features/auth/services/firebaseAuth';
+import { signInWithEmail, signInWithGoogle } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
 
@@ -142,10 +142,9 @@ export const Login: React.FC = () => {
 
 
       // เปิด Google Login Popup
-      await signInWithGoogle();
+      await signInWithGoogle(postAuthDestination);
       // ข้อมูล User ที่ Login สำเร็จ
-      // Login สำเร็จ → ไปหน้า Docs
-      navigate(postAuthDestination, { replace: true });
+      // OAuth redirects back after authentication.
 
     } catch {
       setGoogleError(

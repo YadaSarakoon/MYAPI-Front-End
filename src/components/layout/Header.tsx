@@ -28,7 +28,7 @@ export function Header({
   setLanguage?: (language: 'th' | 'en') => void;
 }) {
   const { user } = useAuth();
-  const accountName = user?.displayName || user?.email || userName;
+  const accountName = user?.user_metadata?.full_name || user?.email || userName;
   const accountMeta = user?.email || userMeta;
 
   return (
