@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logoDark.png';
+import { useAdminAccess } from '../../features/contact/useAdminAccess';
+import { LeadNotification } from '../../features/contact/LeadNotification';
 
 export type SidebarItem = {
   label: string;
@@ -24,6 +26,7 @@ export function Sidebar({
   footer?: ReactNode;
   className?: string;
 }) {
+  const { allowed: isAdmin, user } = useAdminAccess();
   return (
     <aside
       className={cx(
@@ -46,6 +49,7 @@ export function Sidebar({
 
       {/* Navigation */}
       <nav className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
+        <LeadNotification key={user?.id} enabled={isAdmin} />
         <div className="hidden px-2.5 pb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 md:block">
           Console
         </div>
