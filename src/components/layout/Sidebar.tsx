@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logoDark.png';
@@ -26,6 +27,7 @@ export function Sidebar({
   footer?: ReactNode;
   className?: string;
 }) {
+  const { t } = useLanguage();
   const { allowed: isAdmin, user } = useAdminAccess();
   return (
     <aside
@@ -51,8 +53,7 @@ export function Sidebar({
       <nav className="min-h-0 flex-1 overflow-y-auto px-2 py-3">
         <LeadNotification key={user?.id} enabled={isAdmin} />
         <div className="hidden px-2.5 pb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 md:block">
-          Console
-        </div>
+          {t("Console")}</div>
 
         <div className="space-y-0.5">
           {(items.some((item) => item.path === '/dashboard') ? items : [{ label: 'Dashboard', path: '/dashboard' }, ...items]).map((item) => {
@@ -74,7 +75,7 @@ export function Sidebar({
                 )}
               >
                 <span className="font-bold md:hidden">{item.label.charAt(0)}</span>
-                <span className="hidden md:inline">{item.label}</span>
+                <span className="hidden md:inline">{t(item.label)}</span>
 
                 {item.badge && (
                   <span className="hidden rounded-full bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-500 md:inline">
@@ -86,8 +87,8 @@ export function Sidebar({
           })}
         </div>
         <div className="mt-6 border-t border-slate-100 pt-4">
-          <div className="hidden px-2.5 pb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 md:block">Account</div>
-          <Link to="/settings" title="Settings" aria-label="Settings" className={cx('flex w-full items-center justify-center rounded-lg px-1 py-2 text-left text-xs transition-all md:justify-start md:px-2.5', activePath === '/settings' ? 'bg-indigo-50 font-semibold text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900')}><span className="font-bold md:hidden">S</span><span className="hidden md:inline">Settings</span></Link>
+          <div className="hidden px-2.5 pb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400 md:block">{t("Account")}</div>
+          <Link to="/settings" title={t("Settings")} aria-label={t("Settings")} className={cx('flex w-full items-center justify-center rounded-lg px-1 py-2 text-left text-xs transition-all md:justify-start md:px-2.5', activePath === '/settings' ? 'bg-indigo-50 font-semibold text-indigo-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900')}><span className="font-bold md:hidden">S</span><span className="hidden md:inline">{t("Settings")}</span></Link>
         </div>
       </nav>
 

@@ -1,6 +1,8 @@
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import { useLanguage } from '../i18n/language';
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { signInWithGoogle, signUpWithEmail } from '../features/auth/services/supabaseAuth';
+import { googleSignInError, signInWithGoogle, signUpWithEmail } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
 
@@ -77,6 +79,7 @@ const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
 );
 
 export const SignUp: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const { error: authStateError } = useAuth();
@@ -99,8 +102,8 @@ export const SignUp: React.FC = () => {
     setError(''); setConfirmation('');
     try {
       await signInWithGoogle(postAuthDestination);
-    } catch {
-      setError('Unable to sign up with Google. Please try again.');
+    } catch (failure) {
+      setError(googleSignInError(failure));
     } finally {
       setGoogleLoading(false);
     }
@@ -132,17 +135,19 @@ export const SignUp: React.FC = () => {
       `}</style>
 
       {/* Top Header */}
-      <header className="p-6 max-w-7xl w-full mx-auto flex justify-between items-center">
+      <header className="p-6 max-w-7xl w-full mx-auto flex justify-between items-start gap-4">
         <Link to="/" className="flex items-center">
           <MyApiLogo className="h-8" />
         </Link>
 
+        <div className="ml-auto flex items-center gap-3 sm:gap-6">
         <span className="text-xs font-semibold text-slate-400">
-          มีบัญชีผู้ใช้อยู่แล้ว?{' '}
+          {t("มีบัญชีผู้ใช้อยู่แล้ว?")}{' '}
           <Link to="/login" className="text-blue-600 font-bold hover:underline ml-1">
-            เข้าสู่ระบบ
-          </Link>
+            {t("เข้าสู่ระบบ")}</Link>
         </span>
+        <LanguageSwitcher />
+        </div>
       </header>
 
       {/* Main Form Box */}
@@ -150,16 +155,16 @@ export const SignUp: React.FC = () => {
         <div className="w-full max-w-md bg-white rounded-3xl p-8 sm:p-10 border border-slate-200/80 shadow-xl shadow-slate-200/50 space-y-6">
           
           <div className="space-y-1 text-center">
-            <h1 className="text-2xl font-black text-slate-900">สร้างบัญชีผู้ใช้ใหม่</h1>
-            <p className="text-xs text-slate-400">เริ่มต้นใช้งานระบบจัดการพัสดุผ่าน API ฟรีวันนี้</p>
+            <h1 className="text-2xl font-black text-slate-900">{t("สร้างบัญชีผู้ใช้ใหม่")}</h1>
+            <p className="text-xs text-slate-400">{t("เริ่มต้นใช้งานระบบจัดการพัสดุผ่าน API ฟรีวันนี้")}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{authStateError}</div>}
-            {confirmation && <p role="status" className="text-green-700">{confirmation}</p>}
-            {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{error}</div>}
+            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(authStateError)}</div>}
+            {confirmation && <p role="status" className="text-green-700">{t(confirmation)}</p>}
+            {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(error)}</div>}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">ชื่อ - นามสกุล หรือชื่อบริษัท</label>
+              <label className="text-xs font-bold text-slate-700">{t("ชื่อ - นามสกุล หรือชื่อบริษัท")}</label>
               <input
                 type="text"
                 required
@@ -171,7 +176,7 @@ export const SignUp: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700">อีเมล (Email)</label>
+              <label className="text-xs font-bold text-slate-700">{t("อีเมล (Email)")}</label>
               <input
                 type="email"
                 required
@@ -183,7 +188,7 @@ export const SignUp: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="signup-password" className="text-xs font-bold text-slate-700">รหัสผ่าน (Password)</label>
+              <label htmlFor="signup-password" className="text-xs font-bold text-slate-700">{t("รหัสผ่าน (Password)")}</label>
               <input
                 id="signup-password"
                 type="password"
@@ -192,13 +197,13 @@ export const SignUp: React.FC = () => {
                 minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="อย่างน้อย 8 ตัวอักษร"
+                placeholder={t("อย่างน้อย 8 ตัวอักษร")}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:bg-white focus:border-blue-600 transition-colors"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="signup-confirm-password" className="text-xs font-bold text-slate-700">ยืนยันรหัสผ่าน (Confirm Password)</label>
+              <label htmlFor="signup-confirm-password" className="text-xs font-bold text-slate-700">{t("ยืนยันรหัสผ่าน (Confirm Password)")}</label>
               <input
                 id="signup-confirm-password"
                 type="password"
@@ -209,35 +214,33 @@ export const SignUp: React.FC = () => {
                 onBlur={() => setConfirmTouched(true)}
                 aria-invalid={Boolean(passwordError)}
                 aria-describedby={passwordError ? 'signup-password-error' : undefined}
-                placeholder="กรอกรหัสผ่านอีกครั้ง"
+                placeholder={t("กรอกรหัสผ่านอีกครั้ง")}
                 className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-xs focus:outline-none focus:bg-white transition-colors ${passwordError ? 'border-red-500 focus:border-red-500' : 'border-slate-200 focus:border-blue-600'}`}
               />
-              {passwordError && <p id="signup-password-error" role="alert" className="text-xs text-red-600">{passwordError}</p>}
+              {passwordError && <p id="signup-password-error" role="alert" className="text-xs text-red-600">{t(passwordError)}</p>}
             </div>
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || googleLoading}
               className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all text-center mt-2 cursor-pointer"
             >
-              ลงทะเบียนใช้งานฟรี
-            </button>
+              {t("ลงทะเบียนใช้งานฟรี")}</button>
           </form>
 
           <div className="relative flex items-center justify-center my-4">
             <div className="border-t border-slate-100 w-full"></div>
             <span className="bg-white px-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider absolute">
-              หรือ
-            </span>
+              {t("หรือ")}</span>
           </div>
 
           <button
             type="button"
             onClick={() => void handleGoogleSignUp()}
-            disabled={googleLoading}
+            disabled={googleLoading || loading}
             className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors cursor-pointer"
           >
-            <span></span> {googleLoading ? 'กำลังเชื่อมต่อ…' : 'สมัครด้วย Google Account'}
+            <span></span> {t(googleLoading ? 'กำลังเชื่อมต่อ…' : 'สมัครด้วย Google Account')}
           </button>
 
         </div>
@@ -245,8 +248,7 @@ export const SignUp: React.FC = () => {
 
       {/* Footer */}
       <footer className="py-6 text-center text-xs text-slate-400">
-        © 2026 MyAPI Inc. All rights reserved.
-      </footer>
+        {t("© 2026 MyAPI Inc. All rights reserved.")}</footer>
 
     </div>
   );

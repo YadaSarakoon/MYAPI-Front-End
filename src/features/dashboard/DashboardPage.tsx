@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { demoDashboardService } from './services/dashboardService';
@@ -42,14 +43,16 @@ const COPY = {
 } as const;
 
 function Metric({ label, value, detail }: { label: string; value: string; detail: string }) {
-  return <Card><p className="text-xs font-semibold text-slate-500">{label}</p><p className="mt-3 text-2xl font-bold tracking-tight text-slate-950">{value}</p><p className="mt-1 text-[10px] text-slate-400">{detail}</p></Card>;
+  const { t } = useLanguage();
+  return <Card><p className="text-xs font-semibold text-slate-500">{t(label)}</p><p className="mt-3 text-2xl font-bold tracking-tight text-slate-950">{value}</p><p className="mt-1 text-[10px] text-slate-400">{t(detail)}</p></Card>;
 }
 
 export function DashboardPage() {
+  const { t } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [range, setRange] = useState<UsageRange>('7');
-  const [lang, setLang] = useState<'TH' | 'EN'>('TH');
+  const { lang, setLang } = useLanguage();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -94,19 +97,19 @@ export function DashboardPage() {
   };
 
   if (loading) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] text-sm text-slate-500">Loading dashboard…</div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] text-sm text-slate-500">{t("Loading dashboard…")}</div>;
   }
 
   if (loadError || !dashboardData) {
-    return <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] px-6"><div className="max-w-md text-center"><p role="alert" className="text-sm text-rose-600">{loadError ? copy.loadError : copy.empty}</p>{loadError && <button type="button" onClick={() => void loadDashboard()} className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700">{copy.retry}</button>}</div></div>;
+    return <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] px-6"><div className="max-w-md text-center"><p role="alert" className="text-sm text-rose-600">{loadError ? copy.loadError : copy.empty}</p>{loadError && <button type="button" onClick={() => void loadDashboard()} className="mt-4 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700">{t(copy.retry)}</button>}</div></div>;
   }
 
   return <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-sans text-sm text-slate-800">
-    <Sidebar items={mainLinks} activePath="/dashboard" footer={<SidebarLogoutButton label={copy.logout} onClick={() => void handleLogout()} />} />
+    <Sidebar items={mainLinks} activePath="/dashboard" footer={<SidebarLogoutButton label={t(copy.logout)} onClick={() => void handleLogout()} />} />
     <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
       <Header
         title={`${copy.welcome}${firstName ? `, ${firstName}` : ''}`}
-        subtitle={copy.subtitle}
+        subtitle={t(copy.subtitle)}
         actions={
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">
@@ -128,29 +131,29 @@ export function DashboardPage() {
           </div>
         }
         userName={user?.user_metadata?.full_name || user?.email || 'My Company'}
-        userMeta={copy.developer}
+        userMeta={t(copy.developer)}
       />
       <PageContainer className="!px-6 !py-7 lg:!px-10">
         <div className="mx-auto max-w-[1440px] space-y-5">
-          <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-950">{copy.overview}</h2><p className="mt-1 text-xs text-slate-500">{copy.snapshot}</p></div></div>
+          <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-slate-950">{t(copy.overview)}</h2><p className="mt-1 text-xs text-slate-500">{t(copy.snapshot)}</p></div></div>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Metric label={copy.total} value={dashboardData.totalRequests} detail={copy.sample} />
-            <Metric label={copy.month} value={dashboardData.monthRequests} detail={copy.sample} />
-            <Metric label={copy.wallet} value={dashboardData.walletBalance} detail={copy.walletDetail} />
-            <Metric label={copy.api} value={copy.active} detail={copy.apiDetail} />
+            <Metric label={t(copy.total)} value={dashboardData.totalRequests} detail={t(copy.sample)} />
+            <Metric label={t(copy.month)} value={dashboardData.monthRequests} detail={t(copy.sample)} />
+            <Metric label={t(copy.wallet)} value={dashboardData.walletBalance} detail={t(copy.walletDetail)} />
+            <Metric label={t(copy.api)} value={t(copy.active)} detail={t(copy.apiDetail)} />
           </div>
 
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
             <div className="min-w-0 space-y-5">
               <Card>
-                <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-sm font-bold text-slate-950">{copy.usage}</h2><p className="mt-1 text-xs text-slate-500">{copy.volume}</p></div><div className="flex rounded-lg bg-slate-100 p-0.5">{ranges.map((item) => <button key={item} onClick={() => setRange(item)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${range === item ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>{item} {lang === 'TH' ? 'วัน' : 'days'}</button>)}</div></div>
-                <div className="mt-5 h-48 rounded-xl bg-slate-50 p-4">{usage.length ? <><svg viewBox="0 0 600 100" preserveAspectRatio="none" className="h-full w-full" role="img" aria-label={`${copy.usage} ${range} ${lang === 'TH' ? 'วัน' : 'days'}`}><path d="M0 80 H600 M0 50 H600 M0 20 H600" stroke="#e2e8f0" strokeDasharray="4 5"/><polyline points={points} transform="scale(1,1)" fill="none" stroke="#4f46e5" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" /></svg><div className="mt-2 flex justify-between text-[10px] text-slate-400"><span>{range === '7' ? copy.daysAgo : `${copy.last} ${range} ${lang === 'TH' ? 'วัน' : 'days'}`}</span><span>{copy.today}</span></div></> : <div className="flex h-full items-center justify-center text-xs text-slate-400">{copy.noUsage}</div>}</div>
+                <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-sm font-bold text-slate-950">{t(copy.usage)}</h2><p className="mt-1 text-xs text-slate-500">{t(copy.volume)}</p></div><div className="flex rounded-lg bg-slate-100 p-0.5">{ranges.map((item) => <button key={item} onClick={() => setRange(item)} className={`rounded-md px-3 py-1.5 text-[10px] font-bold ${range === item ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500'}`}>{item} {t(lang === 'TH' ? 'วัน' : 'days')}</button>)}</div></div>
+                <div className="mt-5 h-48 rounded-xl bg-slate-50 p-4">{usage.length ? <><svg viewBox="0 0 600 100" preserveAspectRatio="none" className="h-full w-full" role="img" aria-label={`${copy.usage} ${range} ${lang === 'TH' ? 'วัน' : 'days'}`}><path d="M0 80 H600 M0 50 H600 M0 20 H600" stroke="#e2e8f0" strokeDasharray="4 5"/><polyline points={points} transform="scale(1,1)" fill="none" stroke="#4f46e5" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" /></svg><div className="mt-2 flex justify-between text-[10px] text-slate-400"><span>{range === '7' ? copy.daysAgo : `${copy.last} ${range} ${lang === 'TH' ? 'วัน' : 'days'}`}</span><span>{t(copy.today)}</span></div></> : <div className="flex h-full items-center justify-center text-xs text-slate-400">{t(copy.noUsage)}</div>}</div>
               </Card>
-              <Card className="overflow-hidden p-0"><div className="flex items-center justify-between border-b border-slate-100 px-5 py-4"><div><h2 className="text-sm font-bold text-slate-950">{copy.activity}</h2><p className="mt-1 text-xs text-slate-500">{copy.rows}</p></div><Link to="/production" className="text-xs font-semibold text-indigo-600">{copy.view}</Link></div><div className="overflow-x-auto"><table className="w-full min-w-[700px]"><thead><tr className="bg-slate-50/60 text-left">{[copy.time, copy.method, copy.endpoint, copy.status, copy.response].map((label) => <th key={label} className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{label}</th>)}</tr></thead><tbody>{dashboardData.activity.length ? dashboardData.activity.map((row) => <tr key={`${row.time}-${row.endpoint}`} className="border-t border-slate-100"><td className="whitespace-nowrap px-5 py-3 text-xs text-slate-500">{row.time}</td><td className="px-5 py-3"><span className="font-mono text-[10px] font-bold text-indigo-700">{row.method}</span></td><td className="px-5 py-3"><code className="text-xs text-slate-700">{row.endpoint}</code></td><td className="px-5 py-3"><span className={row.status === 'Success' ? 'text-xs font-semibold text-emerald-600' : 'text-xs font-semibold text-rose-600'}>{row.status === 'Success' ? copy.success : copy.failed} · {row.code}</span></td><td className="px-5 py-3 text-xs text-slate-500">{row.response}</td></tr>) : <tr><td colSpan={5} className="px-5 py-8 text-center text-xs text-slate-400">{copy.noActivity}</td></tr>}</tbody></table></div></Card>
+              <Card className="overflow-hidden p-0"><div className="flex items-center justify-between border-b border-slate-100 px-5 py-4"><div><h2 className="text-sm font-bold text-slate-950">{t(copy.activity)}</h2><p className="mt-1 text-xs text-slate-500">{t(copy.rows)}</p></div><Link to="/production" className="text-xs font-semibold text-indigo-600">{t(copy.view)}</Link></div><div className="overflow-x-auto"><table className="w-full min-w-[700px]"><thead><tr className="bg-slate-50/60 text-left">{[copy.time, copy.method, copy.endpoint, copy.status, copy.response].map((label) => <th key={label} className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">{t(label)}</th>)}</tr></thead><tbody>{dashboardData.activity.length ? dashboardData.activity.map((row) => <tr key={`${row.time}-${row.endpoint}`} className="border-t border-slate-100"><td className="whitespace-nowrap px-5 py-3 text-xs text-slate-500">{row.time}</td><td className="px-5 py-3"><span className="font-mono text-[10px] font-bold text-indigo-700">{row.method}</span></td><td className="px-5 py-3"><code className="text-xs text-slate-700">{row.endpoint}</code></td><td className="px-5 py-3"><span className={row.status === 'Success' ? 'text-xs font-semibold text-emerald-600' : 'text-xs font-semibold text-rose-600'}>{row.status === 'Success' ? copy.success : copy.failed} · {row.code}</span></td><td className="px-5 py-3 text-xs text-slate-500">{row.response}</td></tr>) : <tr><td colSpan={5} className="px-5 py-8 text-center text-xs text-slate-400">{t(copy.noActivity)}</td></tr>}</tbody></table></div></Card>
             </div>
 
-            <aside className="space-y-5"><Card><h2 className="text-sm font-bold text-slate-950">{copy.actions}</h2><p className="mt-1 text-xs text-slate-500">{copy.actionsHint}</p><div className="mt-4 space-y-2">{[{ label: copy.docs, href: '/docs' }, { label: copy.sandbox, href: '/sandbox' }, { label: copy.keys, href: '/production' }, { label: copy.billing, href: '/billing' }].map((item) => <Link key={item.href} to={item.href} className="flex items-center justify-between rounded-xl border border-slate-200 p-3 text-xs font-semibold text-slate-700 hover:border-indigo-200 hover:bg-slate-50">{item.label}<span className="text-slate-300">→</span></Link>)}</div></Card>
-              <Card><h2 className="text-sm font-bold text-slate-950">{copy.gettingStarted}</h2><p className="mt-1 text-xs text-slate-500">{copy.checklist}</p><div className="mt-4 space-y-3">{dashboardData.checklist.length ? dashboardData.checklist.map((item) => <Link key={item.href} to={item.href} className="flex items-center gap-3"><span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${item.done ? 'bg-emerald-100 text-emerald-700' : 'border border-slate-300 text-slate-400'}`}>{item.done ? '✓' : '·'}</span><span className="text-xs text-slate-600">{lang === 'TH' ? ({ 'Review API documentation': 'อ่านเอกสาร API', 'Try a request in Sandbox': 'ทดลองเรียก API ใน Sandbox', 'Request Production access': 'ขอเปิดใช้งาน Production', 'Configure billing details': 'ตั้งค่าการเรียกเก็บเงิน' } as const)[item.label] : item.label}</span><span className={`ml-auto text-[9px] font-semibold ${item.done ? 'text-emerald-600' : 'text-slate-400'}`}>{item.done ? copy.complete : copy.next}</span></Link>) : <p className="text-xs text-slate-400">{copy.noChecklist}</p>}</div></Card>
+            <aside className="space-y-5"><Card><h2 className="text-sm font-bold text-slate-950">{t(copy.actions)}</h2><p className="mt-1 text-xs text-slate-500">{t(copy.actionsHint)}</p><div className="mt-4 space-y-2">{[{ label: copy.docs, href: '/docs' }, { label: copy.sandbox, href: '/sandbox' }, { label: copy.keys, href: '/production' }, { label: copy.billing, href: '/billing' }].map((item) => <Link key={item.href} to={item.href} className="flex items-center justify-between rounded-xl border border-slate-200 p-3 text-xs font-semibold text-slate-700 hover:border-indigo-200 hover:bg-slate-50">{t(item.label)}<span className="text-slate-300">→</span></Link>)}</div></Card>
+              <Card><h2 className="text-sm font-bold text-slate-950">{t(copy.gettingStarted)}</h2><p className="mt-1 text-xs text-slate-500">{t(copy.checklist)}</p><div className="mt-4 space-y-3">{dashboardData.checklist.length ? dashboardData.checklist.map((item) => <Link key={item.href} to={item.href} className="flex items-center gap-3"><span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] ${item.done ? 'bg-emerald-100 text-emerald-700' : 'border border-slate-300 text-slate-400'}`}>{t(item.done ? '✓' : '·')}</span><span className="text-xs text-slate-600">{lang === 'TH' ? ({ 'Review API documentation': 'อ่านเอกสาร API', 'Try a request in Sandbox': 'ทดลองเรียก API ใน Sandbox', 'Request Production access': 'ขอเปิดใช้งาน Production', 'Configure billing details': 'ตั้งค่าการเรียกเก็บเงิน' } as const)[item.label] : item.label}</span><span className={`ml-auto text-[9px] font-semibold ${item.done ? 'text-emerald-600' : 'text-slate-400'}`}>{item.done ? copy.complete : copy.next}</span></Link>) : <p className="text-xs text-slate-400">{t(copy.noChecklist)}</p>}</div></Card>
             </aside>
           </div>
         </div>

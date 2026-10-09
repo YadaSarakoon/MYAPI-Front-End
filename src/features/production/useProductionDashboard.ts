@@ -1,15 +1,16 @@
+import { useLanguage } from '../../i18n/language';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 
 import { PRODUCTION_COPY } from './data';
-import type { ProductionLanguage, ProductionStatus } from './types';
+import type { ProductionStatus } from './types';
 
 export function useProductionDashboard() {
     const navigate = useNavigate();
     const { logout } = useAuth();
     const [productionStatus, setProductionStatus] = useState<ProductionStatus>('approved');
-    const [lang, setLang] = useState<ProductionLanguage>('TH');
+    const { lang, setLang } = useLanguage();
 
     const handleApply = () => setProductionStatus('pending');
     const approveDemo = () => setProductionStatus('approved');

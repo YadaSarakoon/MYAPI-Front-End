@@ -1,5 +1,6 @@
+import { render } from './render';
 import { afterEach, expect, test, vi } from 'vitest';
-import { act, cleanup, render, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LeadNotification } from '../src/features/contact/LeadNotification';
 import { countNewLeads } from '../src/features/contact/leadClient';

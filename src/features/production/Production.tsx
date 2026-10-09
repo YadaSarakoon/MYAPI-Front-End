@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language';
 import { Badge } from '../../components/common/Badge';
 import { Header as ConsoleHeader } from '../../components/layout/Header';
 import { PageContainer } from '../../components/layout/PageContainer';
@@ -16,6 +17,7 @@ import {
 } from './components/ProductionSections';
 import { useProductionDashboard } from './useProductionDashboard';
 export function Production() {
+  const { t } = useLanguage();
     const { productionStatus, lang, setLang, copy, handleApply, approveDemo, handleDocs, handleGuide, handleWebhook, handleActivity, handleLogout } = useProductionDashboard();
 
     return (
@@ -35,7 +37,7 @@ export function Production() {
                 activePath="/production"
                 footer={
                     <SidebarLogoutButton
-                        label={copy.logout}
+                        label={t(copy.logout)}
                         onClick={() => void handleLogout()}
                     />
                 }
@@ -47,8 +49,8 @@ export function Production() {
 
             <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
                 <ConsoleHeader
-                    title={copy.title}
-                    subtitle={copy.subtitle}
+                    title={t(copy.title)}
+                    subtitle={t(copy.subtitle)}
                     badge={
                         productionStatus ===
                             'approved' ? (
@@ -58,7 +60,7 @@ export function Production() {
                                     className="inline-flex items-center gap-1.5"
                                 >
                                     <StatusDot active />
-                                    {copy.active}
+                                    {t(copy.active)}
                                 </Badge>
                             </div>
                         ) : null
@@ -94,7 +96,7 @@ export function Production() {
                         />
                     }
                     userName="My Company"
-                    userMeta="Production Account"
+                    userMeta={t("Production Account")}
                 />
 
                 {/* ==================================================
@@ -143,28 +145,26 @@ export function Production() {
 
                                         <div>
                                             <div className="text-sm font-bold text-emerald-700">
-                                                {copy.activeTitle}
+                                                {t(copy.activeTitle)}
                                             </div>
 
                                             <p className="mt-0.5 text-xs text-emerald-700/70">
-                                                {copy.activeDescription}
+                                                {t(copy.activeDescription)}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center gap-4">
                                         <Badge tone="emerald">
-                                            Active
-                                        </Badge>
+                                            {t("Active")}</Badge>
 
                                         <div className="hidden border-l border-emerald-200 pl-4 text-right sm:block">
                                             <div className="text-xs text-emerald-700/60">
-                                                {copy.activeSince}
+                                                {t(copy.activeSince)}
                                             </div>
 
                                             <div className="mt-0.5 text-xs font-semibold text-emerald-800">
-                                                12 ก.ย. 2026
-                                            </div>
+                                                {t("12 ก.ย. 2026")}</div>
                                         </div>
                                     </div>
                                 </div>

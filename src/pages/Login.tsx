@@ -1,7 +1,9 @@
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
+import { useLanguage } from '../i18n/language';
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-import { signInWithEmail, signInWithGoogle } from '../features/auth/services/supabaseAuth';
+import { googleSignInError, signInWithEmail, signInWithGoogle } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
 
@@ -99,6 +101,7 @@ const MyApiLogo: React.FC<{ className?: string }> = ({
 );
 
 export const Login: React.FC = () => {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const { error: authStateError } = useAuth();
@@ -138,18 +141,11 @@ export const Login: React.FC = () => {
       setGoogleLoading(true);
       setGoogleError('');
 
-      // สร้าง Google Provider
-
-
-      // เปิด Google Login Popup
       await signInWithGoogle(postAuthDestination);
-      // ข้อมูล User ที่ Login สำเร็จ
-      // OAuth redirects back after authentication.
+      // The provider redirects to /auth/callback after authentication.
 
-    } catch {
-      setGoogleError(
-        'ไม่สามารถเข้าสู่ระบบด้วย Google ได้ กรุณาลองใหม่อีกครั้ง'
-      );
+    } catch (error) {
+      setGoogleError(googleSignInError(error));
     } finally {
       setGoogleLoading(false);
     }
@@ -166,23 +162,24 @@ export const Login: React.FC = () => {
       {/* ==========================================
           Top Header
       ========================================== */}
-      <header className="p-6 max-w-7xl w-full mx-auto flex justify-between items-center">
+      <header className="p-6 max-w-7xl w-full mx-auto flex justify-between items-start gap-4">
 
         <Link to="/" className="flex items-center">
           <MyApiLogo className="h-8" />
         </Link>
 
+        <div className="ml-auto flex items-center gap-3 sm:gap-6">
         <span className="text-xs font-semibold text-slate-400">
-          ยังไม่มีบัญชีผู้ใช้?{' '}
+          {t("ยังไม่มีบัญชีผู้ใช้?")}{' '}
 
           <Link
             to="/signup"
             className="text-blue-600 font-bold hover:underline ml-1"
           >
-            สมัครสมาชิก
-          </Link>
+            {t("สมัครสมาชิก")}</Link>
         </span>
-
+        <LanguageSwitcher />
+        </div>
       </header>
 
       {/* ==========================================
@@ -196,12 +193,10 @@ export const Login: React.FC = () => {
           <div className="space-y-1 text-center">
 
             <h1 className="text-2xl font-black text-slate-900">
-              ยินดีต้อนรับกลับมา
-            </h1>
+              {t("ยินดีต้อนรับกลับมา")}</h1>
 
             <p className="text-xs text-slate-400">
-              เข้าสู่ระบบเพื่อจัดการ API Key และบริการขนส่งของคุณ
-            </p>
+              {t("เข้าสู่ระบบเพื่อจัดการ API Key และบริการขนส่งของคุณ")}</p>
 
           </div>
 
@@ -213,16 +208,15 @@ export const Login: React.FC = () => {
             className="space-y-4"
           >
 
-            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{authStateError}</div>}
+            {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(authStateError)}</div>}
 
-            {formError && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{formError}</div>}
+            {formError && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(formError)}</div>}
 
             {/* Email */}
             <div className="space-y-1.5">
 
               <label className="text-xs font-bold text-slate-700">
-                อีเมล (Email)
-              </label>
+                {t("อีเมล (Email)")}</label>
 
               <input
                 type="email"
@@ -241,15 +235,13 @@ export const Login: React.FC = () => {
               <div className="flex justify-between items-center">
 
                 <label className="text-xs font-bold text-slate-700">
-                  รหัสผ่าน (Password)
-                </label>
+                  {t("รหัสผ่าน (Password)")}</label>
 
                 <a
                   href="#"
                   className="text-[11px] font-semibold text-blue-600 hover:underline"
                 >
-                  ลืมรหัสผ่าน?
-                </a>
+                  {t("ลืมรหัสผ่าน?")}</a>
 
               </div>
 
@@ -267,11 +259,10 @@ export const Login: React.FC = () => {
             {/* Login Button */}
             <button
               type="submit"
-              disabled={formLoading}
+              disabled={formLoading || googleLoading}
               className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition-all text-center mt-2 cursor-pointer disabled:opacity-60"
             >
-              เข้าสู่ระบบ
-            </button>
+              {t("เข้าสู่ระบบ")}</button>
 
           </form>
 
@@ -283,8 +274,7 @@ export const Login: React.FC = () => {
             <div className="border-t border-slate-100 w-full" />
 
             <span className="bg-white px-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider absolute">
-              หรือ
-            </span>
+              {t("หรือ")}</span>
 
           </div>
 
@@ -293,7 +283,7 @@ export const Login: React.FC = () => {
           ========================================== */}
           {googleError && (
             <div className="text-center text-xs text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
-              {googleError}
+              {t(googleError)}
             </div>
           )}
 
@@ -303,7 +293,7 @@ export const Login: React.FC = () => {
           <button
             type="button"
             onClick={handleGoogleLogin}
-            disabled={googleLoading}
+            disabled={googleLoading || formLoading}
             className={`w-full py-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-3 transition-colors ${
               googleLoading
                 ? 'opacity-60 cursor-not-allowed'
@@ -338,8 +328,7 @@ export const Login: React.FC = () => {
 
                 </svg>
 
-                กำลังเข้าสู่ระบบ...
-              </>
+                {t("กำลังเข้าสู่ระบบ...")}</>
 
             ) : (
 
@@ -373,8 +362,7 @@ export const Login: React.FC = () => {
 
                 </svg>
 
-                เข้าสู่ระบบด้วย Google Account
-              </>
+                {t("เข้าสู่ระบบด้วย Google Account")}</>
 
             )}
 
@@ -388,8 +376,7 @@ export const Login: React.FC = () => {
           Footer
       ========================================== */}
       <footer className="py-6 text-center text-xs text-slate-400">
-        © 2026 MyAPI Inc. All rights reserved.
-      </footer>
+        {t("© 2026 MyAPI Inc. All rights reserved.")}</footer>
 
     </div>
   );

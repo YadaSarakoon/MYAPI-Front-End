@@ -1,5 +1,6 @@
+import { render } from './render';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { LeadsPage } from '../src/features/contact/LeadsPage';
 import { listLeads, updateLead } from '../src/features/contact/leadClient';
