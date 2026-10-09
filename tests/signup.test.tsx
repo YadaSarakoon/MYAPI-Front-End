@@ -1,5 +1,6 @@
+import { render } from './render';
 import { afterEach, expect, test, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { SignUp } from '../src/pages/SignUp';
 import { signUpWithEmail } from '../src/features/auth/services/supabaseAuth';

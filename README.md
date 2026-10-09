@@ -1,5 +1,9 @@
 # React + TypeScript + Vite
 
+## Google login and languages
+
+Google sign-in uses Supabase OAuth. Thai and English share one saved language preference across the app. See [Google provider setup and verification](docs/google-login-and-language.md) for the remaining external configuration.
+
 ## Contact requests
 
 Authentication and contact requests use Supabase. Landing-page submissions are saved atomically with an email outbox; authorized MyAPI staff use `/admin/leads` and receive an in-app count of new requests. Email delivery requires Resend secrets and a scheduled worker. See [setup and deployment](docs/contact-leads-setup.md). Run `npm test`, `npm run build`, and `npm run lint`; database integration checks are documented in the guide.

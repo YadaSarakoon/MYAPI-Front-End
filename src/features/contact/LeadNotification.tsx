@@ -1,8 +1,10 @@
+import { useLanguage } from '../../i18n/language';
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { countNewLeads } from './leadClient';
 
 export function LeadNotification({ enabled }: { enabled: boolean }) {
+  const { t } = useLanguage();
   const [count, setCount] = useState<number | null>(null);
   const [failed, setFailed] = useState(false);
   useEffect(() => {
@@ -23,8 +25,8 @@ export function LeadNotification({ enabled }: { enabled: boolean }) {
     return () => { active = false; clearInterval(timer); };
   }, [enabled]);
   if (!enabled) return null;
-  return <Link to="/admin/leads" className="mb-3 block rounded-lg bg-blue-50 px-2 py-3 text-center text-xs font-semibold text-blue-700" title="คำขอติดต่อจากลูกค้า">
-    <span>คำขอติดต่อ</span>
-    <span role="status" aria-live="polite" className="block mt-1">{failed ? 'ตรวจแจ้งเตือนไม่สำเร็จ' : count === null ? 'กำลังตรวจ…' : `คำขอใหม่ ${count} รายการ`}</span>
+  return <Link to="/admin/leads" className="mb-3 block rounded-lg bg-blue-50 px-2 py-3 text-center text-xs font-semibold text-blue-700" title={t("คำขอติดต่อจากลูกค้า")}>
+    <span>{t("คำขอติดต่อ")}</span>
+    <span role="status" aria-live="polite" className="block mt-1">{failed ? t('ตรวจแจ้งเตือนไม่สำเร็จ') : count === null ? t('กำลังตรวจ…') : t('คำขอใหม่ {count} รายการ').replace('{count}', String(count))}</span>
   </Link>;
 }
