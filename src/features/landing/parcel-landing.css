@@ -72,14 +72,8 @@ html[lang='en'] .parcel-step-title { white-space: normal; }
 @media(max-width:600px) { .parcel-header-actions { gap: 4px; }.parcel-logo { width: 82px; }.parcel-language button { padding: 7px; font-size: 11px; }.parcel-header-cta { padding: 8px 10px; font-size: 12px; }.parcel-header-cta svg { display: none; }.parcel-menu-toggle { padding: 6px; }html[lang='en'] .parcel-hero h1 { font-size: clamp(30px,7.7vw,42px); letter-spacing: -1px; } }
 @media(max-width:360px) { .parcel-logo { width: 70px; }.parcel-header { margin: 0 8px; padding: 9px; gap: 4px; }.parcel-header-cta { font-size: 11px; padding: 8px; } }
 
-/* Reserve a separate row above the navigation for language selection. */
+/* Keep language selection at the top-right, with a separate row so it never covers navigation. */
 .parcel-landing { padding-top: 58px; }
-.parcel-language { position: absolute; right: 27px; bottom: calc(100% + 10px); }
-@media(max-width:600px) { .parcel-header { top: 0; }.parcel-language { right: 13px; }.parcel-logo { width: 103px; } }
-
-.parcel-landing { padding-top: 20px; }
-.parcel-header { max-width: 1120px; margin-right: max(110px, calc((100% - 1120px) / 2)); }
-.parcel-language { right: -90px; bottom: auto; top: 50%; transform: translateY(-50%); }
+.parcel-language { position: fixed; top: 12px; right: 20px; z-index: 60; }
 .parcel-header-cta { order: -1; }
-@media(max-width:1240px) { .parcel-header { margin-right: 106px; } }
-@media(max-width:600px) { .parcel-header { margin-left: 12px; margin-right: 76px; padding: 9px; }.parcel-language { right: -68px; }.parcel-header-actions { gap: 2px; }.parcel-logo { width: 80px; }.parcel-header-cta { font-size: 11px; padding: 8px; } }
+@media(max-width:600px) { .parcel-header { top: 0; }.parcel-language { right: 14px; }.parcel-logo { width: 103px; } }

@@ -1,5 +1,6 @@
 import { useLandingLanguage } from './landing-language-context';
 import { useState } from 'react';
+import { ContactRequestForm } from '../contact/ContactRequestForm';
 import { Link } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import logo from '../../assets/logoDark.png';
@@ -20,19 +21,11 @@ const questions = [
   ['เชื่อมต่อกับระบบเดิมได้หรือไม่?', 'ได้ MyAPI ออกแบบเป็น REST API เพื่อให้ทีมพัฒนานำไปต่อยอดกับเว็บไซต์ ระบบหลังบ้าน หรือแพลตฟอร์มของคุณ'],
   ['ต้องการคำแนะนำก่อนเริ่มใช้งานทำอย่างไร?', 'ศึกษาวิธีเริ่มต้นได้จากเอกสาร API และเตรียมรายละเอียดระบบของคุณ เพื่อให้ทีมงานช่วยแนะนำแนวทางการเชื่อมต่อที่เหมาะสม'],
 ];
-const fields = [
-  { name: 'company', label: 'ชื่อบริษัท (ไม่บังคับ)', placeholder: 'เช่น บริษัท ตัวอย่าง จำกัด', type: 'text', autoComplete: 'organization', required: false },
-  { name: 'fullName', label: 'ชื่อ - นามสกุล', placeholder: 'เช่น สมชาย ใจดี', type: 'text', autoComplete: 'name', required: true },
-  { name: 'phone', label: 'เบอร์โทรติดต่อ', placeholder: 'เช่น 081 234 5678', type: 'tel', autoComplete: 'tel', required: true },
-  { name: 'email', label: 'อีเมล', placeholder: 'เช่น name@company.com', type: 'email', autoComplete: 'email', required: true },
-  { name: 'website', label: 'เว็บไซต์ (ไม่บังคับ)', placeholder: 'เช่น https://www.example.com', type: 'url', autoComplete: 'url', required: false },
-  { name: 'courier', label: 'ขนส่งที่สนใจ', placeholder: 'ระบุขนส่งที่สนใจ', type: 'text', autoComplete: 'off', required: false },
-];
 
 export function PastelSections() {
-  const { t } = useLandingLanguage();
+  const { t, language } = useLandingLanguage();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  const [contactNotice, setContactNotice] = useState(false);
+
   return <div className="pastel-sections">
     <section id="features" className="pastel-features" aria-labelledby="pastel-feature-title"><div className="pastel-container">
       <h2 id="pastel-feature-title">{t("จัดส่งได้ครบ")}<span>{t("ทุกจังหวะของธุรกิจ")}</span></h2>
@@ -52,11 +45,7 @@ export function PastelSections() {
     <section id="contact-us" className="pastel-contact" aria-labelledby="pastel-contact-title"><div className="pastel-contact-inner">
       <h2 id="pastel-contact-title">{t("พร้อมยกระดับ")}<br /><span>{t("การจัดส่งของคุณแล้วหรือยัง?")}</span></h2>
       <p className="pastel-subtitle">{t("เล่าให้เราฟังว่าธุรกิจของคุณทำงานอย่างไร เราจะช่วยแนะนำแนวทางเชื่อมต่อที่เหมาะสม")}</p>
-      <form onSubmit={(event) => { event.preventDefault(); setContactNotice(true); }}>
-        <div className="pastel-form-grid">{fields.map(({ name, label, ...props }) => <label key={name} htmlFor={`contact-${name}`}><span>{t(label)}</span><input id={`contact-${name}`} name={name} {...props} placeholder={t(props.placeholder)} /></label>)}</div>
-        <button className="pastel-submit" type="submit">{t("ให้ทีมงานติดต่อกลับ")}</button>
-        {contactNotice && <p className="pastel-form-notice" role="status">{t("ขณะนี้ยังส่งคำขอติดต่อผ่านหน้าเว็บไซต์ไม่ได้ ข้อมูลของคุณยังไม่ได้ถูกส่ง กรุณาลองใหม่ภายหลัง")}</p>}
-      </form>
+      <ContactRequestForm t={t} language={language} />
     </div></section>
     <footer className="pastel-footer"><div className="pastel-container"><Link to="/" aria-label={t("MyAPI หน้าแรก")}><img src={logo} width="130" height="45" alt="MyAPI" /></Link><nav aria-label={t("เมนูท้ายเว็บไซต์")}><a href="#features">{t("ฟีเจอร์")}</a><a href="#workflow">{t("วิธีใช้งาน")}</a><Link to="/docs">{t("เอกสาร API")}</Link><a href="#contact-us">{t("ติดต่อเรา")}</a></nav><p>© {new Date().getFullYear()} MyAPI</p></div></footer>
   </div>;

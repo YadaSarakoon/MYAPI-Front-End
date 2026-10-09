@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language';
 import { Button } from '../common/Button';
 
 export function SidebarLogoutButton({
@@ -7,6 +8,7 @@ export function SidebarLogoutButton({
   label: string;
   onClick: () => void;
 }) {
+  const { t } = useLanguage();
   return (
     <Button
       type="button"
@@ -15,7 +17,7 @@ export function SidebarLogoutButton({
       className="w-full border-slate-200 bg-slate-100 text-slate-800 font-semibold hover:bg-slate-100 hover:text-slate-800"
       onClick={onClick}
     >
-      {label}
+      {t(label)}
     </Button>
   );
 }

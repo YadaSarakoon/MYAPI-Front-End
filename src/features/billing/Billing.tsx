@@ -1,3 +1,4 @@
+import { useLanguage } from '../../i18n/language';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,9 +8,7 @@ import { Header as ConsoleHeader } from '../../components/layout/Header';
 import { PageContainer } from '../../components/layout/PageContainer';
 import { Sidebar as AppSidebar } from '../../components/layout/Sidebar';
 import { SidebarLogoutButton } from '../../components/layout/SidebarLogoutButton';
-import LanguageSwitcher, {
-    type Language as SwitcherLanguage,
-} from '../../components/common/LanguageSwitcher';
+import LanguageSwitcher, { type Language as SwitcherLanguage } from '../../components/common/LanguageSwitcher';
 
 import { useAuth } from '../auth/useAuth';
 import { calculateDueDate, formatCurrency } from './billingLogic';
@@ -33,24 +32,25 @@ function StatusBadge({
     status: 'Paid' | 'Pending' | 'Processing';
     language: SwitcherLanguage;
 }) {
-    const t = translations[language === 'TH' ? 'th' : 'en'];
+  const { t } = useLanguage();
+    const copy = translations[language === 'TH' ? 'th' : 'en'];
 
     const label =
         status === 'Paid'
-            ? t.paid
+            ? copy.paid
             : status === 'Pending'
-              ? t.pending
-              : t.processing;
+              ? copy.pending
+              : copy.processing;
 
     if (status === 'Paid') {
-        return <Badge tone="emerald">{label}</Badge>;
+        return <Badge tone="emerald">{t(label)}</Badge>;
     }
 
     if (status === 'Pending') {
-        return <Badge tone="amber">{label}</Badge>;
+        return <Badge tone="amber">{t(label)}</Badge>;
     }
 
-    return <Badge tone="amber">{label}</Badge>;
+    return <Badge tone="amber">{t(label)}</Badge>;
 }
 
 function LineChart({
@@ -60,6 +60,7 @@ function LineChart({
     data: BillingHistoryItem[];
     language: SwitcherLanguage;
 }) {
+  const { t } = useLanguage();
     const width = 760;
     const height = 250;
 
@@ -151,12 +152,10 @@ function LineChart({
                                 fontSize="11"
                                 fill="#94a3b8"
                             >
-                                ฿
-                                {Math.round(
+                                {t("฿")}{Math.round(
                                     value / 1000,
                                 ).toLocaleString()}
-                                k
-                            </text>
+                                {t("k")}</text>
                         </g>
                     );
                 })}
@@ -197,12 +196,10 @@ function LineChart({
                             fontWeight="600"
                             fill="#475569"
                         >
-                            ฿
-                            {Math.round(
+                            {t("฿")}{Math.round(
                                 point.item.amount / 1000,
                             ).toLocaleString()}
-                            k
-                        </text>
+                            {t("k")}</text>
 
                         <text
                             x={point.x}
@@ -244,6 +241,7 @@ function LineChart({
 }
 
 export default function Billing() {
+  const { t } = useLanguage();
     const navigate = useNavigate();
     const { logout } = useAuth();
     const {
@@ -252,8 +250,7 @@ export default function Billing() {
         payments: PAYMENTS,
     } = demoBillingService.getSnapshot();
 
-    const [language, setLanguage] =
-        useState<SwitcherLanguage>('TH');
+    const { lang: language, setLang: setLanguage } = useLanguage();
 
     const [historyRange, setHistoryRange] =
         useState<HistoryRange>(6);
@@ -264,14 +261,14 @@ export default function Billing() {
     const [showPaymentHistory, setShowPaymentHistory] =
         useState(false);
 
-    const t = translations[language === 'TH' ? 'th' : 'en'];
+    const copy = translations[language === 'TH' ? 'th' : 'en'];
 
     const handleLogout = async () => {
         try {
             await logout();
             navigate('/', { replace: true });
         } catch {
-            window.alert(t.logoutError);
+            window.alert(copy.logoutError);
         }
     };
 
@@ -317,13 +314,13 @@ export default function Billing() {
     const handleOpenDocument = (
         documentId: string,
     ) => {
-        window.alert(`${t.documentUnavailable}: ${documentId}`);
+        window.alert(`${copy.documentUnavailable}: ${documentId}`);
     };
 
     const handleDownloadDocument = (
         documentId: string,
     ) => {
-        window.alert(`${t.documentUnavailable}: ${documentId}`);
+        window.alert(`${copy.documentUnavailable}: ${documentId}`);
     };
 
     return (
@@ -336,7 +333,7 @@ export default function Billing() {
                 activePath="/billing"
                 footer={
                     <SidebarLogoutButton
-                        label={t.logout}
+                        label={t(copy.logout)}
                         onClick={() => void handleLogout()}
                     />
                 }
@@ -344,12 +341,12 @@ export default function Billing() {
 
             <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
                 <ConsoleHeader
-                    title={t.billing}
-                    subtitle={t.aboutPostpaidDesc}
+                    title={t(copy.billing)}
+                    subtitle={t(copy.aboutPostpaidDesc)}
                     badge={
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
-                                {t.aboutPostpaid}
+                                {t(copy.aboutPostpaid)}
                             </span>
                         </div>
                     }
@@ -374,7 +371,7 @@ export default function Billing() {
                             <Card>
                                 <div>
                                     <p className="text-xs font-medium text-slate-500">
-                                        {t.shipmentsThisMonth}
+                                        {t(copy.shipmentsThisMonth)}
                                     </p>
 
                                     <p className="mt-2 text-2xl font-bold text-slate-950">
@@ -382,20 +379,18 @@ export default function Billing() {
                                     </p>
 
                                     <p className="mt-1 text-[11px] text-slate-400">
-                                        shipments
-                                    </p>
+                                        {t("shipments")}</p>
                                 </div>
                             </Card>
 
                             <Card>
                                 <div>
                                     <p className="text-xs font-medium text-slate-500">
-                                        {t.shippingCharges}
+                                        {t(copy.shippingCharges)}
                                     </p>
 
                                     <p className="mt-2 text-2xl font-bold text-slate-950">
-                                        ฿
-                                        {formatCurrency(
+                                        {t("฿")}{formatCurrency(
                                             currentBilling.amount,
                                         )}
                                     </p>
@@ -409,18 +404,17 @@ export default function Billing() {
                             <Card>
                                 <div>
                                     <p className="text-xs font-medium text-slate-500">
-                                        {t.outstanding}
+                                        {t(copy.outstanding)}
                                     </p>
 
                                     <p className="mt-2 text-2xl font-bold text-amber-600">
-                                        ฿
-                                        {formatCurrency(
+                                        {t("฿")}{formatCurrency(
                                             currentBilling.amount,
                                         )}
                                     </p>
 
                                     <p className="mt-1 text-[11px] text-slate-400">
-                                        {t.due} {dueDate}
+                                        {t(copy.due)} {dueDate}
                                     </p>
                                 </div>
                             </Card>
@@ -438,33 +432,32 @@ export default function Billing() {
                                     <div>
                                         <div className="flex items-center gap-2">
                                             <h2 className="text-base font-bold text-slate-950">
-                                                {t.currentBilling}
+                                                {t(copy.currentBilling)}
                                             </h2>
 
                                             <Badge tone="amber">
-                                                {t.pending}
+                                                {t(copy.pending)}
                                             </Badge>
                                         </div>
 
                                         <p className="mt-1 text-xs text-slate-500">
-                                            {t.currentBillingDesc}
+                                            {t(copy.currentBillingDesc)}
                                         </p>
                                     </div>
 
                                     <div className="text-left md:text-right">
                                         <p className="text-xs text-slate-400">
-                                            {t.amountDue}
+                                            {t(copy.amountDue)}
                                         </p>
 
                                         <p className="mt-1 text-3xl font-bold text-slate-950">
-                                            ฿
-                                            {formatCurrency(
+                                            {t("฿")}{formatCurrency(
                                                 currentBilling.amount,
                                             )}
                                         </p>
 
                                         <p className="mt-1 text-xs text-slate-500">
-                                            {t.paymentDue}:{' '}
+                                            {t(copy.paymentDue)}:{' '}
                                             {dueDate}
                                         </p>
                                     </div>
@@ -475,22 +468,21 @@ export default function Billing() {
                                     <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-xs">
                                         <div>
                                             <span className="text-slate-400">
-                                                {t.billingPeriod}
+                                                {t(copy.billingPeriod)}
                                             </span>
 
                                             <p className="mt-1 font-semibold text-slate-800">
-                                                September 2026
-                                            </p>
+                                                {t("September 2026")}</p>
                                         </div>
 
                                         <div>
                                             <span className="text-slate-400">
-                                                {t.creditTerm}
+                                                {t(copy.creditTerm)}
                                             </span>
 
                                             <p className="mt-1 font-semibold text-slate-800">
                                                 {creditTermDays}{' '}
-                                                {t.days}
+                                                {t(copy.days)}
                                             </p>
                                         </div>
                                     </div>
@@ -506,7 +498,7 @@ export default function Billing() {
                                                 }
                                                 className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
                                             >
-                                                {t.viewStatement}
+                                                {t(copy.viewStatement)}
                                             </button>
                                         )}
 
@@ -520,7 +512,7 @@ export default function Billing() {
                                                 }
                                                 className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-bold text-white transition hover:bg-slate-800"
                                             >
-                                                {t.viewTaxInvoice}
+                                                {t(copy.viewTaxInvoice)}
                                             </button>
                                         )}
                                     </div>
@@ -539,11 +531,11 @@ export default function Billing() {
                                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                                         <div>
                                             <h2 className="text-sm font-bold text-slate-950">
-                                                {t.billingHistory}
+                                                {t(copy.billingHistory)}
                                             </h2>
 
                                             <p className="mt-1 text-xs text-slate-500">
-                                                {t.billingHistoryDesc}
+                                                {t(copy.billingHistoryDesc)}
                                             </p>
                                         </div>
 
@@ -551,19 +543,19 @@ export default function Billing() {
                                             {[
                                                 {
                                                     value: 1 as HistoryRange,
-                                                    label: t.oneMonth,
+                                                    label: copy.oneMonth,
                                                 },
                                                 {
                                                     value: 3 as HistoryRange,
-                                                    label: t.threeMonths,
+                                                    label: copy.threeMonths,
                                                 },
                                                 {
                                                     value: 6 as HistoryRange,
-                                                    label: t.sixMonths,
+                                                    label: copy.sixMonths,
                                                 },
                                                 {
                                                     value: 12 as HistoryRange,
-                                                    label: t.oneYear,
+                                                    label: copy.oneYear,
                                                 },
                                             ].map((item) => (
                                                 <button
@@ -581,7 +573,7 @@ export default function Billing() {
                                                             : 'text-slate-500 hover:text-slate-700'
                                                     }`}
                                                 >
-                                                    {item.label}
+                                                    {t(item.label)}
                                                 </button>
                                             ))}
                                         </div>
@@ -595,12 +587,11 @@ export default function Billing() {
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
                                             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                {t.totalCharges}
+                                                {t(copy.totalCharges)}
                                             </p>
 
                                             <p className="mt-1 text-lg font-bold text-slate-900">
-                                                ฿
-                                                {formatCurrency(
+                                                {t("฿")}{formatCurrency(
                                                     historySummary.totalCharges,
                                                 )}
                                             </p>
@@ -608,7 +599,7 @@ export default function Billing() {
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
                                             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                {t.totalShipments}
+                                                {t(copy.totalShipments)}
                                             </p>
 
                                             <p className="mt-1 text-lg font-bold text-slate-900">
@@ -618,12 +609,11 @@ export default function Billing() {
 
                                         <div className="rounded-xl bg-slate-50 px-4 py-3">
                                             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                {t.averagePerMonth}
+                                                {t(copy.averagePerMonth)}
                                             </p>
 
                                             <p className="mt-1 text-lg font-bold text-slate-900">
-                                                ฿
-                                                {formatCurrency(
+                                                {t("฿")}{formatCurrency(
                                                     historySummary.average,
                                                 )}
                                             </p>
@@ -651,8 +641,8 @@ export default function Billing() {
                                             className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
                                         >
                                             {showHistoryDetails
-                                                ? t.hideDetails
-                                                : t.viewDetails}
+                                                ? copy.hideDetails
+                                                : copy.viewDetails}
                                         </button>
                                     </div>
 
@@ -664,15 +654,15 @@ export default function Billing() {
                                                     <thead>
                                                         <tr className="border-b border-slate-100">
                                                             <th className="px-3 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">
-                                                                {t.billingPeriod}
+                                                                {t(copy.billingPeriod)}
                                                             </th>
 
                                                             <th className="px-3 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-400">
-                                                                {t.totalShipments}
+                                                                {t(copy.totalShipments)}
                                                             </th>
 
                                                             <th className="px-3 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-400">
-                                                                {t.totalCharges}
+                                                                {t(copy.totalCharges)}
                                                             </th>
                                                         </tr>
                                                     </thead>
@@ -703,8 +693,7 @@ export default function Billing() {
                                                                         </td>
 
                                                                         <td className="px-3 py-3 text-right text-xs font-bold text-slate-900">
-                                                                            ฿
-                                                                            {formatCurrency(
+                                                                            {t("฿")}{formatCurrency(
                                                                                 item.amount,
                                                                             )}
                                                                         </td>
@@ -728,11 +717,11 @@ export default function Billing() {
                             <Card padded={false}>
                                 <div className="border-b border-slate-100 px-6 py-5">
                                     <h2 className="text-sm font-bold text-slate-950">
-                                        {t.documents}
+                                        {t(copy.documents)}
                                     </h2>
 
                                     <p className="mt-1 text-xs text-slate-500">
-                                        {t.documentsDesc}
+                                        {t(copy.documentsDesc)}
                                     </p>
                                 </div>
 
@@ -766,12 +755,12 @@ export default function Billing() {
 
                                                 <div className="min-w-0">
                                                     <p className="text-xs font-bold text-slate-900">
-                                                        {t.billingStatement}
+                                                        {t(copy.billingStatement)}
                                                     </p>
 
                                                     <p className="mt-0.5 text-[11px] text-slate-400">
                                                         {
-                                                            t.billingStatementEn
+                                                            t(copy.billingStatementEn)
                                                         }{' '}
                                                         ·{' '}
                                                         {
@@ -784,8 +773,7 @@ export default function Billing() {
                                             <div className="flex items-center gap-4">
                                                 <div className="text-right">
                                                     <p className="text-xs font-bold text-slate-900">
-                                                        ฿
-                                                        {formatCurrency(
+                                                        {t("฿")}{formatCurrency(
                                                             billingStatement.amount,
                                                         )}
                                                     </p>
@@ -815,7 +803,7 @@ export default function Billing() {
                                                     }
                                                     className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
                                                 >
-                                                    {t.view}
+                                                    {t(copy.view)}
                                                 </button>
 
                                                 <button
@@ -827,7 +815,7 @@ export default function Billing() {
                                                     }
                                                     className="text-xs font-bold text-slate-500 hover:text-slate-800"
                                                 >
-                                                    {t.download}
+                                                    {t(copy.download)}
                                                 </button>
                                             </div>
                                         </div>
@@ -861,12 +849,12 @@ export default function Billing() {
 
                                                 <div className="min-w-0">
                                                     <p className="text-xs font-bold text-slate-900">
-                                                        {t.taxInvoice}
+                                                        {t(copy.taxInvoice)}
                                                     </p>
 
                                                     <p className="mt-0.5 text-[11px] text-slate-400">
                                                         {
-                                                            t.taxInvoiceEn
+                                                            t(copy.taxInvoiceEn)
                                                         }{' '}
                                                         ·{' '}
                                                         {
@@ -879,8 +867,7 @@ export default function Billing() {
                                             <div className="flex items-center gap-4">
                                                 <div className="text-right">
                                                     <p className="text-xs font-bold text-slate-900">
-                                                        ฿
-                                                        {formatCurrency(
+                                                        {t("฿")}{formatCurrency(
                                                             taxInvoice.amount,
                                                         )}
                                                     </p>
@@ -910,7 +897,7 @@ export default function Billing() {
                                                     }
                                                     className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
                                                 >
-                                                    {t.view}
+                                                    {t(copy.view)}
                                                 </button>
 
                                                 <button
@@ -922,7 +909,7 @@ export default function Billing() {
                                                     }
                                                     className="text-xs font-bold text-slate-500 hover:text-slate-800"
                                                 >
-                                                    {t.download}
+                                                    {t(copy.download)}
                                                 </button>
                                             </div>
                                         </div>
@@ -958,15 +945,14 @@ export default function Billing() {
 
                                         <div>
                                             <p className="text-xs font-bold text-slate-900">
-                                                {t.paymentHistory}
+                                                {t(copy.paymentHistory)}
                                             </p>
 
                                             <p className="mt-0.5 text-[11px] text-slate-400">
-                                                {t.latestPayment}:{' '}
+                                                {t(copy.latestPayment)}:{' '}
                                                 {latestPayment.date}
                                                 {' · '}
-                                                ฿
-                                                {formatCurrency(
+                                                {t("฿")}{formatCurrency(
                                                     latestPayment.amount,
                                                 )}
                                             </p>
@@ -983,8 +969,8 @@ export default function Billing() {
                                         className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
                                     >
                                         {showPaymentHistory
-                                            ? t.hidePaymentHistory
-                                            : t.viewPaymentHistory}
+                                            ? copy.hidePaymentHistory
+                                            : copy.viewPaymentHistory}
                                     </button>
                                 </div>
 
@@ -1015,8 +1001,7 @@ export default function Billing() {
 
                                                         <div className="flex items-center gap-4">
                                                             <span className="text-xs font-bold text-slate-900">
-                                                                ฿
-                                                                {formatCurrency(
+                                                                {t("฿")}{formatCurrency(
                                                                     payment.amount,
                                                                 )}
                                                             </span>

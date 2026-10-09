@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
+import { LanguageProvider } from './i18n/LanguageProvider';
 import { appRoutes } from './config/routes';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { GuestOnly, RequireAuth } from './features/auth/RouteGuards';
@@ -8,7 +9,7 @@ const guestOnlyPaths = new Set(['/login', '/signup']);
 
 export default function App() {
   return (
-    <AuthProvider>
+    <LanguageProvider><AuthProvider>
       <Routes>
         {appRoutes.map(({ path, element }) => {
           const guarded = protectedPaths.has(path)
@@ -19,6 +20,6 @@ export default function App() {
           return <Route key={path} path={path} element={guarded} />;
         })}
       </Routes>
-    </AuthProvider>
+    </AuthProvider></LanguageProvider>
   );
 }

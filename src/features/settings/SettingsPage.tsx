@@ -1,11 +1,10 @@
+import { useLanguage } from '../../i18n/language';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Badge } from '../../components/common/Badge';
 import { Card } from '../../components/common/Card';
-import LanguageSwitcher, {
-  type Language,
-} from '../../components/common/LanguageSwitcher';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { Header } from '../../components/layout/Header';
 import { PageContainer } from '../../components/layout/PageContainer';
 import { Sidebar } from '../../components/layout/Sidebar';
@@ -69,6 +68,7 @@ const COPY = {
 } as const;
 
 export function SettingsPage() {
+  const { t } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -77,13 +77,13 @@ export function SettingsPage() {
       productUpdateNotifications: false,
     });
 
-  const [lang, setLang] = useState<Language>('TH');
+  const { lang, setLang } = useLanguage();
 
   const copy = COPY[lang];
 
   const provider =
-    user?.providerData
-      .map(({ providerId }) => providerId)
+    user?.identities
+      ?.map(({ provider }) => provider)
       .join(', ') || 'Unknown';
 
   const handleLogout = async () => {
@@ -102,7 +102,7 @@ export function SettingsPage() {
         activePath="/settings"
         footer={
           <SidebarLogoutButton
-            label={copy.logout}
+            label={t(copy.logout)}
             onClick={() => void handleLogout()}
           />
         }
@@ -110,8 +110,8 @@ export function SettingsPage() {
 
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
         <Header
-          title={copy.title}
-          subtitle={copy.subtitle}
+          title={t(copy.title)}
+          subtitle={t(copy.subtitle)}
           actions={
             <LanguageSwitcher
               lang={lang}
@@ -119,11 +119,11 @@ export function SettingsPage() {
             />
           }
           userName={
-            user?.displayName ||
+            user?.user_metadata?.full_name ||
             user?.email ||
             'My Company'
           }
-          userMeta={copy.developer}
+          userMeta={t(copy.developer)}
         />
 
         <PageContainer className="!px-6 !py-7 lg:!px-10">
@@ -132,17 +132,16 @@ export function SettingsPage() {
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="text-sm font-bold text-slate-950">
-                    {copy.profile}
+                    {t(copy.profile)}
                   </h2>
 
                   <p className="mt-1 text-xs text-slate-500">
-                    {copy.profileHint}
+                    {t(copy.profileHint)}
                   </p>
                 </div>
 
                 <Badge tone="emerald">
-                  Firebase Auth
-                </Badge>
+                  {t("Supabase Auth")}</Badge>
               </div>
 
               <div className="mt-5 divide-y divide-slate-100">
@@ -150,7 +149,7 @@ export function SettingsPage() {
                   {
                     label: copy.displayName,
                     value:
-                      user?.displayName ||
+                      user?.user_metadata?.full_name ||
                       copy.notProvided,
                   },
                   {
@@ -183,22 +182,22 @@ export function SettingsPage() {
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-sm font-bold text-slate-950">
-                  {copy.preferences}
+                  {t(copy.preferences)}
                 </h2>
               </div>
 
               <p className="mt-1 text-xs text-slate-500">
-                {copy.preferencesHint}
+                {t(copy.preferencesHint)}
               </p>
 
               <label className="mt-5 flex items-center justify-between gap-4">
                 <span>
                   <span className="block text-xs font-semibold text-slate-800">
-                    {copy.notifications}
+                    {t(copy.notifications)}
                   </span>
 
                   <span className="mt-1 block text-xs text-slate-400">
-                    {copy.notificationHint}
+                    {t(copy.notificationHint)}
                   </span>
                 </span>
 

@@ -1,0 +1,5 @@
+[functions.myapi-submit-contact]
+verify_jwt = true
+
+[functions.myapi-notify-contacts]
+verify_jwt = true

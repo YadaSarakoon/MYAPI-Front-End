@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { User } from 'firebase/auth';
+import type { User } from '@supabase/supabase-js';
 
 export type AuthContextValue = {
   user: User | null;
