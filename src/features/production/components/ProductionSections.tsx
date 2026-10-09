@@ -1,3 +1,4 @@
+import { useLanguage } from '../../../i18n/language';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { Badge } from '../../../components/common/Badge';
@@ -32,6 +33,7 @@ export function CopyButton({
 }: {
     value: string;
 }) {
+  const { t } = useLanguage();
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
@@ -57,8 +59,7 @@ export function CopyButton({
             {copied ? (
                 <>
                     <span>✓</span>
-                    Copied
-                </>
+                    {t("Copied")}</>
             ) : (
                 <>
                     <svg
@@ -79,8 +80,7 @@ export function CopyButton({
                             d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
                         />
                     </svg>
-                    Copy
-                </>
+                    {t("Copy")}</>
             )}
         </button>
     );
@@ -93,15 +93,16 @@ export function SectionHeader({
     title: string;
     description?: string;
 }) {
+  const { t } = useLanguage();
     return (
         <div>
             <h2 className="text-sm font-bold text-slate-950">
-                {title}
+                {t(title)}
             </h2>
 
             {description && (
                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                    {description}
+                    {t(description)}
                 </p>
             )}
         </div>
@@ -134,6 +135,7 @@ export function ActivityStatus({
 }: {
     status: 'Success' | 'Failed';
 }) {
+    const { t } = useLanguage();
     const success = status === 'Success';
 
     return (
@@ -152,7 +154,7 @@ export function ActivityStatus({
                 }`}
             />
 
-            {status}
+            {t(status)}
         </span>
     );
 }
@@ -166,6 +168,7 @@ export function ProductionAccessRequired({
 }: {
     onApply: () => void;
 }) {
+  const { t } = useLanguage();
     return (
         <div className="mx-auto max-w-3xl">
             <Card className="overflow-hidden">
@@ -173,18 +176,13 @@ export function ProductionAccessRequired({
                     <div className="flex items-start justify-between gap-5">
                         <div>
                             <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                                Production Access
-                            </div>
+                                {t("Production Access")}</div>
 
                             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-950">
-                                Production API ยังไม่เปิดใช้งาน
-                            </h2>
+                                {t("Production API ยังไม่เปิดใช้งาน")}</h2>
 
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                                ขอเปิดใช้งาน Production API
-                                เพื่อเชื่อมต่อระบบจริงและสร้าง
-                                Shipment ที่มีค่าใช้บริการจริง
-                            </p>
+                                {t("ขอเปิดใช้งาน Production API เพื่อเชื่อมต่อระบบจริงและสร้าง Shipment ที่มีค่าใช้บริการจริง")}</p>
                         </div>
 
                         <Badge
@@ -192,8 +190,7 @@ export function ProductionAccessRequired({
                             className="shrink-0"
                         >
                             <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-rose-500" />
-                            Required
-                        </Badge>
+                            {t("Required")}</Badge>
                     </div>
                 </div>
 
@@ -243,11 +240,11 @@ export function ProductionAccessRequired({
 
                                     <div>
                                         <div className="text-xs font-bold text-slate-900">
-                                            {item.title}
+                                            {t(item.title)}
                                         </div>
 
                                         <div className="mt-0.5 text-[10px] text-slate-500">
-                                            {item.text}
+                                            {t(item.text)}
                                         </div>
                                     </div>
                                 </div>
@@ -278,14 +275,10 @@ export function ProductionAccessRequired({
 
                             <div>
                                 <div className="text-xs font-bold text-slate-900">
-                                    พร้อมเริ่มใช้งาน Production แล้ว?
-                                </div>
+                                    {t("พร้อมเริ่มใช้งาน Production แล้ว?")}</div>
 
                                 <p className="mt-1 text-xs leading-5 text-slate-500">
-                                    ระบบจะส่งคำขอให้ทีมงานตรวจสอบ
-                                    และเปิดสิทธิ์ Production API
-                                    ให้กับบัญชีของคุณ
-                                </p>
+                                    {t("ระบบจะส่งคำขอให้ทีมงานตรวจสอบ และเปิดสิทธิ์ Production API ให้กับบัญชีของคุณ")}</p>
                             </div>
                         </div>
                     </div>
@@ -295,15 +288,13 @@ export function ProductionAccessRequired({
                             type="button"
                             onClick={onApply}
                         >
-                            ขอเปิดใช้งาน Production API
-                        </Button>
+                            {t("ขอเปิดใช้งาน Production API")}</Button>
 
                         <button
                             type="button"
                             className="text-xs font-semibold text-slate-500 transition hover:text-indigo-600"
                         >
-                            ดูรายละเอียดการเปิดใช้งาน
-                        </button>
+                            {t("ดูรายละเอียดการเปิดใช้งาน")}</button>
                     </div>
                 </div>
             </Card>
@@ -320,6 +311,7 @@ export function ProductionAccessPending({
 }: {
     onDemoApprove: () => void;
 }) {
+  const { t } = useLanguage();
     return (
         <div className="mx-auto max-w-3xl">
             <Card className="overflow-hidden">
@@ -344,40 +336,30 @@ export function ProductionAccessPending({
                     <div className="mt-5">
                         <Badge tone="amber">
                             <span className="mr-1.5">●</span>
-                            Pending Review
-                        </Badge>
+                            {t("Pending Review")}</Badge>
 
                         <h2 className="mt-3 text-2xl font-bold text-slate-950">
-                            กำลังตรวจสอบ Production Access
-                        </h2>
+                            {t("กำลังตรวจสอบ Production Access")}</h2>
 
                         <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">
-                            เราได้รับคำขอของคุณแล้ว
-                            ทีมงานกำลังตรวจสอบข้อมูล
-                            เมื่ออนุมัติแล้ว Production API
-                            จะพร้อมใช้งานทันที
-                        </p>
+                            {t("เราได้รับคำขอของคุณแล้ว ทีมงานกำลังตรวจสอบข้อมูล เมื่ออนุมัติแล้ว Production API จะพร้อมใช้งานทันที")}</p>
                     </div>
 
                     <div className="mx-auto mt-7 max-w-md rounded-xl border border-slate-200 bg-slate-50 p-4 text-left">
                         <div className="flex justify-between">
                             <span className="text-xs text-slate-500">
-                                สถานะ
-                            </span>
+                                {t("สถานะ")}</span>
 
                             <span className="text-xs font-bold text-amber-600">
-                                Pending Review
-                            </span>
+                                {t("Pending Review")}</span>
                         </div>
 
                         <div className="mt-3 flex justify-between">
                             <span className="text-xs text-slate-500">
-                                ขั้นตอนถัดไป
-                            </span>
+                                {t("ขั้นตอนถัดไป")}</span>
 
                             <span className="text-xs font-semibold text-slate-700">
-                                Admin Approval
-                            </span>
+                                {t("Admin Approval")}</span>
                         </div>
                     </div>
 
@@ -387,8 +369,7 @@ export function ProductionAccessPending({
                         onClick={onDemoApprove}
                         className="mt-6 text-[10px] text-slate-300 hover:text-slate-500"
                     >
-                        Demo: Approve Production
-                    </button>
+                        {t("Demo: Approve Production")}</button>
                 </div>
             </Card>
         </div>
@@ -412,6 +393,7 @@ export function CredentialRow({
     value: string;
     secret?: boolean;
 }) {
+  const { t } = useLanguage();
     const [show, setShow] = useState(false);
 
     const displayValue = secret && !show
@@ -427,11 +409,11 @@ export function CredentialRow({
 
                 <div>
                     <div className="text-xs font-bold text-slate-900">
-                        {label}
+                        {t(label)}
                     </div>
 
                     <div className="mt-0.5 text-[10px] text-slate-400">
-                        {description}
+                        {t(description)}
                     </div>
                 </div>
             </div>
@@ -449,7 +431,7 @@ export function CredentialRow({
                         onClick={() => setShow((value) => !value)}
                         className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:border-indigo-200 hover:text-indigo-700"
                     >
-                        {show ? 'Hide' : 'Show'}
+                        {t(show ? 'Hide' : 'Show')}
                     </button>
                 )}
 
@@ -468,6 +450,7 @@ export function ApiCredentials({
 }: {
     onDocs: () => void;
 }) {
+  const { t } = useLanguage();
     return (
         <Card className="overflow-hidden">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
@@ -488,12 +471,10 @@ export function ApiCredentials({
 
                     <div>
                         <h2 className="text-sm font-bold text-slate-950">
-                            API Credentials
-                        </h2>
+                            {t("API Credentials")}</h2>
 
                         <p className="mt-0.5 text-xs text-slate-500">
-                            ข้อมูลสำหรับเชื่อมต่อระบบของคุณกับ MyAPI
-                        </p>
+                            {t("ข้อมูลสำหรับเชื่อมต่อระบบของคุณกับ MyAPI")}</p>
                     </div>
                 </div>
 
@@ -502,14 +483,13 @@ export function ApiCredentials({
                     onClick={onDocs}
                     className="rounded-lg border border-indigo-200 px-3 py-2 text-xs font-semibold text-indigo-600 transition hover:bg-indigo-50"
                 >
-                    วิธีการเชื่อมต่อ API ↗
-                </button>
+                    {t("วิธีการเชื่อมต่อ API ↗")}</button>
             </div>
 
             <div className="px-5">
                 <CredentialRow
-                    label="Base URL"
-                    description="URL สำหรับเรียกใช้งาน API จริง"
+                    label={t("Base URL")}
+                    description={t("URL สำหรับเรียกใช้งาน API จริง")}
                     value={PRODUCTION_BASE_URL}
                     icon={
                         <svg
@@ -531,8 +511,8 @@ export function ApiCredentials({
                 />
 
                 <CredentialRow
-                    label="Client ID"
-                    description="รหัสสำหรับยืนยันตัวตนของคุณ"
+                    label={t("Client ID")}
+                    description={t("รหัสสำหรับยืนยันตัวตนของคุณ")}
                     value="YOUR_CLIENT_ID"
                     icon={
                         <svg
@@ -555,8 +535,8 @@ export function ApiCredentials({
                 />
 
                 <CredentialRow
-                    label="Client Secret"
-                    description="รหัสลับสำหรับยืนยันตัวตน"
+                    label={t("Client Secret")}
+                    description={t("รหัสลับสำหรับยืนยันตัวตน")}
                     value="YOUR_CLIENT_SECRET"
                     secret
                     icon={
@@ -590,13 +570,10 @@ export function ApiCredentials({
 
                     <div>
                         <div className="text-xs font-bold text-indigo-900">
-                            ตัวอย่างการเรียกใช้ API
-                        </div>
+                            {t("ตัวอย่างการเรียกใช้ API")}</div>
 
                         <p className="mt-0.5 text-[10px] text-indigo-700/70">
-                            ดูตัวอย่างคำสั่งและ Response
-                            ได้จาก API Docs
-                        </p>
+                            {t("ดูตัวอย่างคำสั่งและ Response ได้จาก API Docs")}</p>
                     </div>
                 </div>
 
@@ -605,8 +582,7 @@ export function ApiCredentials({
                     onClick={onDocs}
                     className="rounded-lg bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"
                 >
-                    Open API Docs ↗
-                </button>
+                    {t("Open API Docs ↗")}</button>
             </div>
         </Card>
     );
@@ -623,6 +599,7 @@ export function QuickActions({
     onDocs: () => void;
     onGuide: () => void;
 }) {
+  const { t } = useLanguage();
     const items = [
         {
             title: 'API Docs',
@@ -650,8 +627,8 @@ export function QuickActions({
     return (
         <Card>
             <SectionHeader
-                title="Quick Actions"
-                description="เครื่องมือสำหรับเริ่มต้นใช้งาน"
+                title={t("Quick Actions")}
+                description={t("เครื่องมือสำหรับเริ่มต้นใช้งาน")}
             />
 
             <div className="mt-4 space-y-2">
@@ -670,11 +647,11 @@ export function QuickActions({
 
                         <div className="min-w-0 flex-1">
                             <div className="text-xs font-bold text-slate-800">
-                                {item.title}
+                                {t(item.title)}
                             </div>
 
                             <div className="mt-0.5 truncate text-[10px] text-slate-400">
-                                {item.description}
+                                {t(item.description)}
                             </div>
                         </div>
 
@@ -697,13 +674,14 @@ export function WebhookCard({
 }: {
     onManage: () => void;
 }) {
+  const { t } = useLanguage();
     const [enabled, setEnabled] = useState(false);
 
     return (
         <Card>
             <SectionHeader
-                title="Webhook"
-                description="รับแจ้งเตือนเหตุการณ์จากระบบ"
+                title={t("Webhook")}
+                description={t("รับแจ้งเตือนเหตุการณ์จากระบบ")}
             />
 
             <div className="mt-4 rounded-xl border border-slate-200 p-3">
@@ -715,7 +693,7 @@ export function WebhookCard({
                                 : 'bg-slate-100 text-slate-400'
                         }`}
                     >
-                        {enabled ? '✓' : '−'}
+                        {t(enabled ? '✓' : '−')}
                     </div>
 
                     <div className="min-w-0 flex-1">
@@ -726,14 +704,13 @@ export function WebhookCard({
                                     : 'text-slate-500'
                             }`}
                         >
-                            {enabled
+                            {t(enabled
                                 ? 'Webhook เปิดใช้งานแล้ว'
-                                : 'Webhook ปิดใช้งาน'}
+                                : 'Webhook ปิดใช้งาน')}
                         </div>
 
                         <div className="mt-0.5 truncate text-[10px] text-slate-400">
-                            https://your-domain.com/webhook
-                        </div>
+                            {t("https://your-domain.com/webhook")}</div>
                     </div>
 
                     <button
@@ -763,8 +740,7 @@ export function WebhookCard({
                 onClick={onManage}
                 className="mt-3 w-full rounded-lg border border-indigo-200 py-2 text-xs font-semibold text-indigo-600 transition hover:bg-indigo-50"
             >
-                จัดการ Webhook
-            </button>
+                {t("จัดการ Webhook")}</button>
         </Card>
     );
 }
@@ -774,12 +750,13 @@ export function WebhookCard({
 // ============================================================
 
 export function UsageSummary() {
+  const { t } = useLanguage();
     return (
         <Card>
             <div className="flex flex-wrap items-center justify-between gap-3">
                 <SectionHeader
-                    title="Usage Summary"
-                    description="สถิติการใช้งาน API ของคุณ"
+                    title={t("Usage Summary")}
+                    description={t("สถิติการใช้งาน API ของคุณ")}
                 />
 
                 <select
@@ -787,34 +764,32 @@ export function UsageSummary() {
                     defaultValue="current"
                 >
                     <option value="current">
-                        เดือนนี้
-                    </option>
+                        {t("เดือนนี้")}</option>
                     <option value="previous">
-                        เดือนก่อน
-                    </option>
+                        {t("เดือนก่อน")}</option>
                 </select>
             </div>
 
             <div className="mt-5 grid divide-y divide-slate-100 md:grid-cols-3 md:divide-x md:divide-y-0">
                 <UsageItem
-                    label="Total Requests"
+                    label={t("Total Requests")}
                     value={PRODUCTION_USAGE_DEMO.totalRequests.value}
                     change={PRODUCTION_USAGE_DEMO.totalRequests.change}
-                    description="จากเดือนก่อน"
+                    description={t("จากเดือนก่อน")}
                 />
 
                 <UsageItem
-                    label="Success Rate"
+                    label={t("Success Rate")}
                     value={PRODUCTION_USAGE_DEMO.successRate.value}
                     change={PRODUCTION_USAGE_DEMO.successRate.change}
-                    description="จากเดือนก่อน"
+                    description={t("จากเดือนก่อน")}
                 />
 
                 <UsageItem
-                    label="Total Shipment"
+                    label={t("Total Shipment")}
                     value={PRODUCTION_USAGE_DEMO.totalShipments.value}
                     change={PRODUCTION_USAGE_DEMO.totalShipments.change}
-                    description="จากเดือนก่อน"
+                    description={t("จากเดือนก่อน")}
                 />
             </div>
         </Card>
@@ -832,10 +807,11 @@ export function UsageItem({
     change: string;
     description: string;
 }) {
+  const { t } = useLanguage();
     return (
         <div className="py-3 md:px-5 md:py-0 md:first:pl-0 md:last:pr-0">
             <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                {label}
+                {t(label)}
             </div>
 
             <div className="mt-2 flex items-end gap-2">
@@ -849,7 +825,7 @@ export function UsageItem({
             </div>
 
             <div className="mt-1 text-[10px] text-slate-400">
-                {description}
+                {t(description)}
             </div>
         </div>
     );
@@ -864,17 +840,16 @@ export function RecentActivity({
 }: {
     onViewAll: () => void;
 }) {
+  const { t } = useLanguage();
     return (
         <Card className="overflow-hidden p-0">
             <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <div>
                     <h2 className="text-sm font-bold text-slate-950">
-                        Recent API Activity
-                    </h2>
+                        {t("Recent API Activity")}</h2>
 
                     <p className="mt-1 text-xs text-slate-500">
-                        รายการเรียกใช้งาน API ล่าสุด
-                    </p>
+                        {t("รายการเรียกใช้งาน API ล่าสุด")}</p>
                 </div>
 
                 <button
@@ -882,8 +857,7 @@ export function RecentActivity({
                     onClick={onViewAll}
                     className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
                 >
-                    ดูทั้งหมด →
-                </button>
+                    {t("ดูทั้งหมด →")}</button>
             </div>
 
             <div className="overflow-x-auto">
@@ -891,28 +865,22 @@ export function RecentActivity({
                     <thead>
                         <tr className="border-b border-slate-100 bg-slate-50/60 text-left">
                             <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Time
-                            </th>
+                                {t("Time")}</th>
 
                             <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Method
-                            </th>
+                                {t("Method")}</th>
 
                             <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Endpoint
-                            </th>
+                                {t("Endpoint")}</th>
 
                             <th className="px-5 py-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Status
-                            </th>
+                                {t("Status")}</th>
 
                             <th className="px-5 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Response
-                            </th>
+                                {t("Response")}</th>
 
                             <th className="px-5 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                                Charge
-                            </th>
+                                {t("Charge")}</th>
                         </tr>
                     </thead>
 
