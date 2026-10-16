@@ -5,6 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { googleSignInError, signInWithGoogle, signUpWithEmail } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
+import { emailAuthError, signupNotice } from '../features/auth/emailAuthMessages';
 
 // --- Component: MyAPI SVG Logo (ใช้ตัว A ทรงเส้นมนโค้งตรงตามธีมหลัก) ---
 const MyApiLogo: React.FC<{ className?: string }> = ({ className = "h-8" }) => (
@@ -118,9 +119,9 @@ export const SignUp: React.FC = () => {
     try {
       const result = await signUpWithEmail(name, email, password);
       if (result.session) navigate(postAuthDestination, { replace: true });
-      else setConfirmation('กรุณาตรวจสอบอีเมลและกดยืนยันบัญชีก่อนเข้าสู่ระบบ');
-    } catch {
-      setError('Unable to create account. Check your details or try another email.');
+      else setConfirmation(signupNotice);
+    } catch (failure) {
+      setError(emailAuthError(failure));
     } finally {
       setLoading(false);
     }
@@ -162,7 +163,7 @@ export const SignUp: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(authStateError)}</div>}
             {confirmation && <p role="status" className="text-green-700">{t(confirmation)}</p>}
-            {error && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(error)}</div>}
+            {error && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(error)}</div>}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700">{t("ชื่อ - นามสกุล หรือชื่อบริษัท")}</label>
               <input
