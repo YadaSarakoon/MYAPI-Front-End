@@ -12,6 +12,7 @@ import { SidebarLogoutButton } from '../../components/layout/SidebarLogoutButton
 
 import { useAuth } from '../auth/useAuth';
 import type { AccountPreferences } from './types';
+import { AccountPassword } from './AccountPassword';
 
 const links = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -179,6 +180,7 @@ export function SettingsPage() {
               </div>
             </Card>
 
+            <AccountPassword />
             <Card>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-sm font-bold text-slate-950">

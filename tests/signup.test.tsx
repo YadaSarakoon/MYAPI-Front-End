@@ -25,8 +25,17 @@ test('mismatched passwords block signup and correction allows the original passw
   fireEvent.change(confirm, { target: { value: 'password123' } });
   expect(screen.queryByRole('alert')).toBeNull();
   submit();
-  await screen.findByText('กรุณาตรวจสอบอีเมลและกดยืนยันบัญชีก่อนเข้าสู่ระบบ');
+  await screen.findByText(/หากอีเมลนี้สมัครได้/);
   expect(signUpWithEmail).toHaveBeenCalledWith('Customer', 'customer@example.com', 'password123');
+});
+
+test('email rate limit shows actionable feedback', async () => {
+  setup();
+  vi.mocked(signUpWithEmail).mockRejectedValueOnce({ code: 'over_email_send_rate_limit' });
+  fireEvent.change(screen.getByLabelText('ยืนยันรหัสผ่าน (Confirm Password)'), { target: { value: 'password123' } });
+  submit();
+  expect((await screen.findByRole('alert')).textContent).toContain('จำกัดการส่งอีเมล');
+  expect(screen.queryByRole('status')).toBeNull();
 });
 test('an empty confirmation cannot submit an account', () => {
   setup(); submit();

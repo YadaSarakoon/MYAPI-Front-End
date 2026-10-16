@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
+import { useLanguage } from '../../i18n/language';
 import { useMemo, useState, type ReactNode } from 'react';
 import logo from '../../assets/logo.png';
 
@@ -47,13 +49,14 @@ function SectionTitle({
   title: string;
   description?: string;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="mb-3">
-      <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+      <h2 className="text-sm font-bold text-slate-900">{t(title)}</h2>
 
       {description && (
         <p className="mt-1 text-xs leading-5 text-slate-500">
-          {description}
+          {t(description)}
         </p>
       )}
     </div>
@@ -67,10 +70,11 @@ function Field({
   label: string;
   children: ReactNode;
 }) {
+  const { t } = useLanguage();
   return (
     <div className="min-w-0 space-y-2">
       <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-        {label}
+        {t(label)}
       </div>
 
       <div className="min-h-7 flex items-center min-w-0">
@@ -81,6 +85,7 @@ function Field({
 }
 
 function CopyButton({ text }: { text: string }) {
+  const { t } = useLanguage();
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -106,7 +111,7 @@ function CopyButton({ text }: { text: string }) {
         transition-colors hover:bg-slate-100 hover:text-slate-700
       "
     >
-      {copied ? 'คัดลอกแล้ว ✓' : 'คัดลอก'}
+      {t(copied ? 'คัดลอกแล้ว ✓' : 'คัดลอก')}
     </button>
   );
 }
@@ -120,6 +125,7 @@ function CodeBlock({
   label?: string;
   tone?: 'dark' | 'light';
 }) {
+  const { t } = useLanguage();
   const text =
     typeof children === 'string' ? children : '';
 
@@ -156,7 +162,7 @@ function CodeBlock({
               }
             `}
           >
-            {label}
+            {t(label)}
           </span>
 
           <CopyButton text={text} />
@@ -185,14 +191,13 @@ function RequiredBadge({
 }: {
   required?: boolean;
 }) {
+  const { t } = useLanguage();
   return required ? (
     <span className="inline-flex rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-600">
-      required
-    </span>
+      {t("required")}</span>
   ) : (
     <span className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-slate-400">
-      optional
-    </span>
+      {t("optional")}</span>
   );
 }
 
@@ -225,6 +230,7 @@ function Sidebar({
   onLanding,
   onSandbox,
 }: SidebarProps) {
+  const { t } = useLanguage();
   const filteredGroups = useMemo(() => {
     const keyword = search.toLowerCase().trim();
 
@@ -234,14 +240,15 @@ function Sidebar({
       ...group,
       items: group.items.filter(
         (item) =>
-          item.name.toLowerCase().includes(keyword) ||
+          item.name.toLowerCase().includes(keyword) || t(item.name).toLowerCase().includes(keyword) ||
           item.path.toLowerCase().includes(keyword),
       ),
     })).filter((group) => group.items.length > 0);
-  }, [search]);
+  }, [search, t]);
 
   return (
     <aside className="flex h-full w-[272px] shrink-0 flex-col border-r border-slate-200 bg-white">
+
       {/* Brand */}
       <div className="flex h-[68px] shrink-0 items-center border-b border-slate-100 px-4">
         <button
@@ -255,12 +262,10 @@ function Sidebar({
 
           <div className="min-w-0">
             <div className="truncate text-xs font-bold text-slate-950">
-              MyAPI Open API
-            </div>
+              {t("MyAPI Open API")}</div>
 
             <div className="mt-0.5 text-xs text-slate-400">
-              API Documentation
-            </div>
+              {t("API Documentation")}</div>
           </div>
         </button>
       </div>
@@ -287,7 +292,7 @@ function Sidebar({
             onChange={(event) =>
               onSearchChange(event.target.value)
             }
-            placeholder="Search endpoints..."
+            placeholder={t("Search endpoints...")}
             className="
               h-9 w-full rounded-lg border border-slate-200
               bg-slate-50 pl-9 pr-3 text-xs text-slate-700
@@ -305,8 +310,7 @@ function Sidebar({
         {/* Getting Started */}
         <div className="mb-4">
           <div className="px-2.5 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-            Getting Started
-          </div>
+            {t("Getting Started")}</div>
 
           <button
             type="button"
@@ -342,7 +346,7 @@ function Sidebar({
               </svg>
             </span>
 
-            <span>Overview</span>
+            <span>{t("Overview")}</span>
           </button>
         </div>
 
@@ -367,7 +371,7 @@ function Sidebar({
                     transition-colors hover:text-slate-600
                   "
                 >
-                  <span>{group.label}</span>
+                  <span>{t(group.label)}</span>
 
                   <svg
                     className={`h-3 w-3 transition-transform ${
@@ -425,7 +429,7 @@ function Sidebar({
                               }
                             `}
                           >
-                            {item.name}
+                            {t(item.name)}
                           </span>
                         </button>
                       );
@@ -452,7 +456,7 @@ function Sidebar({
             hover:shadow-md
           "
         >
-          <span>Go to Sandbox</span>
+          <span>{t("Go to Sandbox")}</span>
 
           <svg
             className="h-4 w-4"
@@ -485,6 +489,7 @@ function Overview({
     endpointId?: string,
   ) => void;
 }) {
+  const { t } = useLanguage();
   const handleEndpoint = (id: string) => {
     onNavigate('docs', id);
   };
@@ -580,35 +585,26 @@ function Overview({
 
             <div className="relative p-7 lg:p-8">
               <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
-                Getting Started
-              </div>
+                {t("Getting Started")}</div>
 
               <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">
-                MyAPI Open API
-              </h1>
+                {t("MyAPI Open API")}</h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
-                Introduction and quick start guide for
-                integrating your application with
-                MyAPI Open API.
-              </p>
+                {t("Introduction and quick start guide for integrating your application with MyAPI Open API.")}</p>
 
               <div className="mt-6 flex flex-wrap gap-2">
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
-                  REST API
-                </span>
+                  {t("REST API")}</span>
 
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
-                  OAuth 2.0
-                </span>
+                  {t("OAuth 2.0")}</span>
 
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
-                  JSON
-                </span>
+                  {t("JSON")}</span>
 
                 <span className="rounded-lg bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-500">
-                  Sandbox
-                </span>
+                  {t("Sandbox")}</span>
               </div>
             </div>
           </section>
@@ -617,21 +613,15 @@ function Overview({
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
               <h2 className="text-sm font-bold text-slate-950">
-                Introduction
-              </h2>
+                {t("Introduction")}</h2>
 
               <p className="mt-1 text-xs text-slate-500">
-                Everything you need to start integrating with
-                MyAPI.
-              </p>
+                {t("Everything you need to start integrating with MyAPI.")}</p>
             </div>
 
             <div className="p-6">
               <p className="text-sm leading-7 text-slate-600">
-                This documentation covers the steps required to sign up as a Partner,
-                receive Sandbox Credentials, understand authentication,
-                and integrate MyAPI Open API with your application.
-              </p>
+                {t("This documentation covers the steps required to sign up as a Partner, receive Sandbox Credentials, understand authentication, and integrate MyAPI Open API with your application.")}</p>
 
               <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
                 {overviewCards.map(
@@ -647,11 +637,11 @@ function Overview({
                       "
                     >
                       <div className="text-xs font-bold text-slate-900">
-                        {title}
+                        {t(title)}
                       </div>
 
                       <p className="mt-1.5 text-xs leading-6 text-slate-500">
-                        {description}
+                        {t(description)}
                       </p>
                     </div>
                   ),
@@ -664,13 +654,10 @@ function Overview({
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
               <h2 className="text-sm font-bold text-slate-950">
-                Signing Up & Getting Started
-              </h2>
+                {t("Signing Up & Getting Started")}</h2>
 
               <p className="mt-1 text-xs text-slate-500">
-                ขั้นตอนการสมัคร รับ Credentials และเตรียมพร้อมสำหรับการใช้งาน
-                API
-              </p>
+                {t("ขั้นตอนการสมัคร รับ Credentials และเตรียมพร้อมสำหรับการใช้งาน API")}</p>
             </div>
 
             <div className="p-6">
@@ -687,11 +674,11 @@ function Overview({
                         </span>
 
                         <h3 className="text-xs font-bold text-slate-900">
-                          {title}
+                          {t(title)}
                         </h3>
 
                         <p className="mt-1 text-xs leading-6 text-slate-500">
-                          {desc}
+                          {t(desc)}
                         </p>
 
                         {link && (
@@ -706,8 +693,7 @@ function Overview({
                               hover:text-indigo-800
                             "
                           >
-                            Open Google Form
-                            <span>↗</span>
+                            {t("Open Google Form")}<span>↗</span>
                           </a>
                         )}
                       </div>
@@ -732,11 +718,7 @@ function Overview({
                 </svg>
 
                 <p className="text-xs leading-6 text-amber-800">
-                  <strong>Credentials:</strong> client_id
-                  และ client_secret เป็นข้อมูลสำหรับ Partner
-                  โดยเฉพาะ ควรเก็บเป็นความลับและไม่เผยแพร่ใน
-                  client-side code หรือ source control
-                </p>
+                  <strong>{t("Credentials:")}</strong> {t("client_id และ client_secret เป็นข้อมูลสำหรับ Partner โดยเฉพาะ ควรเก็บเป็นความลับและไม่เผยแพร่ใน client-side code หรือ source control")}</p>
               </div>
             </div>
           </section>
@@ -745,54 +727,46 @@ function Overview({
           <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
             <div className="border-b border-slate-100 px-6 py-5">
               <h2 className="text-sm font-bold text-slate-950">
-                API Use Suggestion
-              </h2>
+                {t("API Use Suggestion")}</h2>
 
               <p className="mt-1 text-xs text-slate-500">
-                Base URL และมาตรฐาน Response ที่ใช้กับ API
-              </p>
+                {t("Base URL และมาตรฐาน Response ที่ใช้กับ API")}</p>
             </div>
 
             <div className="space-y-6 p-6">
               {/* Environment */}
               <div>
-                <SectionTitle title="Environment" />
+                <SectionTitle title={t("Environment")} />
 
                 <div className="overflow-hidden rounded-xl border border-slate-200">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500">
                       <tr>
                         <th className="px-4 py-3 font-semibold">
-                          Environment
-                        </th>
+                          {t("Environment")}</th>
                         <th className="px-4 py-3 font-semibold">
-                          Base URL
-                        </th>
+                          {t("Base URL")}</th>
                       </tr>
                     </thead>
 
                     <tbody className="divide-y divide-slate-100">
                       <tr>
                         <td className="px-4 py-3 font-semibold text-slate-700">
-                          Test
-                        </td>
+                          {t("Test")}</td>
 
                         <td className="px-4 py-3">
                           <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-[11px] text-indigo-700">
-                            https://dev-open-api.myexpress.ai
-                          </code>
+                            {t("https://dev-open-api.myexpress.ai")}</code>
                         </td>
                       </tr>
 
                       <tr>
                         <td className="px-4 py-3 font-semibold text-slate-700">
-                          Production
-                        </td>
+                          {t("Production")}</td>
 
                         <td className="px-4 py-3">
                           <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-[11px] text-indigo-700">
-                            https://open-api.myexpress.ai
-                          </code>
+                            {t("https://open-api.myexpress.ai")}</code>
                         </td>
                       </tr>
                     </tbody>
@@ -802,18 +776,16 @@ function Overview({
 
               {/* Status */}
               <div>
-                <SectionTitle title="Response Status Code" />
+                <SectionTitle title={t("Response Status Code")} />
 
                 <div className="overflow-hidden rounded-xl border border-slate-200">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500">
                       <tr>
                         <th className="w-28 px-4 py-3 font-semibold">
-                          Status
-                        </th>
+                          {t("Status")}</th>
                         <th className="px-4 py-3 font-semibold">
-                          Detail
-                        </th>
+                          {t("Detail")}</th>
                       </tr>
                     </thead>
 
@@ -839,7 +811,7 @@ function Overview({
                           </td>
 
                           <td className="px-4 py-3 text-slate-600">
-                            {status.detail}
+                            {t(status.detail)}
                           </td>
                         </tr>
                       ))}
@@ -850,21 +822,18 @@ function Overview({
 
               {/* Error */}
               <div>
-                <SectionTitle title="Error Response Detail" />
+                <SectionTitle title={t("Error Response Detail")} />
 
                 <div className="overflow-hidden rounded-xl border border-slate-200">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500">
                       <tr>
                         <th className="px-4 py-3 font-semibold">
-                          Name
-                        </th>
+                          {t("Name")}</th>
                         <th className="px-4 py-3 font-semibold">
-                          Description
-                        </th>
+                          {t("Description")}</th>
                         <th className="px-4 py-3 font-semibold">
-                          Type
-                        </th>
+                          {t("Type")}</th>
                       </tr>
                     </thead>
 
@@ -904,7 +873,7 @@ function Overview({
                           </td>
 
                           <td className="px-4 py-3 text-slate-600">
-                            {description}
+                            {t(description)}
                           </td>
 
                           <td className="px-4 py-3">
@@ -924,8 +893,8 @@ function Overview({
           {/* Quick Start */}
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <SectionTitle
-              title="Quick Start"
-              description="เริ่มต้นใช้งาน MyAPI Open API ใน 4 ขั้นตอน"
+              title={t("Quick Start")}
+              description={t("เริ่มต้นใช้งาน MyAPI Open API ใน 4 ขั้นตอน")}
             />
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -940,15 +909,15 @@ function Overview({
                   "
                 >
                   <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-                    Step {num}
+                    {t("Step")}{num}
                   </span>
 
                   <h3 className="mt-2 text-xs font-bold text-slate-900">
-                    {title}
+                    {t(title)}
                   </h3>
 
                   <p className="mt-1 text-xs leading-5 text-slate-500">
-                    {desc}
+                    {t(desc)}
                   </p>
                 </div>
               ))}
@@ -958,8 +927,8 @@ function Overview({
           {/* Explore API */}
           <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <SectionTitle
-              title="Explore API"
-              description="เลือก API ที่ต้องการดูรายละเอียด"
+              title={t("Explore API")}
+              description={t("เลือก API ที่ต้องการดูรายละเอียด")}
             />
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -994,16 +963,15 @@ function Overview({
                   "
                 >
                   <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
-                    {group}
+                    {t(group)}
                   </div>
 
                   <div className="mt-2 text-xs font-bold text-slate-900">
-                    {title}
+                    {t(title)}
                   </div>
 
                   <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 transition-transform group-hover:translate-x-0.5">
-                    View API
-                    <span>→</span>
+                    {t("View API")}<span>→</span>
                   </div>
                 </button>
               ))}
@@ -1026,6 +994,7 @@ function Documentation({
 }: {
   endpoint: Endpoint;
 }) {
+  const { t } = useLanguage();
   const requestExample =
     endpoint.bodyType === 'formdata'
       ? (endpoint.bodyExample as FormField[])
@@ -1062,16 +1031,16 @@ function Documentation({
                   />
 
                   <span className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
-                    {endpoint.group}
+                    {t(endpoint.group)}
                   </span>
                 </div>
 
                 <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">
-                  {endpoint.name}
+                  {t(endpoint.name)}
                 </h1>
 
                 <p className="mt-2 max-w-3xl text-sm leading-7 text-slate-500">
-                  {endpoint.summary}
+                  {t(endpoint.summary)}
                 </p>
               </div>
 
@@ -1101,32 +1070,29 @@ function Documentation({
             <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
               <div className="border-b border-slate-100 px-6 py-4">
                 <h2 className="text-sm font-bold text-slate-950">
-                  Endpoint
-                </h2>
+                  {t("Endpoint")}</h2>
               </div>
 
               <div className="grid grid-cols-1 gap-x-8 gap-y-6 p-6 sm:grid-cols-2">
-                <Field label="Method">
+                <Field label={t("Method")}>
                   <MethodChip
                     method={endpoint.method}
                     size="md"
                   />
                 </Field>
 
-                <Field label="Authentication">
+                <Field label={t("Authentication")}>
                   {endpoint.auth === 'bearer' ? (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      Bearer Access Token
-                    </span>
+                      {t("Bearer Access Token")}</span>
                   ) : (
                     <span className="text-xs text-slate-500">
-                      ไม่ต้องใช้ Authentication
-                    </span>
+                      {t("ไม่ต้องใช้ Authentication")}</span>
                   )}
                 </Field>
 
-                <Field label="Path">
+                <Field label={t("Path")}>
                   <div className="flex min-w-0 max-w-full items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5">
                     <code className="min-w-0 truncate font-mono text-[11px] text-indigo-700">
                       {endpoint.path}
@@ -1136,7 +1102,7 @@ function Documentation({
                   </div>
                 </Field>
 
-                <Field label="Content Type">
+                <Field label={t("Content Type")}>
                   <code className="max-w-full truncate rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 font-mono text-[11px] text-slate-600">
                     {endpoint.headers.find(
                       (header) =>
@@ -1151,8 +1117,8 @@ function Documentation({
             {endpoint.headers.length > 0 && (
               <section>
                 <SectionTitle
-                  title="Headers"
-                  description="HTTP headers required for this request."
+                  title={t("Headers")}
+                  description={t("HTTP headers required for this request.")}
                 />
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -1161,14 +1127,11 @@ function Documentation({
                       <thead className="border-b border-slate-100 bg-slate-50">
                         <tr className="text-slate-500">
                           <th className="px-4 py-3 font-semibold">
-                            Key
-                          </th>
+                            {t("Key")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Value
-                          </th>
+                            {t("Value")}</th>
                           <th className="w-28 px-4 py-3 font-semibold">
-                            Required
-                          </th>
+                            {t("Required")}</th>
                         </tr>
                       </thead>
 
@@ -1212,8 +1175,8 @@ function Documentation({
             {endpoint.pathParams.length > 0 && (
               <section>
                 <SectionTitle
-                  title="Path Params"
-                  description="Parameters included directly in the URL path."
+                  title={t("Path Params")}
+                  description={t("Parameters included directly in the URL path.")}
                 />
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -1222,14 +1185,11 @@ function Documentation({
                       <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
                         <tr>
                           <th className="px-4 py-3 font-semibold">
-                            Name
-                          </th>
+                            {t("Name")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Example
-                          </th>
+                            {t("Example")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Description
-                          </th>
+                            {t("Description")}</th>
                         </tr>
                       </thead>
 
@@ -1250,7 +1210,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5 leading-5 text-slate-600">
-                                {param.desc}
+                                {t(param.desc)}
                               </td>
                             </tr>
                           ),
@@ -1266,8 +1226,8 @@ function Documentation({
             {endpoint.queryParams.length > 0 && (
               <section>
                 <SectionTitle
-                  title="Query Params"
-                  description="Optional or required parameters appended to the URL."
+                  title={t("Query Params")}
+                  description={t("Optional or required parameters appended to the URL.")}
                 />
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -1276,17 +1236,13 @@ function Documentation({
                       <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
                         <tr>
                           <th className="px-4 py-3 font-semibold">
-                            Name
-                          </th>
+                            {t("Name")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Example
-                          </th>
+                            {t("Example")}</th>
                           <th className="w-28 px-4 py-3 font-semibold">
-                            Required
-                          </th>
+                            {t("Required")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Description
-                          </th>
+                            {t("Description")}</th>
                         </tr>
                       </thead>
 
@@ -1315,7 +1271,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5 leading-5 text-slate-600">
-                                {param.desc}
+                                {t(param.desc)}
                               </td>
                             </tr>
                           ),
@@ -1331,8 +1287,8 @@ function Documentation({
             {endpoint.bodyFields.length > 0 && (
               <section>
                 <SectionTitle
-                  title="Request Body"
-                  description="Fields accepted in the request payload."
+                  title={t("Request Body")}
+                  description={t("Fields accepted in the request payload.")}
                 />
 
                 <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -1341,17 +1297,13 @@ function Documentation({
                       <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
                         <tr>
                           <th className="px-4 py-3 font-semibold">
-                            Field
-                          </th>
+                            {t("Field")}</th>
                           <th className="w-28 px-4 py-3 font-semibold">
-                            Type
-                          </th>
+                            {t("Type")}</th>
                           <th className="w-28 px-4 py-3 font-semibold">
-                            Required
-                          </th>
+                            {t("Required")}</th>
                           <th className="px-4 py-3 font-semibold">
-                            Description
-                          </th>
+                            {t("Description")}</th>
                         </tr>
                       </thead>
 
@@ -1383,7 +1335,7 @@ function Documentation({
                               </td>
 
                               <td className="px-4 py-3.5 leading-6 text-slate-600">
-                                {field.desc}
+                                {t(field.desc)}
                               </td>
                             </tr>
                           ),
@@ -1404,17 +1356,16 @@ function Documentation({
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                   <div>
                     <h3 className="text-sm font-bold text-slate-950">
-                      Request Example
-                    </h3>
+                      {t("Request Example")}</h3>
 
                     <div className="mt-1 flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
 
                       <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        {endpoint.bodyType ===
+                        {t(endpoint.bodyType ===
                         'formdata'
                           ? 'FORM DATA'
-                          : 'JSON'}
+                          : 'JSON')}
                       </span>
                     </div>
                   </div>
@@ -1435,8 +1386,7 @@ function Documentation({
               <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <div>
                   <h3 className="text-sm font-bold text-slate-950">
-                    Response Example
-                  </h3>
+                    {t("Response Example")}</h3>
 
                   <div className="mt-1 flex items-center gap-1.5">
                     <span className="inline-flex rounded-md bg-emerald-50 px-2 py-0.5 font-mono text-xs font-bold text-emerald-600">
@@ -1444,8 +1394,7 @@ function Documentation({
                     </span>
 
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                      JSON
-                    </span>
+                      {t("JSON")}</span>
                   </div>
                 </div>
 
@@ -1465,19 +1414,17 @@ function Documentation({
                 <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                   <div>
                     <h3 className="text-sm font-bold text-slate-950">
-                      Error Response
-                    </h3>
+                      {t("Error Response")}</h3>
 
                     <div className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-400">
-                      JSON
-                    </div>
+                      {t("JSON")}</div>
                   </div>
 
                   <span className="text-xs text-slate-400">
                     {endpoint.errors.length}{' '}
-                    {endpoint.errors.length === 1
+                    {t(endpoint.errors.length === 1
                       ? 'Example'
-                      : 'Examples'}
+                      : 'Examples')}
                   </span>
                 </div>
 
@@ -1581,6 +1528,8 @@ export function ApiDocs() {
         onSandbox={goSandbox}
       />
 
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex shrink-0 justify-end border-b border-slate-200 bg-white px-5 py-3 lg:px-8"><LanguageSwitcher /></div>
       {page === 'overview' ? (
         <Overview
           onNavigate={(target, endpointId) => {
@@ -1595,6 +1544,7 @@ export function ApiDocs() {
       ) : (
         <Documentation endpoint={endpoint} />
       )}
+      </div>
     </div>
   );
 }
