@@ -6,6 +6,7 @@ import { useAdminAccess } from './useAdminAccess';
 import { listLeads, updateLead, type Lead, type LeadPage, type LeadStatus } from './leadClient';
 import './leads.css';
 import { LeadNotification } from './LeadNotification';
+import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 
 const statuses: Record<LeadStatus, string> = { new: 'ใหม่', contacted: 'ติดต่อแล้ว', closed: 'ปิดงาน' };
 const notifications = { pending: 'รอแจ้งเตือน', sent: 'ส่งแจ้งเตือนแล้ว', failed: 'แจ้งเตือนไม่สำเร็จ' };
@@ -114,5 +115,5 @@ function AdminContent() {
 
 export function LeadsPage() {
   const { t } = useLanguage();
-  return <RequireAuth><main className="leads-page"><header className="leads-header"><div><Link to="/dashboard">{t("← กลับหน้าหลัก")}</Link><h1>{t("คำขอติดต่อจากลูกค้า")}</h1><p>{t("ติดตามลูกค้าที่สนใจบริการ MyAPI")}</p></div></header><AdminContent /></main></RequireAuth>;
+  return <RequireAuth><main className="leads-page"><header className="leads-header"><div><Link to="/dashboard">{t("← กลับหน้าหลัก")}</Link><h1>{t("คำขอติดต่อจากลูกค้า")}</h1><p>{t("ติดตามลูกค้าที่สนใจบริการ MyAPI")}</p></div><LanguageSwitcher /></header><AdminContent /></main></RequireAuth>;
 }
