@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { googleSignInError, signInWithEmail, signInWithGoogle } from '../features/auth/services/supabaseAuth';
 import { getPostAuthDestination } from '../features/auth/authRedirect';
 import { useAuth } from '../features/auth/useAuth';
+import { emailAuthError } from '../features/auth/emailAuthMessages';
 
 // --- Component: MyAPI SVG Logo ---
 const MyApiLogo: React.FC<{ className?: string }> = ({
@@ -125,8 +126,8 @@ export const Login: React.FC = () => {
     try {
       await signInWithEmail(email, password);
       navigate(postAuthDestination, { replace: true });
-    } catch {
-      setFormError('Unable to sign in. Check your email and password.');
+    } catch (failure) {
+      setFormError(emailAuthError(failure));
     } finally {
       setFormLoading(false);
     }
@@ -210,7 +211,7 @@ export const Login: React.FC = () => {
 
             {authStateError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(authStateError)}</div>}
 
-            {formError && <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(formError)}</div>}
+            {formError && <div role="alert" className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">{t(formError)}</div>}
 
             {/* Email */}
             <div className="space-y-1.5">
