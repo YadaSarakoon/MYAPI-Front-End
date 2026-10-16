@@ -1,4 +1,3 @@
-import LanguageSwitcher from '../../components/common/LanguageSwitcher';
 import { useLanguage } from '../../i18n/language';
 import { useMemo, useState, type ReactNode } from 'react';
 import logo from '../../assets/logo.png';
@@ -1529,7 +1528,6 @@ export function ApiDocs() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex shrink-0 justify-end border-b border-slate-200 bg-white px-5 py-3 lg:px-8"><LanguageSwitcher /></div>
       {page === 'overview' ? (
         <Overview
           onNavigate={(target, endpointId) => {

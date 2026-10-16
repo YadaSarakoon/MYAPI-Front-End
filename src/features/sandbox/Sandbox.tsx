@@ -34,6 +34,7 @@ import type {
 } from './types';
 import { GROUP_DOCS, INTRO_BLOCKS, type DocBlock } from './apiReference';
 import type { EndpointDoc } from './endpoints';
+import { useLanguage } from '../../i18n/language';
 
 // Use the updated endpoint dataset, including documented response examples and schemas.
 const ENDPOINTS = DOCUMENTED_ENDPOINTS as unknown as Endpoint[];
@@ -1369,7 +1370,6 @@ export function Sandbox() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex shrink-0 justify-end border-b border-slate-200 bg-white px-5 py-3 lg:px-8"><LanguageSwitcher /></div>
       {page === 'overview' ? (
         <Overview
           onNavigate={(target, endpointId) => {
@@ -2365,12 +2365,6 @@ export function Sandbox() {
                                     >
                                       Open Parcel API →
                                     </button>
-                                  )}
-
-                                  {response.demo && (
-                                    <p className="text-xs leading-5 text-slate-400">
-                                      Demo response — ตัวอย่างการตอบกลับจากข้อมูล endpoint ที่มีอยู่ใน Sandbox
-                                    </p>
                                   )}
                                 </div>
                               </div>
