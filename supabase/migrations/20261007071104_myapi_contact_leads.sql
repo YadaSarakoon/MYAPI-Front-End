@@ -1,4 +1,4 @@
--- MyAPI-only objects. Other application tables are untouched.
+-- MyAPI-only objects. Existing unrelated application tables are untouched.
 create schema myapi_private;
 revoke all on schema myapi_private from public, anon, authenticated;
 grant usage on schema myapi_private to authenticated, service_role;

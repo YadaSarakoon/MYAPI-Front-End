@@ -1,8 +1,11 @@
 # รับข้อมูลลูกค้าและแจ้งเตือนด้วย Supabase
 
-## ระบบที่ย้ายแล้ว
+## โปรเจกต์เป้าหมายและโครงสร้างระบบ
 
-- โปรเจกต์: `MyAPI (configured project)` (`YOUR_PROJECT_REF`)
+ทุกตำแหน่งที่ใช้ `YOUR_PROJECT_REF` เป็น placeholder ให้แทนด้วย project reference ของ MyAPI ที่ผู้ดูแลยืนยันแล้วเฉพาะตอนตั้งค่าใช้งานจริง เก็บ URL และ key จริงใน `.env` ที่ไม่เข้า Git หรือการตั้งค่า hosting ไม่ใส่กลับลงในเอกสารนี้
+
+- โปรเจกต์ MyAPI ปัจจุบัน: `YOUR_PROJECT_REF`
+- ยังไม่ได้ยืนยัน migrations, Edge Functions, Auth providers, secrets และ schedule บนโปรเจกต์นี้ ผลตรวจในอดีตท้ายเอกสารมาจากโปรเจกต์อื่น
 - Supabase Auth แทน Firebase Auth: ล็อกอิน/สมัครด้วยอีเมล, session, logout และ OAuth redirect
 - Edge Function `myapi-submit-contact`: ตรวจข้อมูล, honeypot, ขนาด 16 KiB และจำกัด 5 คำขอต่อชั่วโมงต่อ IP ที่ hash ฝั่ง server
 - ตาราง `public.myapi_contact_leads` และคิว `myapi_private.contact_outbox` ถูกสร้างพร้อมกันใน transaction เดียว การ retry UUID เดิมไม่สร้างข้อมูลซ้ำ; UUID เดิมกับข้อมูลต่างกันถูกปฏิเสธ
@@ -13,7 +16,7 @@
 
 ## Frontend
 
-ตั้งค่าจาก `.env.example` ในเครื่องและในผู้ให้บริการ hosting แล้ว build ใหม่:
+ตั้งค่าจาก `.env.example` ในเครื่องและในผู้ให้บริการ hosting โดยใช้ URL และ public key จากโปรเจกต์ MyAPI `YOUR_PROJECT_REF` เดียวกัน แล้ว build ใหม่:
 
 ```dotenv
 VITE_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
@@ -25,7 +28,7 @@ VITE_API_BASE_URL=<ค่าของ API เดิมถ้ามี>
 
 ตั้ง Auth > URL Configuration ให้มี URL เว็บจริง และ redirect URLs `/dashboard`, `/admin/leads` รวมถึง localhost ที่ใช้พัฒนา โดยอย่าเปลี่ยนรายการของระบบอื่นในโปรเจกต์นี้
 
-ตรวจเมื่อ 7 ต.ค. 2026: Email provider เปิดอยู่, Google provider ยังปิด หากต้องการ Google ให้ตั้ง OAuth client/secret ใน Supabase Auth > Providers > Google ก่อน ปุ่ม Google จะใช้ OAuth redirect แทน popup. การสมัครอีเมลที่ต้องยืนยันจะแสดงข้อความให้ตรวจอีเมล ไม่แสดงว่าล็อกอินแล้ว
+ตรวจ Email provider และ Google provider ในโปรเจกต์ MyAPI ก่อนใช้งาน หากต้องการ Google ให้ตั้ง OAuth client/secret ใน Supabase Auth > Providers > Google และ callback ตามคู่มือ `google-login-and-language.md` ก่อน ปุ่ม Google จะใช้ OAuth redirect แทน popup. การสมัครอีเมลที่ต้องยืนยันจะแสดงข้อความให้ตรวจอีเมล ไม่แสดงว่าล็อกอินแล้ว
 
 ## ให้สิทธิ์แอดมิน
 
@@ -49,7 +52,7 @@ join auth.users u on u.id = a.user_id;
 
 ## เปิดอีเมลแจ้งเตือน (ยังต้องตั้งค่า)
 
-ฟังก์ชัน `myapi-notify-contacts` ถูก deploy แล้ว แต่ยังไม่ส่งอีเมลเพราะไม่มีบริการ/ผู้ส่งและยังไม่ได้ตั้ง schedule. ฟอร์มยังบันทึกข้อมูลและคิวอีเมลได้ตามปกติ ข้อมูลที่รอส่งจะไม่ถูกนับเป็นส่งสำเร็จ
+ก่อนเปิดอีเมล ให้ตรวจว่า migrations และฟังก์ชัน `myapi-submit-contact` / `myapi-notify-contacts` ถูก deploy ในโปรเจกต์ MyAPI `YOUR_PROJECT_REF` แล้ว รวมถึงตรวจบริการผู้ส่ง, secrets และ schedule สถานะเหล่านี้ยังไม่ได้ยืนยันบนโปรเจกต์ปัจจุบัน ข้อมูลที่รอส่งในโค้ดจะไม่ถูกนับเป็นส่งสำเร็จ
 
 1. สมัคร Resend และ verify โดเมนผู้ส่ง
 2. ตั้ง secrets เฉพาะ MyAPI ผ่าน Supabase Dashboard > Edge Functions > Secrets ตาม `supabase/functions/.env.example`:
@@ -98,7 +101,7 @@ npm run lint
 
 - `supabase/tests/contact.integration.sql`: transaction tests สำหรับข้อมูลซ้ำ/quota/RLS/column grants/การแก้ไขชนกัน/คิว retry ทุกข้อมูลทดสอบและสิทธิ์ชั่วคราว rollback; ใช้ SQL Editor หรือ Supabase MCP
 - `node supabase/tests/smoke.mjs`: ส่งข้อมูลจำลองผ่าน API จริงสองครั้ง ตรวจ guest read และ worker authorization; สร้าง lead/คิวทดสอบจริง 1 รายการและพิมพ์ UUID ต้องลบข้อมูลทดสอบหลังตรวจโดยใช้ UUID นั้น **ห้ามรันเมื่อ worker อีเมลเปิดใช้งานอยู่** เพราะจะเกิดแจ้งเตือนจริง
-- migration ใน repository ถูกใช้กับโปรเจกต์แล้ว ชื่อเวอร์ชันตรงกับ remote migration history. โปรเจกต์นี้มี migrations ของระบบอื่นอยู่ด้วย อย่า `db reset` หรือ push history ทั้งชุดจาก repo นี้โดยไม่ reconcile กับเจ้าของระบบ
+- ตรวจ project ID ให้เป็น `YOUR_PROJECT_REF` และเทียบ migration history กับไฟล์ใน repository ก่อน deploy ยังไม่ได้ยืนยันว่า migrations ถูกใช้กับโปรเจกต์ MyAPI ปัจจุบันครบแล้ว อย่า reset ฐานข้อมูลหรือ push history ทั้งชุดโดยไม่ตรวจความสอดคล้องก่อน
 - deploy เฉพาะ `myapi-submit-contact` และ `myapi-notify-contacts` ผ่าน Supabase MCP/CLI; อย่าปิด JWT verification
 
 การทดสอบไม่แทนการรับอีเมลจริง ต้องตั้งค่าผู้ส่ง, schedule, บัญชีแอดมิน และ frontend hosting ให้ครบก่อนทดสอบ flow บนเว็บที่เผยแพร่จริง
@@ -109,7 +112,9 @@ npm run lint
 
 อ้างอิง: [Supabase Auth events](https://supabase.com/docs/reference/javascript/auth-onauthstatechange), [Edge JWT compatibility](https://supabase.com/docs/guides/functions/auth-legacy-jwt), [Scheduled functions](https://supabase.com/docs/guides/functions/schedule-functions), [Resend idempotency](https://resend.com/docs/dashboard/emails/idempotency-keys)
 
-## ผลตรวจครั้งนี้ (7 ต.ค. 2026)
+## ผลตรวจในอดีต (7 ต.ค. 2026)
+
+รายการด้านล่างบันทึกจากโปรเจกต์ที่ใช้ก่อนหน้านี้ เก็บไว้เป็นประวัติเท่านั้น ไม่ยืนยันสถานะ deployment, ข้อมูล, สิทธิ์ หรือความปลอดภัยของ `YOUR_PROJECT_REF` ต้องตรวจใหม่บนโปรเจกต์ MyAPI ก่อนใช้งานจริง
 
 - `npm test`: 16 frontend tests และ 4 server handler tests ผ่าน
 - `npm run build` และ `npm run lint` ผ่าน; build ยังเตือน bundle เกิน 500 kB
