@@ -1,0 +1,4003 @@
+openapi: 3.0.0
+info:
+  title: MyExpress Open API Document
+  description: |-
+    ## Introduction
+
+    *   Signing Up
+        
+    *   API Use Suggestion
+        
+    *   Authentication/​Authorization
+        
+    *   Parcel API
+        
+    *   Webhook
+        
+
+    * * *
+
+    ### Signing Up
+
+    ![](assets/signing-up-flow.jpg)
+
+    step 1: Partner submit google form follow this url
+
+    *   [Google Form Link](https://forms.gle/FHuFkuTXCHW9kBTR9)
+
+    step 2: MyExpress create Partner Account
+
+    *   create account information
+        
+    *   generate client\_id & client\_secret
+        
+    *   setup webhook
+        
+
+    step 3: MyExpress sent client\_id & client\_secret for Test Environment
+
+    Example client\_id & client\_secret
+
+    ```json
+    {
+      "client_id": "<YOUR_CLIENT_ID>",
+      "client_secret": "<YOUR_CLIENT_SECRET>"
+    }
+
+    ```
+
+    step 4: Partner sef-test in Test Environment
+
+    *   API Use Suggestion
+        
+    *   Authentication/​Authorization
+        
+    *   Create & Delete Parcel
+        
+    *   Webhook
+        
+
+    step 5: Partner plan go-live ...
+
+    step: 6: MyExpress sent client\_id , client\_secret for Production Environment
+
+    * * *
+
+    ### API Suggestion
+
+    *   URL
+
+    | **Environment** | **Url** |
+    | --- | --- |
+    | Test | [https://dev-open-api.myexpress.ai](https://dev-open-api.myexpress.aiURL) |
+    | Production | [https://open-api.myexpress.ai](https://open-api.myexpress.aiAPI) |
+
+    *   Response Status Code
+
+    | **Status** | **Detail** |
+    | --- | --- |
+    | 200 | Request is successful. |
+    | 400 | Error bad request |
+    | 401 | Error an access token is missing or unauthorized |
+    | 403 | Error find an account forbidden |
+    | 500 | Error internal server http request |
+
+    *   Error Response Detail
+
+    | Name | Description | Type |
+    | --- | --- | --- |
+    | status | status error code | Number |
+    | error\_description | error description | String |
+    | name | error name from Bad request | String |
+    | error | error name | String |
+    | message | detail error | String |
+  version: 1.0.0
+servers:
+  - url: https://dev-open-api.myexpress.ai
+    description: Test Environment
+  - url: https://open-api.myexpress.ai
+    description: Production Environment
+tags:
+  - name: Authentication/​Authorization
+    description: |-
+      All APIs on MyExpress Open API are secured with [OAuth 2.0](https://tools.ietf.org/html/rfc6749) security standards. and grant types is [Client Credentials](https://oauth.net/2/grant-types/client-credentials/)
+
+      ![](assets/auth-oauth-flow.jpg)
+  - name: Parcel
+    description: |-
+      ![](assets/parcel-api-sequence.jpg)
+
+      ### รายการขนส่งที่เปิดใช้งาน
+
+      *   ไปรษณีย์ไทย (THAI\_POST): ประเภท NON\_COD
+          
+      *   ไปรษณีย์ไทย (THAI\_POST): ประเภท COD
+  - name: Webhook
+    description: |-
+      ประกอบไปด้วย
+
+      *   Parcel Shipping Status Update (สถานะพัสดุ)
+
+      ![](assets/webhook-workflow.jpg)
+
+      \*Note\*
+
+      ทาง Myexpress จะทำหน้าที่เป็นตัวกลางในการรับ event ของ webhook แล้วส่งเป็น REST API method **POST** ไปให้โดย partner จะต้องมี api เพื่อรอรับ request body สถานะพัสดุและ return response success กลับมาให้ Myexpress เมื่อ partner ได้รับสถานพัสดุสำเร็จ
+
+      กรณีที่ response ที่ MyExpress ได้รับไม่ใช่ http status 200 (success) ระบบส่งข้อมูลให้ใหม่และส่งไม่เกิน 5 ครั้ง
+
+      ### รายการขนส่งที่เปิดใช้งาน
+
+      *   ไปรษณีย์ไทย (THAI\_POST): ประเภท NON\_COD และ COD
+
+      * * *
+
+      ### ไปรษณีย์ไทย (THAI\_POST): ประเภท NON\_COD
+
+      ### Request Body
+
+      ตัวอย่าง Request Body ที่ Myexpress จะส่งเป็น REST API ไปให้
+
+      ```json
+      {
+        "shippingCost": {
+          "totalAmount": 17,
+          "shippingCost": 17,
+          "codAmount": 0,
+          "codFee": 0,
+          "codVat": 0,
+          "specialAreaCost": 0
+        },
+        "trackingNumber": "JBXXXXXXXXXTH",
+        "expressName": "THAI_POST",
+        "weightGram": 56,
+        "stage": {
+          "barcode": "JBXXXXXXXXXTH",
+          "weight": 56,
+          "cod": "no",
+          "status": "2",
+          "statusDescription": "ปณ.ต้นทางรับฝากแล้ว",
+          "statusDate": "26/07/2024 14:13:50",
+          "stationPostcode": "10121",
+          "station": "สวนพลู/กรุงเทพฯ",
+          "receiverName": "",
+          "latitude": "13.7176545386002",
+          "longtitude": "100.540133267641",
+          "signature": ""
+         }
+      }
+
+      ```
+
+      ### ไปรษณีย์ไทย (THAI\_POST): ประเภท COD
+
+      ### Request Body
+
+      ตัวอย่าง Request Body ที่ Myexpress จะส่งเป็น REST API ไปให้
+
+      ```json
+      {
+        "shippingCost": {
+          "totalAmount": 19.14,
+          "shippingCost": 17,
+          "codAmount": 100,
+          "codFee": 2,
+          "codVat": 0.14,
+          "specialAreaCost": 0
+        },
+        "trackingNumber": "JAXXXXXXXXXTH",
+        "expressName": "THAI_POST",
+        "weightGram": 56,
+        "stage": {
+          "barcode": "JAXXXXXXXXXTH",
+          "weight": 56,
+          "cod": "yes",
+          "status": "2",
+          "statusDescription": "ปณ.ต้นทางรับฝากแล้ว",
+          "statusDate": "26/07/2024 14:13:50",
+          "stationPostcode": "10121",
+          "station": "สวนพลู/กรุงเทพฯ",
+          "receiverName": "",
+          "latitude": "13.7176545386002",
+          "longtitude": "100.540133267641",
+          "signature": ""
+         }
+      }
+
+      ```
+
+      ### Request Body Description
+
+      | **Name** | **Description** | **Type** |
+      | --- | --- | --- |
+      | shippingCost.totalAmount | ราคาต้นทุนรวมทั้งหมด | Number |
+      | shippingCost.shippingCost | ราคาต้นทุนขนส่ง | Number |
+      | shippingCost.codAmount | ยอดเงิน COD (บาท) | Number |
+      | shippingCost.codFee | ค่าธรรมเนียม COD | Number |
+      | shippingCost.codVat | ภาษีมูลค่าเพิ่ม COD | Number |
+      | shippingCost.specialAreaCost | ค่าพื้นที่พิเศษ พื้นที่ห่างไกล | Number |
+      | trackingNumber | เลข tracking จากขนส่ง | String |
+      | expressName | ชื่อขนส่ง | String |
+      | weightGram | น้ำหนักพัสดุหน่วย **กรัม** | Number |
+      | stage.barcode | เลข tracking จากขนส่ง | String |
+      | stage.weight | น้ำหนักหน่วยเป็นกรัม ตัวอย่าง 1000 | String |
+      | stage.cod | พัสดุ COD  
+      ตัวอย่าง ใช่ = yes หรือ ไม่ = no | String |
+      | stage.status | status code จากขนส่งดูได้จากตาราง Status Detail | String |
+      | stage.statusDescription | status Description จากขนส่ง ดูได้จากตาราง Status Detail | String |
+      | stage.statusDate | วันที่ เวลา ที่ได้รับสถานะ  
+      ตัวอย่าง 23/07/2024 10:00:00 | String |
+      | stage.stationPostcode | รหัสไปรษณีย์ตำแหน่งที่ทำการไปรษณีย์ ตัวอย่าง 10160 | String |
+      | stage.station | ที่ทำการไปรษณีย์ ตัวอย่างภาษีเจริญ/กรุงเทพฯ | String |
+      | stage.receiverName | ชื่อผู้รับ | String |
+      | stage.atitude | ตำแหน่งละติจูดที่ทำการไปรษณีย์ | String |
+      | stage.longtitude | ตำแหน่งลองติจูดที่ทำการไปรษณีย์ | String |
+      | stage.signature | ลายเซ็นผู้รับ | String |
+
+      ### Status Detail
+
+      | **Status** | **StatusDescription** | **StatusDescription EN** |
+      | --- | --- | --- |
+      | 0 | ผู้ฝากนำข้อมูลสินค้าเข้าระบบแล้ว | preload item data in to system |
+      | 1 | ผู้ฝากสร้างใบฝากส่งเข้าระบบแล้ว | Preparing to ship. |
+      | 2 | ปณ.ต้นทางรับฝากแล้ว | Received from source postoffice. |
+      | 3 | ถึง ปณ.ปลายทาง เตรียมนำจ่าย | Destination postoffice prepare to pay package. |
+      | 4 | นำจ่ายถึงผู้รับแล้ว | Successful delivery |
+      | 5 | ปณ.ปลายทางส่งคืน | destination postoffice send a returned item |
+      | 6 | ปณ.ต้นทางส่งคืนบริษัท | source postoffice send a returned item to sender |
+      | 7 | ของสูญหาย | lost item |
+      | 8 | เลื่อนวันรับของ | receiver postpone to receive item |
+      | 9 | นำจ่าย/ชำระเงินเรียบร้อย | Successful delivery and collect COD money |
+      | 10 | ยกเลิกจัดส่ง | Canceled Order. |
+      | 11 | ทำการนำจ่าย | Pay to customer. |
+      | 12 | นำจ่ายไม่ได้ |  |
+      | 13 | อยู่ในระหว่างการขนส่ง | in transit |
+      | 14 | รับ/ผ่าน สิ่งของ |  |
+      | 15 | อยู่ในระหว่างส่งคืน |  |
+      | 16 | สแกนเปิดเพื่อส่งต่อ |  |
+      | 17 | สแกนรับเข้าปลายทาง |  |
+      | 18 | สแกนรับมอบ | Scan received item. |
+      | 19 | ไม่สามารถนำจ่ายได้ แจ้ง ศปง. เพื่อประสานงาน | Carded |
+      | 20 | จ่าหน้าไม่ชัดเจน | Address not clear |
+      | 21 | ไม่มีเลขบ้านตามจ่าหน้า | No such address |
+      | 22 | ไม่ยอมรับ | Refused/Unclaimed |
+      | 23 | ไม่มีผู้รับตามจ่าหน้า | No Recipient |
+      | 24 | ไม่มารับตามกำหนด | Overdue |
+      | 25 | เลิกกิจการ | Out of business |
+      | 26 | ย้าย / ไม่ทราบที่อยู่ใหม่ | Moved no forwarding add. |
+      | 27 | บ้านปิด | Closed House |
+      | 28 | ส่วนราชการ / บริษัทหยุด | Government/Public Company closed |
+      | 29 | อื่นๆ | Others |
+      | 30 | รอจ่าย ณ ที่ทำการไปรษณีย์ | Poste Restante |
+      | 31 | นำจ่าย ณ ตู้ไปรษณีย์เช่า (ออกใบแจ้ง) | P.O. Box (Issue Notification) |
+      | 32 | นำจ่ายใหม่ | Re Delivery |
+      | 33 | ปณอ. (ไปรษณีย์อนุญาตเอกชน) | Licensed Post Office |
+      | 34 | ต่างประเทศ (นำจ่ายไม่ได้) | International ( Unsuccessful Attempt) |
+      | 35 | ขอรับเองที่ไปรษณีย์ | Request own pick-up at the post office |
+      | 36 | โทรศัพท์ติดต่อผู้รับ | Contact the recipient by phone |
+      | 37 | ตู้นำจ่ายไปรษณีย์อัตโนมัติ | Smart Parcel Locker |
+      | 38 | Super EMS |  |
+      | 39 | ติดต่อผู้รับไม่ได้ | Can not contact receiver |
+      | 40 | ผิดเขต | Wrong zone. |
+      | 41 | เตรียมส่งสิ่งของคืนลูกค้า |  |
+      | 42 | อยู่ในระหว่างส่งของคืนลูกค้า |  |
+      | 43 | ส่งของคืนลูกค้าเรียบร้อยแล้ว |  |
+      | 44 | เตรียมทำใบฝากส่งคืนสินค้า Reverse |  |
+      | 45 | ปณ.ต้นทางรับฝากสินค้าส่งคืน Reverse แล้ว |  |
+      | 46 | ปณ.ต้นทาง เตรียมส่งคืนสถานทูต |  |
+      | 47 | ปณ.ต้นทาง ส่งคืนสถานทูตแล้ว |  |
+      | 48 | นำจ่าย/ส่งเงินธนาณัติ | Paid by money order |
+      | 49 | Claim | Claim |
+      | 50 | อยู่ระหว่างการสอบสวน | Item investigate |
+      | 51 | อนุมัติชดใช้/ ส่งคืน ปภค.10003 |  |
+      | 53 | ไม่ทราบสาเหตุการส่งคืน |  |
+      | 54 | ศป.ต้นทางรับเข้า |  |
+      | 55 | ศป.ต้นทางส่งออก |  |
+      | 56 | ศป.กลางทางรับเข้า |  |
+      | 57 | ศป.กลางทางส่งออก |  |
+      | 58 | ศป.ปลายทางรับเข้า |  |
+      | 59 | ศป.ปลายทางส่งออก |  |
+      | 60 | ปณ.ปลายทางรับเข้า |  |
+      | 61 | ปณ.ต้นทางเตรียมส่งคืน |  |
+      | 62 | อยู่ระหว่างคัดแยกสินค้า |  |
+      | 63 | ส่งออกจากศูนย์คัดแยกสินค้า/ที่ทำการ |  |
+      | 64 | ผู้ฝากส่งกำหนดวัน/เวลา นำจ่าย | Flexible Delivery (FD) |
+      | 65 | หมายเหตุ | Utility |
+      | 66 | ส่งออกจากที่ทำการแลกเปลี่ยนแล้ว | Departure From Outward OE |
+      | 67 | ส่งศุลกากร | To Customs |
+      | 68 | มาจากศุลกากร | From Customs |
+      | 69 | ศุลกากรกัก | Detention in Customs |
+      | 70 | ส่งผ่านศูนย์คัดแยกสินค้า | Transfer |
+      | 71 | ถึงศูนย์คัดแยกสินค้า/ที่ทำการ | Container Received |
+      | 72 | ไม่อนุมัติชดใช้ |  |
+      | 74 | โทรศัพท์ติดต่อผู้รับ/ผู้ฝากแล้ว ให้เก็บรอนำจ่าย |  |
+
+      ### Response
+
+      ตัวอย่าง Response ที่ Partner ต้อง Return Response กลับ
+
+      ```json
+      {
+         "status": 200,
+         "message":"success"
+      }
+
+      ```
+  - name: Print Label
+    description: |-
+      ![](assets/print-label-flow.jpg)
+
+      ### รายการขนส่งที่เปิดใช้งาน
+
+      *   ไปรษณีย์ไทย (THAI\_POST): ประเภท NON\_COD
+          
+      *   ไปรษณีย์ไทย (THAI\_POST): ประเภท COD
+  - name: Verify COD Account
+    description: '![](assets/verify-cod-flow.jpg)'
+paths:
+  /v1/auth/oauth2/token:
+    post:
+      tags:
+        - Authentication/​Authorization
+      summary: Generate Access Token
+      description: |-
+        #### Request Body
+
+        | Name | **Detail** | **Type** | **Additional information** |
+        | --- | --- | --- | --- |
+        | client\_id | client\_id ที่ได้รับจาก ระบบที่ Myexpress นำส่ง | String | required |
+        | client\_secret | client\_secret ที่ได้รับจาก ระบบที่ Myexpress นำส่ง | String | required |
+        | grant\_type | grant\_type รหัสของลูกค้าที่จะนำบันทึกลงระบบ Account Myexpress คือ client\_credentails | String | **required = client\_credentails** |
+        | scope | scope ที่ได้รับจากการ access จากระบบที่ Myexpress | String | required |
+
+        #### Response
+
+        | **Name** | **Description** | **type** |
+        | --- | --- | --- |
+        | access\_token | ข้อมูลเข้ารหัส รับรองความปลอดภัยของ user | String |
+        | expires\_in | ระยะเวลาที่ token หมดอายุ (second) | Number |
+        | token\_type | ชนิด Token | String |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                client_id: <YOUR_CLIENT_ID>
+                client_secret: <YOUR_CLIENT_SECRET>
+                grant_type: client_credentials
+                scope: parcel
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Jul 2024 08:29:48 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store
+            pragma:
+              schema:
+                type: string
+                example: no-cache
+            x-kong-response-latency:
+              schema:
+                type: integer
+                example: '18'
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=A4MFFO%2BXaAmLer1jHonrYqSunmCnFGQ2Jd8yclUuBJuStekBMefz%2F3YvxNc9jAUBWlR0VF8C%2BUjacE5vAvrGsWCz8VwyRD54wj7h28rNId69Q7HpnPHzQF8t2RjLlDkULMZ3LtntJMZRHXvf"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8a7a4e070d337b56-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                expires_in: 7200
+                token_type: bearer
+                access_token: <ACCESS_TOKEN>
+        '400':
+          description: Bad Request
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Tue, 23 Jul 2024 09:23:19 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '78'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Cache-Control:
+              schema:
+                type: string
+                example: no-store
+            pragma:
+              schema:
+                type: string
+                example: no-cache
+            x-kong-response-latency:
+              schema:
+                type: integer
+                example: '5'
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=a2L6tZTaYJSF6p4qNX0msddU11jkEeBolW4b4vd96k0sTozuwQZNvFUjroJTBW%2BSPMPhGz4yp4htEroZ9zwlTU5eyLr4vQe%2Ftm6EgpZ8tWuftI6Elo%2FMFDpKiA0yxt7ijsgwJztfjCWFFzZK"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8a7a9c6ba8757b5e-BKK
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                error: invalid_client
+                error_description: Invalid client authentication
+      security: []
+  /v1/parcel:
+    post:
+      tags:
+        - Parcel
+      summary: Create Parcel (NON_COD / COD)
+      description: |-
+        ## ประเภท NON_COD
+
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | express | ชื่อขนส่ง (EN) | String | Required **"THAIPOST"** |
+        | sender | ข้อมูลผู้ส่ง | Object | Required |
+        | sender.name | ชื่อผู้ส่ง | String | Required |
+        | sender.phoneNumber | เบอร์โทรศัพท์ที่ติดต่อได้ของผู้ส่ง | String | Required |
+        | sender.address | เลขที่อยู่ผู้ส่ง | String | Required |
+        | sender.subDistrict | ตำบลผู้ส่ง | String | Required |
+        | sender.district | อำเภอผู้ส่ง | String | Required |
+        | sender.province | จังหวัดผู้ส่ง | String | Required |
+        | sender.zipCode | รหัสไปรษณีย์ผู้ส่ง | String | Required |
+        | receiver | ข้อมูลผู้รับ | Object | Required |
+        | receiver.name | ชื่อผู้รับ | String | Required |
+        | receiver.phoneNumber | เบอร์โทรศัพท์ที่ติดต่อได้ของผู้รับ | String | Required |
+        | receiver.address | เลขที่อยู่ผู้รับ | String | Required |
+        | receiver.subDistrict | ตำบลผู้รับ | String | Required |
+        | receiver.district | อำเภอผู้รับ | String | Required |
+        | receiver.province | จังหวัดผู้รับ | String | Required |
+        | receiver.zipCode | ไปรษณีย์ผู้รับ | String | Required |
+        | receiver.moo | หมู่ผู้รับ | String | Conditionally required  
+        **จำเป็นต้องระบุเมื่อที่อยู่ผู้รับอยู่ในพื้นที่พิเศษที่มีการคิดค่าบริการตามหมู่** |
+        | note | หมายเหตุ | String | Optional |
+        | weightGram | น้ำหนักพัสดุ **กรัม** | Number | Required **ไม่น้อยกว่า 10 กรัม และมากกว่า 20,000 กรัม** |
+        | isInsured | ประกันพัสดุ | Boolean | Optional  
+        **ในกรณีที่ไม่ต้องการรับประกันพัสดุ ท่านสามารถละเว้นการส่งค่าดังกล่าว หรือระบุเป็น false** |
+        | insuranceDeclaredValue | วงเงินเอาประกัน | Number | Conditionally required  
+        **ต้องระบุเมื่อ isInsured เป็น true (ค่าระหว่าง 0 ถึง 50,000 บาท) หากเป็น false ไม่จำเป็นต้องระบุ** |
+        | insuranceProductPrice | ราคาสินค้าภายในกล่องพัสดุ | Number | Conditionally required  
+        **ต้องระบุเมื่อ isInsured เป็น true (ค่ามากกว่า 0) หากเป็น false ไม่จำเป็นต้องระบุ** |
+
+        #### Response
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | message | ข้อมูลสถานะการสร้างเลข | String |
+        | data | ข้อมูลตอบกลับหลังจากการสร้างเลข | Object |
+
+        ##### Data Detail
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | sender | ข้อมูลผู้ส่ง | Object |
+        | sender.name | ชื่อผู้ส่ง | String |
+        | sender.phoneNumber | เบอร์โทรผู้ส่ง | String |
+        | sender.address | ที่อยู่ผู้ส่ง | String |
+        | sender.subDistrict | อำเภอผู้ส่ง | String |
+        | sender.district | ตำบล/เขต/แขวงผู้ส่ง | String |
+        | sender.province | จังหวัดผู้ส่ง | String |
+        | sender.zipCode | รหัสไปรษณีย์ผู้ส่ง | String |
+        | receiver | ผู้รับ | String |
+        | receiver.name | ชื่อผู้รับ | String |
+        | receiver.phoneNumber | เบอร์โทรผู้รับ | String |
+        | receiver.address | ที่อยู่ผู้รับ | String |
+        | receiver.subDistrict | อำเภอผู้รับ | String |
+        | receiver.district | ตำบล/เขต/แขวงผู้รับ | String |
+        | receiver.province | จังหวัดผู้รับ | String |
+        | receiver.zipCode | รหัสไปราณีย์ผู้รับ | String |
+        | note | ข้อความผู้รับ | String |
+        | weightGram | น้ำหนักพัสดุผู้รับ (**หน่วย กรัม**) | Number |
+        | shipping | ข้อมูล tracking | Object |
+        | shipping.express | บริษัทขนส่ง | String |
+        | shipping.statusLog | ข้อมูล log ขนส่ง | String |
+        | trackingNumber | เลข tracking จากขนส่ง | String |
+        | shipping.weightGram | น้ำหนักจากขนส่ง (**หน่วย กรัม**) | Number |
+        | status | สถานะพัสดุ | String |
+        | type | ชนิดการส่งพัสดุ | String |
+        | createdAt | วันที่สร้างพัสดุ | String |
+        | updatedAt | วันที่ update พัสดุ | String |
+
+        ---
+
+        ## ประเภท COD
+
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | express | ชื่อขนส่ง (EN) | String | Required **"THAIPOST"** |
+        | sender | ข้อมูลผู้ส่ง | Object | Required |
+        | sender.phoneNumber | เบอร์โทรศัพท์ของบัญชี COD ที่ลงทะเบียน | String | Required **ต้องไม่น้อยกว่า 9 หลัก และไม่เกิน 10 หลัก** |
+        | sender.email | อีเมลของบัญชี COD ที่ลงทะเบียน | String | Required |
+        | receiver | ข้อมูลผู้รับ | Object | Required |
+        | receiver.name | ชื่อผู้รับ | String | Required |
+        | receiver.phoneNumber | เบอร์โทรศัพท์ที่ติดต่อได้ของผู้รับ | String | Required |
+        | receiver.address | เลขที่อยู่ผู้รับ | String | Required |
+        | receiver.subDistrict | ตำบลผู้รับ | String | Required |
+        | receiver.district | อำเภอผู้รับ | String | Required |
+        | receiver.province | จังหวัดผู้รับ | String | Required |
+        | receiver.zipCode | ไปรษณีย์ผู้รับ | String | Required |
+        | receiver.moo | หมู่ผู้รับ | String | Conditionally required  
+        **จำเป็นต้องระบุเมื่อที่อยู่ผู้รับอยู่ในพื้นที่พิเศษที่มีการคิดค่าบริการตามหมู่** |
+        | note | หมายเหตุ | String | Optional |
+        | weightGram | น้ำหนักพัสดุ **กรัม** | Number | Required **ไม่น้อยกว่า 10 กรัม และมากกว่า 20,000 กรัม** |
+        | codEnabled | พัสดุประเภท COD | Boolean | Required |
+        | codAmount | มูลค่า COD หน่วยบาท | Number | Required **ต้องมีค่ามากกว่า 0** |
+        | insideBoxDetail | รายการสิ่งของภายในกล่อง | Object\[\] | Required **Object ภายใน Array ต้องมีมากกว่า 0 และน้อยกว่าเท่ากับ 30** |
+        | insideBoxDetail.name | ประเภทของสิ่งของ | String | Required |
+        | insideBoxDetail.type | ข้อมูลชนิดของสิ่งของ | String | Required **ถ้าไม่มีสามารถใส่ - ได้** |
+        | insideBoxDetail.size | ข้อมูลขนาดของสิ่งของ | String | Required |
+        | insideBoxDetail.amount | ข้อมูลจำนวนของสิ่งของ | Number | Required **ต้องมีค่ามากกว่า 0** |
+        | insideBoxDetail.price | ข้อมูลราคาของสิ่งของ | Number | Required **ต้องมีค่ามากกว่า 0** |
+        | insideBoxDetail.color | ข้อมูลสีของสิ่งของ | String | Required |
+        | insideBoxDetail.weightGram | ข้อมูลน้ำหนักของสิ่งของ หน่วยกรัม | Number | Required **ต้องมีค่ามากกว่า 0** |
+        | isInsured | ประกันพัสดุ | Boolean | Optional  
+        **ในกรณีที่ไม่ต้องการรับประกันพัสดุ ท่านสามารถละเว้นการส่งค่าดังกล่าว หรือระบุเป็น false** |
+        | insuranceDeclaredValue | วงเงินเอาประกัน | Number | Conditionally required  
+        **ต้องระบุเมื่อ isInsured เป็น true (ค่าระหว่าง 0 ถึง 50,000 บาท) หากเป็น false ไม่จำเป็นต้องระบุ** |
+
+        #### Response
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | message | ข้อมูลสถานะการสร้างเลข | String |
+        | data | ข้อมูลตอบกลับหลังจากการสร้างเลข | Object |
+
+        ##### Data Detail
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | sender | ข้อมูลผู้ส่ง | Object |
+        | sender.name | ชื่อผู้ส่ง | String |
+        | sender.phoneNumber | เบอร์โทรผู้ส่ง | String |
+        | sender.address | ที่อยู่ผู้ส่ง | String |
+        | sender.subDistrict | อำเภอผู้ส่ง | String |
+        | sender.district | ตำบล/เขต/แขวงผู้ส่ง | String |
+        | sender.province | จังหวัดผู้ส่ง | String |
+        | sender.zipCode | รหัสไปรษณีย์ผู้ส่ง | String |
+        | receiver | ผู้รับ | String |
+        | receiver.name | ชื่อผู้รับ | String |
+        | receiver.phoneNumber | เบอร์โทรผู้รับ | String |
+        | receiver.address | ที่อยู่ผู้รับ | String |
+        | receiver.subDistrict | อำเภอผู้รับ | String |
+        | receiver.district | ตำบล/เขต/แขวงผู้รับ | String |
+        | receiver.province | จังหวัดผู้รับ | String |
+        | receiver.zipCode | รหัสไปราณีย์ผู้รับ | String |
+        | note | ข้อความผู้รับ | String |
+        | weightGram | น้ำหนักพัสดุผู้รับ (**หน่วย กรัม**) | Number |
+        | shipping | ข้อมูล tracking | Object |
+        | shipping.express | บริษัทขนส่ง | String |
+        | shipping.statusLog | ข้อมูล log ขนส่ง | String |
+        | trackingNumber | เลข tracking จากขนส่ง | String |
+        | shipping.weightGram | น้ำหนักจากขนส่ง (**หน่วย กรัม**) | Number |
+        | status | สถานะพัสดุ | String |
+        | type | ชนิดการส่งพัสดุ | String |
+        | createdAt | วันที่สร้างพัสดุ | String |
+        | updatedAt | วันที่ update พัสดุ | String |
+        | weightGram | น้ำหนักพัสดุ **กรัม** | Number |
+        | insideBoxDetail | รายการสิ่งของภายในกล่อง | Object\[\] |
+        | insideBoxDetail.name | ประเภทของสิ่งของ | String |
+        | insideBoxDetail.type | ข้อมูลชนิดของสิ่งของ | String |
+        | insideBoxDetail.size | ข้อมูลขนาดของสิ่งของ | String |
+        | insideBoxDetail.amount | ข้อมูลจำนวนของสิ่งของ | Number |
+        | insideBoxDetail.price | ข้อมูลราคาของสิ่งของ | Number |
+        | insideBoxDetail.color | ข้อมูลสีของสิ่งของ | String |
+        | insideBoxDetail.weightGram | ข้อมูลน้ำหนักของสิ่งของ หน่วยกรัม | Number |
+        | codAmount | มูลค่า COD หน่วยบาท | Number |
+        | codEnabled | พัสดุประเภท COD | Boolean |
+        | codFee | ค่าบริการ COD | Number |
+        | codFeeVat | Vat 7% ของค่าบริการ COD | Number |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                express: THAI_POST
+                sender:
+                  phoneNumber: '0900000000'
+                  email: test@test.com
+                receiver:
+                  name: คุณมายเอ็กซ์เพรส ชลบุรี
+                  phoneNumber: '0989392917'
+                  address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                  subDistrict: หนองขาม
+                  district: ศรีราชา
+                  province: ชลบุรี
+                  zipCode: '20230'
+                note: ''
+                weightGram: 1000
+                codEnabled: true
+                codAmount: 100
+                insideBoxDetail:
+                  - name: อุปกรณ์อิเล็กทรอนิกส์
+                    type: กล้่อง Cannon
+                    size: ขนาดเล็ก (S)
+                    color: สีดำ (Black)
+                    amount: 1
+                    price: 1
+                    weightGram: 1000
+                isInsured: true
+                insuranceDeclaredValue: 3000
+            examples:
+              NON_COD:
+                summary: Create Parcel ประเภท NON_COD
+                value:
+                  express: THAI_POST
+                  sender:
+                    name: คุณมายเอ็กซ์เพรส ภูเก็ต
+                    phoneNumber: '0813150764'
+                    address: 69/429 หมู่ 2
+                    subDistrict: วิชิต
+                    district: เมืองภูเก็ต
+                    province: ภูเก็ต
+                    zipCode: '83000'
+                  receiver:
+                    name: คุณมายเอ็กซ์เพรส ชลบุรี
+                    phoneNumber: '0989392917'
+                    address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                    moo: "1"
+                    subDistrict: หนองขาม
+                    district: ศรีราชา
+                    province: ชลบุรี
+                    zipCode: '20230'
+                  note: ''
+                  weightGram: 1000
+                  isInsured: true
+                  insuranceDeclaredValue: 3000
+                  insuranceProductPrice: 3000
+              COD:
+                summary: Create Parcel ประเภท COD
+                value:
+                  express: THAI_POST
+                  sender:
+                    phoneNumber: '0900000000'
+                    email: test@test.com
+                  receiver:
+                    name: คุณมายเอ็กซ์เพรส ชลบุรี
+                    phoneNumber: '0989392917'
+                    address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                    moo: "1"
+                    subDistrict: หนองขาม
+                    district: ศรีราชา
+                    province: ชลบุรี
+                    zipCode: '20230'
+                  note: ''
+                  weightGram: 1000
+                  codEnabled: true
+                  codAmount: 100
+                  insideBoxDetail:
+                    - name: อุปกรณ์อิเล็กทรอนิกส์
+                      type: กล้่อง Cannon
+                      size: ขนาดเล็ก (S)
+                      color: สีดำ (Black)
+                      amount: 1
+                      price: 1
+                      weightGram: 1000
+                  isInsured: true
+                  insuranceDeclaredValue: 3000
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          description: Add Access token here
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Thu, 10 Oct 2024 06:22:28 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"4fb-B6GWMy9U7buNowlUP50KuDknk78"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '3097'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '22'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=AgJg1%2Faj9xrI3rMPxY51ldochC9i%2B6rz6f42LNDrhC7pNJSfWKBCYbmYve2oMaD%2BudlE2YEOijsz0300sh3p8laWv5Idxgf6V%2BnYCvcYyJ%2FFo3vzNViTILADNZNWyNZ2tsRoO5rgAiJBwKH8"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8d0484116a06d01f-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Success 200 รับประกันพัสดุ
+                  value:
+                    message: create parcel success
+                    data:
+                      note: ''
+                      receiver:
+                        address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                        district: ศรีราชา
+                        name: คุณมายเอ็กซ์เพรส ชลบุรี
+                        phoneNumber: '0989392917'
+                        province: ชลบุรี
+                        subDistrict: หนองขาม
+                        zipCode: '20230'
+                      id: cd613f68fd1bb07c3dcb4f4bc78d0c48fcb1c685ff5529055d6f3daa2d05d043OP1728541345897
+                      sender:
+                        address: 99/9
+                        district: เมืองจันทบุรี
+                        name: Test
+                        phoneNumber: '0900000000'
+                        province: จันทบุรี
+                        subDistrict: เกาะขวาง
+                        zipCode: '22000'
+                      shipping:
+                        express: THAI_POST
+                        trackingNumber: JA056666571TH
+                        weightGram: 1000
+                        statusLog: []
+                      status: NEW
+                      type: COD
+                      createdAt: '2024-10-10T06:22:25.897Z'
+                      updatedAt: '2024-10-10T06:22:27.594Z'
+                      weightGram: 1000
+                      isInsured: true
+                      insideBoxDetail:
+                        - name: อุปกรณ์อิเล็กทรอนิกส์
+                          type: กล้่อง Cannon
+                          size: ขนาดเล็ก (S)
+                          color: สีดำ (Black)
+                          amount: 1
+                          price: 1
+                          weightGram: 1000
+                      codAmount: 100
+                      codEnabled: true
+                      codFee: 1.3
+                      codFeeVat: 0.09
+                      insuranceDeclaredValue: 3500
+                      insuranceProductPrice: 3000
+                example-1:
+                  summary: Success 200 ไม่รับประกันพัสดุ
+                  value:
+                    message: create parcel success
+                    data:
+                      note: ''
+                      receiver:
+                        address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                        district: ศรีราชา
+                        name: คุณมายเอ็กซ์เพรส ชลบุรี
+                        phoneNumber: '0989392917'
+                        province: ชลบุรี
+                        subDistrict: หนองขาม
+                        zipCode: '20230'
+                      id: cd613f68fd1bb07c3dcb4f4bc78d0c48fcb1c685ff5529055d6f3daa2d05d043OP1728541345897
+                      sender:
+                        address: 99/9
+                        district: เมืองจันทบุรี
+                        name: Test
+                        phoneNumber: '0900000000'
+                        province: จันทบุรี
+                        subDistrict: เกาะขวาง
+                        zipCode: '22000'
+                      shipping:
+                        express: THAI_POST
+                        trackingNumber: JA056666571TH
+                        weightGram: 1000
+                        statusLog: []
+                      status: NEW
+                      type: COD
+                      createdAt: '2024-10-10T06:22:25.897Z'
+                      updatedAt: '2024-10-10T06:22:27.594Z'
+                      weightGram: 1000
+                      isInsured: false
+                      insideBoxDetail:
+                        - name: อุปกรณ์อิเล็กทรอนิกส์
+                          type: กล้่อง Cannon
+                          size: ขนาดเล็ก (S)
+                          color: สีดำ (Black)
+                          amount: 1
+                          price: 1
+                          weightGram: 1000
+                      codAmount: 100
+                      codEnabled: true
+                      codFee: 1.3
+                      codFeeVat: 0.09
+        '400':
+          description: Bad Request
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Wed, 09 Oct 2024 16:15:40 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '152'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"98-GrsGG5xF+Jn0Q3tXyqZu+QkfJVw"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '687'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '19'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=vZC1QG58CdGy%2BvGzr6%2BBePL3cgZ75QBnmRx2vzhoxMwcv2Gemq3miJwao1HjjSqKAqzmGhS%2FvHjic7EagKZkd6RKqxL3LiWFyT8%2B2H39vo0WUwmbZkv%2FLIjWK7HcTiPMRu3MDtQOKA%2FcPP%2FN"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8cffabae1e5287e5-URT
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 account COD waiting approve
+                  value:
+                    status: 400
+                    message: senderCOD phoneNumber 0810000000 is currently pending approval or has not been approved
+                    name: SenderCODNotApproveException
+                example-1:
+                  summary: Error 400 account COD not approve
+                  value:
+                    status: 400
+                    message: senderCOD phoneNumber 0810000000 is currently pending approval or has not been approved
+                    name: SenderCODNotApproveException
+                example-2:
+                  summary: Error 400 require weight Gram
+                  value:
+                    status: 400
+                    message: weightKg not allow. Please use weightGram
+                    name: BadRequestException
+                example-3:
+                  summary: Error 400 require weightGram < 10 or >2000
+                  value:
+                    status: 400
+                    message: Gram not allow below 10 gram and more 20,000 gram
+                    name: BadRequestException
+                example-4:
+                  summary: Error 400 require codAmount and > 0
+                  value:
+                    status: 400
+                    message: not found codAmount or codAmount less than 1
+                    name: CODAmountInvalidException
+                example-5:
+                  summary: Error 400 codAmount have more than 2 decimal places
+                  value:
+                    status: 400
+                    message: not found codAmount or codAmount less than 1 or codAmount must not have more than 2 decimal places
+                    name: CODAmountInvalidException
+                example-6:
+                  summary: Error 400 require insideBoxDetail
+                  value:
+                    status: 400
+                    message: cannot create parcel cod because not found insideBoxDetail or length equal 0
+                    name: InsideBoxDetailNotCorrectException
+                example-7:
+                  summary: Error 400 phone number invalid
+                  value:
+                    status: 400
+                    message: not found sender.phoneNumber or invalid length
+                    name: SenderPhoneNumberInvalidException
+                example-8:
+                  summary: Error 400 email invalid
+                  value:
+                    status: 400
+                    message: not found sender.email or invalid format
+                    name: SenderEmailInvalidException
+                example-9:
+                  summary: Error 400 insuranceDeclaredValue invalid
+                  value:
+                    status: 400
+                    message: not found sender.email or invalid format
+                    name: SenderEmailInvalidException
+                ex10-400:
+                  summary: Error 400 require Receiver
+                  value:
+                    status: 400
+                    name: Error
+                    message: receiver require
+                ex11-400:
+                  summary: Error 400 require Sender
+                  value:
+                    status: 400
+                    name: Error
+                    message: sender require
+                ex12-400:
+                  summary: Error 400 insuranceProductPrice invalid
+                  value:
+                    status: 400
+                    message: insuranceDeclaredValue must be a number between 0 and 50,000
+                    name: BadRequestException
+                ex13-400:
+                  summary: Error 400 require Moo
+                  value:
+                    status: 400
+                    message: receiver.moo is require
+                    name: Error
+        '401':
+          description: Unauthorized
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Wed, 09 Oct 2024 15:30:13 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '77'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            www-authenticate:
+              schema:
+                type: string
+                example: Bearer realm="service"
+            x-kong-response-latency:
+              schema:
+                type: integer
+                example: '1'
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=fo6acQgQNY%2BD8xqC%2BPUWhCRtlXouy%2BmfO9nLzKwxHOSMPevG5l%2BNa1robJxsoc%2F0qp8JV8QCurUq0Awppfl0XSKkGYFEj%2B7m9kU6s5iIH5WX33ut8NOdFKcAiao8whTNXuHkIKI1IK97wbz3"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8cff6920bc70d038-BKK
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                ex0-401:
+                  summary: Error 401
+                  value:
+                    error_description: The access token is missing
+                    error: invalid_request
+                ex-original:
+                  value:
+                    error: invalid_request
+                    error_description: The access token is missing
+        '403':
+          description: Forbidden
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                ex0-403:
+                  summary: Error 403
+                  value:
+                    name: AccountDisableException
+                    message: AccountDisableException
+        '404':
+          description: Not Found
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Wed, 09 Oct 2024 15:34:28 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"6e-92K+71nMcqoSz30IJRSXyxwLrwo"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '24'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '22'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=IuXIBLSGbkxbet4pQ3VH5kK3ToWzVHU3ASi2HumrtUFoCs7glkyR1Efjl%2FCJevrM%2BLen0tIPZFnziWO8Rf8xYe4QwZrii6dLoTiBpIxPTNb7lMGSNML0RMp5o6perq7ZUOx3J9eGZ26x%2BX34"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8cff6f5b8fe3a8cf-SIN
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                ex0-404:
+                  summary: Error 404 not found accountCOD
+                  value:
+                    status: 404
+                    message: not found senderCOD with phoneNumber 0820000000
+                    name: SenderCODNotFoundException
+  /v1/parcel/tracking:
+    post:
+      tags:
+        - Parcel
+      summary: Get Parcel
+      description: |-
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | express | ชื่อขนส่ง | String | required = **"THAI\_POST"** |
+        | trackingNumbers | เลข trackingNumber | String\[\] | required = ex.**[  "TH0001",  "TH0002",...]** |
+
+        #### Response
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | notFoundTrackingNumbers | เลข tracking ที่ค้นหาไม่พบ | String\[\] |
+        | express | ชื่อขนส่ง | String |
+        | data.note | ข้อมูลเพิ่มเติม | String |
+        | data.receiver.address | ที่อยู่ผู้ส่ง | String |
+        | data.receiver.district | อำเภอผู้ส่ง | String |
+        | data.receiver.name | ชื่อผู้ส่ง | String |
+        | data.receiver.phoneNumber | เบอร์โทรผู้ส่ง | String |
+        | data.receiver.province | จังหวัดผู้ส่ง | String |
+        | data.receiver.subDistrict | ตำบลผู้ส่ง | String |
+        | data.receiver.zipCode | รหัสไปรษณีย์ผู้ส่ง | String |
+        | id | รหัส Parcel | String |
+        | data.sender.address | ที่อยู่ผู้รับ | String |
+        | data.sender.district | อำเภอผู้รับ | String |
+        | data.sender.name | ชื่อ | String |
+        | data.sender.phoneNumber | เบอร์โทรผู้รับ | String |
+        | data.sender.province | จังหวัดผู้รับ | String |
+        | data.sender.subDistrict | ตำบลผู้รับ | String |
+        | data.sender.zipCode | รหัสไปรษณีย์ผู้รับ | String |
+        | shipping.express | ชื่อขนส่งจากข้อมูลขนส่ง | String |
+        | shipping.trackingNumber | เลข tracking | String |
+        | shipping.weightGram | น้ำหนักที่บันทึกจาก **(กรัม)** ขนส่ง | Number |
+        | shipping.statusLog.code | log Code ข้อมูลจากขนส่ง | String |
+        | shipping.statusLog.timestamp | เวลาจากสถานะขนส่ง | Date |
+        | shipping.statusLog.message | ข้อมูลสถานะ จากขนส่ง | String |
+        | shipping.statusLog.weightGram | น้ำหนัก **(กรัม)** ที่บันทึกจากขนส่ง ใน log | Number |
+        | shipping.statusLog.trackingNumber | เลข tracking จากขนส่งบันทึกจาก log | String |
+        | status | สถานะการขนส่งล่าสุด | String |
+        | type | ชนิดพัสดุ | String |
+        | createdAt | วันที่สร้าง | Date |
+        | updatedAt | วันที่อัพเดท | Date |
+        | weightGram | น้ำหนักที่บันทึกจากระบบ **(กรัม)** | Number |
+
+        #### Error Response
+
+        | Name | Description | Type |
+        | --- | --- | --- |
+        | status | สถานะ | Number |
+        | message | ข้อมูลอธิบาย error | String |
+        | name | ชื่อ | String |
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+              example: '"{\n    \"express\": \"THAI_POST\",\n    \"trackingNumbers\": [\n        \"JB052917036TH\",\n        \"JB052917037TH\",\n        \"JB052917038TH\",\n        \"JB052917039TH\",\n        \"JB052917040TH\",\n        \"JB052917041TH\",\n        \"JB052917042TH\",\n        \"JB052917043TH\",\n        \"JB050236544TH\",\n        \"JB052917035TH\",\n        \"JB050236582TH\",\n        \"JB050236579TH\",\n        \"JB050236579TH\",\n        \"JB012345678TH\"\n    ]\n}"'
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                notFoundTrackingNumbers:
+                  - JB012345678TH
+                express: THAI_POST
+                data:
+                  - note: ''
+                    receiver:
+                      address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                      district: ศรีราชา
+                      name: คุณมายเอ็กซ์เพรส ชลบุรี
+                      phoneNumber: '0989392917'
+                      province: ชลบุรี
+                      subDistrict: หนองขาม
+                      zipCode: '20230'
+                    id: 1211c0bccc0142404df1274999e94d0144c3eadc181bb95ee01cfb61ea46e7e1OP1723622204784
+                    sender:
+                      address: 69/429 หมู่ 2
+                      district: เมืองภูเก็ต
+                      name: คุณมายเอ็กซ์เพรส ภูเก็ต
+                      phoneNumber: '0813150764'
+                      province: ภูเก็ต
+                      subDistrict: วิชิต
+                      zipCode: '83000'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: JB052917036TH
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T07:56:44.783Z'
+                    updatedAt: '2024-08-14T07:56:44.957Z'
+                    weightGram: 10000
+                  - note: ''
+                    receiver:
+                      address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                      district: ศรีราชา
+                      name: คุณมายออเดอร์ ชลบุรี
+                      phoneNumber: '0856779101'
+                      province: ชลบุรี
+                      subDistrict: หนองขาม
+                      zipCode: '20230'
+                    id: c293ecfdc710dce4540056cf51ea6cd1a56aff3eba142526fdb19a55c5fc2f00OP1722422798569
+                    sender:
+                      address: 69/429 หมู่ 2
+                      district: เมืองภูเก็ต
+                      name: คุณมายออเดอร์ ภูเก็ต
+                      phoneNumber: '0815690987'
+                      province: ภูเก็ต
+                      subDistrict: วิชิต
+                      zipCode: '83000'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: JB050236582TH
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-07-31T10:46:38.569Z'
+                    updatedAt: '2024-07-31T10:46:38.983Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                      district: เกาะสีชัง
+                      name: คุณมายออเดอร์ ชลบุรี
+                      phoneNumber: '0811729602'
+                      province: ชลบุรี
+                      subDistrict: ท่าเทววงษ์
+                      zipCode: '20120'
+                    id: 3d978cfbf3fcf6bcd147ac2f1539d66defd539612009bea0c0f9279c7e4cdbe3OP1723618385929
+                    sender:
+                      address: 69/429 หมู่ 2
+                      district: เมืองภูเก็ต
+                      name: คุณมายออเดอร์ ภูเก็ต
+                      phoneNumber: '0838083207'
+                      province: ภูเก็ต
+                      subDistrict: วิชิต
+                      zipCode: '83000'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: JB052917037TH
+                      weightGram: 360
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T06:53:05.928Z'
+                    updatedAt: '2024-08-14T06:53:06.485Z'
+                    weightGram: 360
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ สมุทรปราการ
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 45a6d1356cb85d1542268cd333f6404e55010fcfe01e3cf7df441673f2a8c94eOP1723616118012
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1111
+                      weightGram: 10
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T06:15:18.012Z'
+                    updatedAt: '2024-08-14T06:15:18.160Z'
+                    weightGram: 10
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 1d918829b9ce8f52e7fe6a91cca8a9e7acebaa2d099ad1348c343d584ca72cadOP1723615779195
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1112
+                      weightGram: 10
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T06:09:39.194Z'
+                    updatedAt: '2024-08-14T06:09:39.344Z'
+                    weightGram: 10
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ สมุทรปราการ
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 2e436a180f005b083317e6ccdb89c8c3e22d7db82b084fd4cb3c4500e2cc12d3OP1723610342386
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1113
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T04:39:02.386Z'
+                    updatedAt: '2024-08-14T04:39:02.555Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ สมุทรปราการ
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 7bdddce1435ff5332937ec82bc528897b54dd0f63b6edb82f78e2c1ff530f06bOP1723609934928
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1114
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T04:32:14.928Z'
+                    updatedAt: '2024-08-14T04:32:15.083Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ สมุทรปราการ
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 090cab1d51ea3bcbfa3b9b4cc6fb597f236d15ddd4cf3953f30e3d28d596b911OP1723609742419
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1115
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T04:29:02.418Z'
+                    updatedAt: '2024-08-14T04:29:02.577Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 581/91 หมู่บ้านพฤกษาวิลล์107/5 สุขสวัสดิ์ 78
+                      district: พระสมุทรเจดีย์
+                      name: คุณมายออเดอร์ สมุทรปราการ
+                      phoneNumber: '0824922944'
+                      province: สมุทรปราการ
+                      subDistrict: ในคลองบางปลากด
+                      zipCode: '10290'
+                    id: 2bb4e3a6415fa87205c53b0cd1002292cd806a6621a9f2810aaa7929e688debcOP1723608889296
+                    sender:
+                      address: PP Residence ห้อง 201
+                      district: ยานนาวา
+                      name: คุณมายออเดอร์ กรุงเทพมหานคร
+                      phoneNumber: '0869375604'
+                      province: กรุงเทพมหานคร
+                      subDistrict: บางโพงพาง
+                      zipCode: '10120'
+                    shipping:
+                      express: THAI_POST
+                      statusLog: []
+                      trackingNumber: TEST1116
+                      weightGram: 1000
+                    status: NEW
+                    type: NON_COD
+                    createdAt: '2024-08-14T04:14:49.296Z'
+                    updatedAt: '2024-08-14T04:14:49.470Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                      district: ศรีราชา
+                      name: คุณมายออเดอร์ ชลบุรี
+                      phoneNumber: '0872570359'
+                      province: ชลบุรี
+                      subDistrict: หนองขาม
+                      zipCode: '20230'
+                    id: dbd61e125fcbca1f297139feeed8e60812a33b5973426e3c54edbd27dfd0fd61OP1722422793562
+                    sender:
+                      address: 69/429 หมู่ 2
+                      district: เมืองภูเก็ต
+                      name: คุณมายออเดอร์ ภูเก็ต
+                      phoneNumber: '0887656466'
+                      province: ภูเก็ต
+                      subDistrict: วิชิต
+                      zipCode: '83000'
+                    shipping:
+                      express: THAI_POST
+                      statusLog:
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236579TH
+                      trackingNumber: JB050236579TH
+                      weightGram: 1000
+                    status: PICKUPED
+                    type: NON_COD
+                    createdAt: '2024-07-31T10:46:33.562Z'
+                    updatedAt: '2024-08-15T06:37:18.433Z'
+                    weightGram: 1000
+                  - note: ''
+                    receiver:
+                      address: 188/273 หมู่บ้านเดอะบูเลอวาร์ด ศรีราชา ซอย 14/1 หมู่ที่ 1
+                      district: ศรีราชา
+                      name: คุณมายออเดอร์ ชลบุรี
+                      phoneNumber: '0872129126'
+                      province: ชลบุรี
+                      subDistrict: หนองขาม
+                      zipCode: '20230'
+                    id: d16b201b1abd2f8963889f5d5ec9f6045e93d73e29abd841f203b1d9c3ce5b12OP1722422802867
+                    sender:
+                      address: 69/429 หมู่ 2
+                      district: เมืองภูเก็ต
+                      name: คุณมายออเดอร์ ภูเก็ต
+                      phoneNumber: '0888580766'
+                      province: ภูเก็ต
+                      subDistrict: วิชิต
+                      zipCode: '83000'
+                    shipping:
+                      express: THAI_POST
+                      statusLog:
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T03:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                        - code: '1'
+                          timestamp: '2024-08-07T10:00:19.000Z'
+                          message: รับฝาก
+                          isReturn: false
+                          weightGram: 1000
+                          trackingNumber: JB050236596TH
+                      trackingNumber: JB050236596TH
+                      weightGram: 1000
+                    status: PICKUPED
+                    type: NON_COD
+                    createdAt: '2024-07-31T10:46:42.867Z'
+                    updatedAt: '2024-08-09T09:05:57.039Z'
+                    weightGram: 1000
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 require express THAI_POST
+                  value:
+                    status: 400
+                    message: 'Express name: undefined is not allow. Please change to express that you can accept.'
+                    name: BadRequestException
+                example-1:
+                  summary: Error 400 tracking number limit
+                  value:
+                    status: 400
+                    message: Tracking numbers must be require. Tracking numbers must have a limit of 20.
+                    name: BadRequestException
+  /v1/parcel/{parcelId}:
+    delete:
+      tags:
+        - Parcel
+      summary: Delete Parcel
+      description: |-
+        #### Request Param
+
+        | **Name** | **Detail** | **type** | Additional information |
+        | --- | --- | --- | --- |
+        | parcelId | **parcel id ที่ได้รับจาก สร้าง parcel** | String | Required |
+
+        #### Response
+
+        | **Name** | **Detail** | **Type** |
+        | --- | --- | --- |
+        | message | อธิบายสถานะการลบ | String |
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          description: Add Access token here
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: parcelId
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Wed, 24 Jul 2024 07:09:31 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"79-XrDQYPRqMJsRRPbGOYuIqfcINEI"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '873'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '22'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=mZHilLrhL0A5Z%2BsVMLJRxyxpk%2F2x7Vx4nyW53N8es%2FlIivhXt%2FJN7xDp7FaDFt2%2FXp10CDBMqYM5f3UPK%2FlhBWQDIJryZmljq%2BiGPzuB3PKXa3E55le0T7Z7b5pn0z0pgnBZ662E14XrI3b%2B"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8a8215ca5e3818fc-SIN
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: 'delete parcelNumber: 8a88a0acb0ff10fb526cb3de97f7c1681e8cc488d4b39eb646f484fbf23cb8e3OP1721804390165 success'
+        '404':
+          description: Not Found
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Wed, 24 Jul 2024 07:10:12 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"61-5QEeshd8Q5gQBx2UsnVPPaEUKPo"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '21'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '29'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=TIUWZEb8b1B7Kn1WS%2BAcEwNbvIWqRzM2zpG3nmsSIeEfmf6%2B9zuYY8dM0iOXQd7B2Wvl%2B%2F03VqXRfgjXf8w34m0HHpBGcDJXnmc7lANxOJFHmzNZbAyvkmr%2B2Of%2BYaLFzrIaE1dPk7HGTWN1"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8a8216cced9018fc-SIN
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 404
+                message: Parcel with refId=[1721804390165] not found
+                name: NotFoundException
+  /v1/parcel/payment-status:
+    get:
+      tags:
+        - Parcel
+      summary: Check Payment Status
+      description: |-
+        ##### Request Query Params
+
+        | Name | **Description** | Type | **Additional information** |
+        | --- | --- | --- | --- |
+        | trackingNumber | เลขพัสดุ | String | Required |
+
+        ##### **Response**
+
+        | **Name** | **Description** | **Type** |
+        | --- | --- | --- |
+        | trackingNumber | เลขพัสดุ | String |
+        | codTransferStatus | ประกอบด้วย 3 สถานะ  
+        "NONE" พัสดุยังไม่ถูกจัดส่งหรือยังไม่ถึงปลายทาง  
+        "PENDING" พัสดุถึงปลายทาง และรอทำรายการโอนเงิน  
+        "TRANSFERRED" ทำรายการโอนเงินเรียบร้อยแล้ว  
+        "REJECTED" ยกเลิกรายการโอน เนื่องจากพัสดุตีกลับ | String |
+        | codTransferDate | วันที่ทำรายการโอนเงินเรียบร้อยแล้ว | String |
+        | shippingCost |  | Object |
+        | shippingCost.totalAmount | ราคาต้นทุนรวมทั้งหมด | Number |
+        | shippingCost.shippingCost | ราคาต้นทุนขนส่ง | Number |
+        | shippingCost.codAmount | ยอดเงิน COD (บาท) | Number |
+        | shippingCost.codFee | ค่าธรรมเนียม COD | Number |
+        | shippingCost.codVat | ภาษีมูลค่าเพิ่ม COD | Number |
+        | shippingCost.specialAreaCost | ค่าพื้นที่พิเศษ พื้นที่ห่างไกล | Number |
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Tue, 19 Nov 2024 09:58:39 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"ce-08RjtPg6X1lZ6yulh/v+AS3q5ys"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '22'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '27'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=r7NpAr9J3QbGhtMvF2cml5fpL4IS4phxu9o0C4epqcI08O6CtfCXYG6KgFwxQCHPzT5PdsH2YJQ5YJfEvMwbUrG%2B4biBEOTkGDwafwPbzZ4EEjojjuLvbyTvz2M1PohQ7OQW1TUnYeSYB1o2"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8e4f57d09b1c7b50-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+            server-timing:
+              schema:
+                type: string
+                example: cfL4;desc="?proto=TCP&rtt=30016&sent=5&recv=7&lost=0&retrans=0&sent_bytes=2813&recv_bytes=981&delivery_rate=121922&cwnd=252&unsent_bytes=0&cid=0960dcdc383f1895&ts=189&x=0"
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: 'Success: status REJECTED'
+                  value:
+                    trackingNumber: JA056666917TH
+                    codTransferStatus: REJECTED
+                    codTransferDate: ''
+                    shippingCost:
+                      totalAmount: 18.391
+                      shippingCost: 17
+                      codAmount: 100
+                      codFee: 1.3
+                      codVat: 0.091
+                      specialAreaCost: 0
+                example-1:
+                  summary: 'Success: status TRANSFERRED'
+                  value:
+                    trackingNumber: JA056666695TH
+                    codTransferStatus: TRANSFERRED
+                    codTransferDate: '2024-10-21'
+                    shippingCost:
+                      totalAmount: 18.391
+                      shippingCost: 17
+                      codAmount: 100
+                      codFee: 1.3
+                      codVat: 0.091
+                      specialAreaCost: 0
+                example-2:
+                  summary: 'Success: status PENDING'
+                  value:
+                    trackingNumber: JA056666687TH
+                    codTransferStatus: PENDING
+                    codTransferDate: ''
+                    shippingCost:
+                      totalAmount: 18.391
+                      shippingCost: 17
+                      codAmount: 100
+                      codFee: 1.3
+                      codVat: 0.091
+                      specialAreaCost: 0
+                example-3:
+                  summary: 'Success: status NONE'
+                  value:
+                    trackingNumber: JA056666545TH
+                    codTransferStatus: NONE
+                    codTransferDate: ''
+                    shippingCost:
+                      totalAmount: 17.0139
+                      shippingCost: 17
+                      codAmount: 1
+                      codFee: 0.013
+                      codVat: 0.0009
+                      specialAreaCost: 0
+        '404':
+          description: Not Found
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Mon, 21 Oct 2024 03:18:16 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"5e-FashAC85JWYu4r+X+doUlmxhqN0"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '82'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '30'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=qaHfKzE72j4VHKLe8FyXeLFXL7O1GxURhZkgjO5%2FJDbnEAt6oGHb94FXaSMHzxKPHnluqBV4saLdBqFgQ%2FF7PoaE2eZRq%2Bch5s4tJGirnDZsYxRrQ6jfA78CPc5yUN4p8WGoWMPqZnqjTSbe"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8d5e1972fdbdee5e-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+            server-timing:
+              schema:
+                type: string
+                example: cfL4;desc="?proto=TCP&rtt=72019&sent=67&recv=66&lost=0&retrans=1&sent_bytes=5881&recv_bytes=1781&delivery_rate=126281&cwnd=255&unsent_bytes=0&cid=4ae4b768d624a9f5&ts=55977&x=0"
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 404
+                message: trackingNumber=[JA000000000TH] not found
+                name: NotFoundException
+  /v1/simulate/thaipost/webhook:
+    post:
+      tags:
+        - Webhook
+      summary: Simulate Thaipost Webhook
+      description: |-
+        ### Request Body
+
+        | **Name** | **Description** | **Type** |
+        | --- | --- | --- |
+        | barcode | เลข tracking จากขนส่ง | String |
+        | weight | น้ำหนักหน่วยเป็นกรัม ตัวอย่าง 1000 | Number |
+        | cod | พัสดุ COD  
+        ตัวอย่าง ใช่ = yes หรือ ไม่ = no | String |
+        | status | status code จากขนส่งดูได้จากตาราง Status Detail | String |
+        | statusDescription | status Description จากขนส่ง ดูได้จากตาราง Status Detail | String |
+        | statusDate | วันที่ เวลา ที่ได้รับสถานะ  
+        ตัวอย่าง 23/07/2024 10:00:00  
+        \*\*ต้องเป็นวันและเวลา ที่มากกว่าวันที่สร้างพัสดุ | String |
+        | stationPostcode | รหัสไปรษณีย์ตำแหน่งที่ทำการไปรษณีย์ ตัวอย่าง 10160 | String |
+        | station | ที่ทำการไปรษณีย์ ตัวอย่างภาษีเจริญ/กรุงเทพฯ | String |
+        | receiverName | ชื่อผู้รับ | String |
+        | latitude | ตำแหน่งละติจูดที่ทำการไปรษณีย์  
+        \*\*ถ้าไม่มีให้ใส่ `""` | String |
+        | longtitude | ตำแหน่งลองติจูดที่ทำการไปรษณีย์  
+        \*\*ถ้าไม่มีให้ใส่ `""` | String |
+        | signature | ลายเซ็นผู้รับ  
+        \*\*ถ้าไม่มีให้ใส่ `""` | String |
+
+        #### Response
+
+        | **Name** | **Detail** | **Type** |
+        | --- | --- | --- |
+        | errorCode | หมายเลข ErrorCode (Success=000) | String |
+        | errorDetail | รายละเอียดของ Error | String |
+        | status | สถานะของ Error (true or false) | String |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - barcode: JB084325131TH
+                  weight: 1000
+                  cod: 'no'
+                  status: '2'
+                  statusDescription: ปณ.ต้นทางรับฝากแล้ว
+                  statusDate: 17/09/2024 16:27:19
+                  stationPostcode: '20230'
+                  station: ศรีราชา/ชลบุรี
+                  receiverName: ''
+                  latitude: ''
+                  longtitude: ''
+                  signature: ''
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Tue, 17 Sep 2024 09:33:44 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            etag:
+              schema:
+                type: string
+                example: W/"3b-ejMK86QMkqqPDZFVVCItNQSoyls"
+            function-execution-id:
+              schema:
+                type: string
+                example: o6bu8o61j8t7
+            x-cloud-trace-context:
+              schema:
+                type: string
+                example: c912d65e2e364273945d50545e373f86;o=1
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '794'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '32'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            CF-Cache-Status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=VC8%2BtXkD8of8wI6otA7lp1K9NtYNygz4Ao5usvARKUK6T18u%2FfoUnYt3GAhW%2BGMlCpMfWsmP5ipEyeu78ljnmnRmusysSR94Oxl1iJEkjI164yM%2FS3RzuSRfM8GbbYM4o5oPl8U9rQNXtHIe"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8c4818a8c9787b48-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                errorCode: '000'
+                errorDetail: success
+                status: 'true'
+  /v1/print-label:
+    post:
+      tags:
+        - Print Label
+      summary: Print Label
+      description: |-
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | size | ขนาดใบลาเบล  
+        **ค่าที่เป็นไปได้**:  
+        TSC\_100\_75, TSC\_100\_100, TSC\_100\_150, TSC\_100\_180, MINI\_57\_100 | String | **Required** |
+        | parcelIds | รหัสพัสดุ  
+        **เงื่อนไข** : ต้องเป็นอาร์เรย์ของรหัสพัสดุที่ต้องการ โดยจะต้องไม่เป็นค่าว่างและต้องมีจำนวนไม่เกิน 20 รายการ | String\[\] | **Required** |
+
+        #### Response
+
+        Response จะส่งกลับมาเป็นไฟล์ PDF ในรูปแบบของ `blob` โดยผู้ใช้งานสามารถใช้ข้อมูลที่ได้รับเพื่อนำไปแสดงผลหรือดาวน์โหลดไฟล์ PDF ได้
+
+        **Response Headers:**
+
+        *   `Content-Type`: `application/pdf`
+            
+            *   ระบุว่าการตอบกลับเป็นไฟล์ประเภท PDF
+        *   `Content-Disposition`: `attachment;filename={timestamp}.pdf`
+            
+            *   ระบุให้ไฟล์ถูกดาวน์โหลดลงในเครื่องของผู้ใช้งาน โดยไฟล์จะถูกตั้งชื่อด้วย timestamp ของเวลาที่สร้างไฟล์ (เช่น `attachment;filename=1691927258234.pdf`)
+
+        **Response Body:**
+
+        *   ไฟล์ PDF จะถูกส่งกลับมาในรูปแบบของ Binary Data (`blob`)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                size: TSC_100_75
+                parcelIds:
+                  - 7b50a746b657a0c5e96ba46888afe37b2389be97c298e3774f64fcfd9f9a575fOP1723535199935
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          description: Add Access token here
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: text/html
+            content-disposition:
+              schema:
+                type: string
+                example: attachment;filename=1723543704932.pdf
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: ''
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 400
+                message: The number of parcel IDs must be greater than 0 and not exceed the limit of 20. Please adjust the number of parcel IDs and try again.
+                name: BadRequestException
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 404
+                message: No parcels found for the given reference IDs with this account.
+                name: NotFoundException
+        default:
+          description: default
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 400
+                message: The number of parcel IDs must be greater than 0 and not exceed the limit of 20. Please adjust the number of parcel IDs and try again.
+                name: BadRequestException
+  /v1/account/sender-cod/image:
+    post:
+      tags:
+        - Verify COD Account
+      summary: Upload Image by File
+      description: |-
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | file | ไฟล์รูปภาพ  
+        **ชนิดไฟล์ที่เป็นไปได้**:  
+        png, jpg | File | **Required** |
+        | type | ชนิดของรูปภาพ  
+        **ค่าที่เป็นไปได้**:  
+        BOOKBANK, ID\_CARD, PERSON\_ID\_CARD, CERTIFICATE | String | **Required** |
+
+        สำหรับการอัปโหลดไฟล์เพื่อยืนยันตัวตนในระบบ แบ่งออกเป็น 2 ประเภทหลัก ดังนี้:
+
+        ### 1\. บุคคลธรรมดา:
+
+        ผู้ใช้งานที่เป็นบุคคลธรรมดาจะต้องทำการอัปโหลดไฟล์รูปภาพตามรายละเอียดดังต่อไปนี้:
+
+        *   **ภาพถ่ายบัตรประชาชน:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพบัตรประชาชนที่ชัดเจน โดยระบุ **type** ใน request body เป็น **ID\_CARD**
+            
+        *   **ภาพถ่ายหน้าสมุดบัญชีธนาคาร:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหน้าสมุดบัญชีธนาคารที่แสดงข้อมูลบัญชีชัดเจน โดยระบุ **type** ใน request body เป็น **BOOKBANK**
+            
+        *   **ภาพถ่ายหน้าตรงคู่กับบัตรประชาชน:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพที่ถ่ายหน้าตรงพร้อมถือบัตรประชาชนแนบกับใบหน้า โดยระบุ **type** ใน request body เป็น **PERSON\_ID\_CARD**
+            
+
+        ### 2\. นิติบุคคล:
+
+        ผู้ใช้งานที่เป็นนิติบุคคลจะต้องทำการอัปโหลดไฟล์รูปภาพตามรายละเอียดดังต่อไปนี้:
+
+        *   **ภาพถ่ายหนังสือรับรองบริษัท:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหนังสือรับรองบริษัทที่ออกโดยหน่วยงานราชการหรือผู้มีอำนาจ โดยระบุ **type** ใน request body เป็น **CERTIFICATE**
+            
+        *   **ภาพถ่ายหน้าสมุดบัญชีธนาคาร:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหน้าสมุดบัญชีธนาคารที่แสดงข้อมูลบัญชีของบริษัท โดยระบุ **type** ใน request body เป็น **BOOKBANK**
+            
+
+        ### รูปแบบไฟล์ที่รองรับ:
+
+        ระบบรองรับการอัปโหลดไฟล์รูปภาพในรูปแบบต่อไปนี้:
+
+        *   **image/jpeg**
+            
+        *   **image/png**
+            
+
+        ### ข้อกำหนดการอัปโหลด:
+
+        *   ผู้ใช้งานสามารถอัปโหลดได้ครั้งละ 1 ไฟล์ต่อชนิดของรูปภาพในแต่ละคำขอ (Request) เท่านั้น
+            
+        *   หลังจากการอัปโหลดไฟล์สำเร็จ ระบบจะคืนค่าที่อยู่ไฟล์ (Directory) เพื่อให้ผู้ใช้งานนำไปใช้ในขั้นตอนการสมัครบัญชี COD ในขั้นตอนถัดไป
+            
+        *   ขนาดของไฟล์รูปภาพจะต้องไม่เกิน 20 MB
+            
+
+        หากมีข้อผิดพลาดในการอัปโหลดไฟล์หรือชนิดของไฟล์ไม่ถูกต้อง ระบบจะตอบกลับด้วยข้อความแสดงข้อผิดพลาด (Error Message) เพื่อแจ้งให้ผู้ใช้งานทราบถึงปัญหาในการอัปโหลด
+
+        #### Response
+
+        | **Name** | **Detail** | **Type** |
+        | --- | --- | --- |
+        | directory | ที่อยู่ไฟล์ | String |
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  description: sample.png (รับค่าเป็น FILE)
+                  format: binary
+                type:
+                  type: string
+                  example: BOOKBANK
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: 'multipart/form-data; '
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Success (หน้าสมุดบัญชีธนาคาร)
+                  value:
+                    directory: mxp-bookbank-cod-image/mxp-bookbank-cod-image/xxxxxxxxxxxxxxxxx_xxxxxxxxxxxx.png
+                example-1:
+                  summary: Success (บัตรประชาชน)
+                  value:
+                    directory: mxp-identification-cod-image/mxp-identification-cod-image/idCard_xxxxxxxxxxxxxxxxx_xxxxxxxxxxxx.png
+                example-2:
+                  summary: Success (รูปคู่บัตรประชาชน)
+                  value:
+                    directory: mxp-identification-cod-image/mxp-identification-cod-image/PersonIdCard_xxxxxxxxxxxxxxxxx_xxxxxxxxxxxx.png
+                example-3:
+                  summary: Success (หนังสือรับรองบริษัท)
+                  value:
+                    directory: mxp-identification-cod-image/mxp-identification-cod-image/Cert_xxxxxxxxxxxxxxxxx_xxxxxxxxxxxx.png
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 No File Attach
+                  value:
+                    status: 400
+                    message: File is required.
+                    name: BadRequestException
+                example-1:
+                  summary: Error 400 Required Type
+                  value:
+                    status: 400
+                    message: Type is required.
+                    name: BadRequestException
+                example-2:
+                  summary: Error 400 Invalid Type
+                  value:
+                    status: 400
+                    message: Invalid type.
+                    name: BadRequestException
+                example-3:
+                  summary: Error 400 Multiple Files
+                  value:
+                    status: 400
+                    message: You can upload only one file.
+                    name: BadRequestException
+  /v1/account/sender-cod/image-from-url:
+    post:
+      tags:
+        - Verify COD Account
+      summary: Upload Image by Url
+      description: |-
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | url | Public url รูปภาพ | String | **Required** |
+        | type | ชนิดของรูปภาพ  
+        **ค่าที่เป็นไปได้**:  
+        BOOKBANK, ID\_CARD, PERSON\_ID\_CARD, CERTIFICATE | String | **Required** |
+
+        สำหรับการอัปโหลดไฟล์เพื่อยืนยันตัวตนในระบบ แบ่งออกเป็น 2 ประเภทหลัก ดังนี้:
+
+        ### 1\. บุคคลธรรมดา:
+
+        ผู้ใช้งานที่เป็นบุคคลธรรมดาจะต้องทำการอัปโหลดไฟล์รูปภาพตามรายละเอียดดังต่อไปนี้:
+
+        *   **ภาพถ่ายบัตรประชาชน:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพบัตรประชาชนที่ชัดเจน โดยระบุ **type** ใน request body เป็น **ID\_CARD**
+            
+        *   **ภาพถ่ายหน้าสมุดบัญชีธนาคาร:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหน้าสมุดบัญชีธนาคารที่แสดงข้อมูลบัญชีชัดเจน โดยระบุ **type** ใน request body เป็น **BOOKBANK**
+            
+        *   **ภาพถ่ายหน้าตรงคู่กับบัตรประชาชน:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพที่ถ่ายหน้าตรงพร้อมถือบัตรประชาชนแนบกับใบหน้า โดยระบุ **type** ใน request body เป็น **PERSON\_ID\_CARD**
+            
+
+        ### 2\. นิติบุคคล:
+
+        ผู้ใช้งานที่เป็นนิติบุคคลจะต้องทำการอัปโหลดไฟล์รูปภาพตามรายละเอียดดังต่อไปนี้:
+
+        *   **ภาพถ่ายหนังสือรับรองบริษัท:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหนังสือรับรองบริษัทที่ออกโดยหน่วยงานราชการหรือผู้มีอำนาจ โดยระบุ **type** ใน request body เป็น **CERTIFICATE**
+            
+        *   **ภาพถ่ายหน้าสมุดบัญชีธนาคาร:** ผู้ใช้งานต้องอัปโหลดไฟล์รูปภาพหน้าสมุดบัญชีธนาคารที่แสดงข้อมูลบัญชีของบริษัท โดยระบุ **type** ใน request body เป็น **BOOKBANK**
+            
+
+        ### รูปแบบไฟล์ที่รองรับ:
+
+        ระบบรองรับการอัปโหลดไฟล์รูปภาพในรูปแบบต่อไปนี้:
+
+        *   **image/jpeg**
+            
+        *   **image/png**
+            
+
+        ### ข้อกำหนดการอัปโหลด:
+
+        *   ผู้ใช้งานสามารถอัปโหลดได้ครั้งละ 1 ไฟล์ต่อชนิดของรูปภาพในแต่ละคำขอ (Request) เท่านั้น
+            
+        *   หลังจากการอัปโหลดไฟล์สำเร็จ ระบบจะคืนค่าที่อยู่ไฟล์ (Directory) เพื่อให้ผู้ใช้งานนำไปใช้ในขั้นตอนการสมัครบัญชี COD ในขั้นตอนถัดไป
+            
+
+        หากมีข้อผิดพลาดในการอัปโหลดไฟล์หรือชนิดของไฟล์ไม่ถูกต้อง ระบบจะตอบกลับด้วยข้อความแสดงข้อผิดพลาด (Error Message) เพื่อแจ้งให้ผู้ใช้งานทราบถึงปัญหาในการอัปโหลด
+
+        #### Response
+
+        | **Name** | **Detail** | **Type** |
+        | --- | --- | --- |
+        | directory | ที่อยู่ไฟล์ | String |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                url: https://storage.googleapis.com/beta-mxp-image/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%84%E0%B8%B9%E0%B9%88%E0%B8%9A%E0%B8%B1%E0%B8%95%E0%B8%A3.png
+                type: PERSON_ID_CARD
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+      responses:
+        '200':
+          description: OK
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Sat, 12 Oct 2024 20:07:40 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Transfer-Encoding:
+              schema:
+                type: string
+                example: chunked
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"80-mQw/RTBre9BMYaAhbMoKV18+kZ4"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '653'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '2'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=IqXtdRKJxlXAJZOvM5cC4QkvZixRIIcMSsN7b5kO0Zi2OD6r6fef6UobUVcZwo8mvvnrVzHibqmfEw20%2Fv7ymS7EIHR%2B3Ow0UStgFG2e5MoLk3mycCaFDihnihbFPIBzjbJqf8eA4wOmxLNm"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8d19b7a96f1f7b44-BKK
+            Content-Encoding:
+              schema:
+                type: string
+                example: br
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                directory: beta-mxp-identification-cod-image/mxp-identification-cod-image/idCard_669f693984d21500143eb80a_1728763660035.jpg
+        '400':
+          description: Bad Request
+          headers:
+            Date:
+              schema:
+                type: string
+                example: Sat, 12 Oct 2024 20:08:45 GMT
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '72'
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            ratelimit-reset:
+              schema:
+                type: integer
+                example: '1'
+            x-ratelimit-remaining-second:
+              schema:
+                type: integer
+                example: '24'
+            x-ratelimit-limit-second:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-limit:
+              schema:
+                type: integer
+                example: '25'
+            ratelimit-remaining:
+              schema:
+                type: integer
+                example: '24'
+            x-powered-by:
+              schema:
+                type: string
+                example: Express
+            access-control-allow-origin:
+              schema:
+                type: string
+                example: '*'
+            etag:
+              schema:
+                type: string
+                example: W/"48-IbCUpLVdUkgvmlCKwqrEg4sjZ2s"
+            x-kong-upstream-latency:
+              schema:
+                type: integer
+                example: '14'
+            x-kong-proxy-latency:
+              schema:
+                type: integer
+                example: '16'
+            via:
+              schema:
+                type: string
+                example: kong/3.4.2
+            cf-cache-status:
+              schema:
+                type: string
+                example: DYNAMIC
+            Report-To:
+              schema:
+                type: string
+                example: '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=7faMQFlJ6GKXhEI%2BVePWSI2nS6gUJOfsrxaiDfnAGMoDKCJ%2BXkLGQlvEb2BkJQSvISgzeviR%2BPdN9fcio28WfbHGaURBBRiyG%2B%2BNwoimLYCOVs6kvwShKpdHPtHivipYlFZuSlX1imi8ZipT"}],"group":"cf-nel","max_age":604800}'
+            NEL:
+              schema:
+                type: string
+                example: '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+            Server:
+              schema:
+                type: string
+                example: cloudflare
+            CF-RAY:
+              schema:
+                type: string
+                example: 8d19b9452eda7b44-BKK
+            alt-svc:
+              schema:
+                type: string
+                example: h3=":443"; ma=86400
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 Require Url
+                  value:
+                    status: 400
+                    message: Url is required.
+                    name: BadRequestException
+                example-1:
+                  summary: Error 400 Require Type
+                  value:
+                    status: 400
+                    message: Type is required.
+                    name: BadRequestException
+                example-2:
+                  summary: Error 400 Failed to download
+                  value:
+                    status: 400
+                    message: 'Failed to download file from URL: Request failed with status code 403'
+                    name: BadRequestException
+                example-3:
+                  summary: Error 400 Invalid Type
+                  value:
+                    status: 400
+                    message: Invalid type.
+                    name: BadRequestException
+  /v1/account/sender-cod/image/view:
+    post:
+      tags:
+        - Verify COD Account
+      summary: Get Image File
+      description: |-
+        #### Request Body
+
+        | Name | Description | Type | Additional information |
+        | --- | --- | --- | --- |
+        | directory | ที่อยู่ไฟล์ | File | **Required** |
+        | type | ชนิดของรูปภาพ  
+        **ค่าที่เป็นไปได้**:  
+        BOOKBANK, ID\_CARD, PERSON\_ID\_CARD, CERTIFICATE | String | **Required** |
+
+        #### Response
+
+        | **Name** | **Detail** | **Type** |
+        | --- | --- | --- |
+        |  | image file | File |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                directory: beta-mxp-identification-cod-image/mxp-identification-cod-image/idCard_669f693984d21500143eb80a_1728763660035.jpg
+                type: ID_CARD
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /v1/account/sender-cod:
+    post:
+      tags:
+        - Verify COD Account
+      summary: Create Sender COD
+      description: |-
+        #### Request Body
+
+        | **Name** | **Description** | **Type** | **Additional information** |
+        | --- | --- | --- | --- |
+        | bankAccount | ข้อมูลบัญชีธนาคาร | Object | Required |
+        | bankAccount.bankInitial | อักษรย่อธนาคาร | String | Required  
+        **ค่าที่เป็นไปได้**  
+        KBANK, SCB, BBL, KTB, TMB, BAY |
+        | bankAccount.holderName | ชื่อบนสมุดบัญชีธนาคาร | String | Required |
+        | bankAccount.number | หมายเลขสมุดบัญชีธนาคาร | String | Required |
+        | bankAccount.bookBankImage | ภาพถ่ายหน้าสมุดบัญชีธนาคาร | String | Required  
+        (ข้อมูลที่ได้จากการอัพโหลดกับระบบ) |
+        | identification | ข้อมูลการยืนยันตัวตน | Object | Required |
+        | identification.number | หมายเลขประจำตัวประชาชน / หมายเลขนิติบุคคล | String | Required |
+        | identification.image | ภาพถ่ายบัตรประชาชน / ภาพถ่ายหนังสือรับรองบริษัท | String | Required  
+        (ข้อมูลที่ได้จากการอัพโหลดกับระบบ) |
+        | identification.selfPicture | ภาพถ่ายหน้าตรงคู่กับบัตรประชาชน | String | Required กรณีที่เป็นประเภทบุคคลธรรมดา  
+        (ข้อมูลที่ได้จากการอัพโหลดกับระบบ) |
+        | identification.type | ประเภทบัญชี COD | String | Required  
+        **ค่าที่เป็นไปได้**  
+        PERSON, LEGAL\_ENTITY |
+        | name | ชื่อผู้ส่ง | String | Required |
+        | phoneNumber | เบอร์โทรศัพท์ผู้ส่ง | String | Required |
+        | email | อีเมลผู้ส่ง | String | Required |
+        | address | ที่อยู่ผู้ส่ง | String | Required |
+        | subDistrict | ตำบลผู้ส่ง | String | Required |
+        | district | อำเภอผู้ส่ง | String | Required |
+        | province | จังหวัดผู้ส่ง | String | Required |
+        | zipCode | รหัสไปรษณีย์ผู้ส่ง | String | Required |
+
+        **ฟิลด์** bankAccount.bookBankImage: รูปภาพหน้าสมุดบัญชีธนาคาร
+
+        **ฟิลด์** identification.image: รูปภาพสำหรับการยืนยันตัวตนจะแตกต่างกันไปตามประเภทของผู้ใช้งาน:
+
+        *   **บุคคลธรรมดา**: ต้องอัปโหลดรูปภาพ **บัตรประชาชน**
+            
+        *   **นิติบุคคล**: ต้องอัปโหลดรูปภาพ **หนังสือรับรองบริษัท**
+            
+
+        **ฟิลด์** identification.selfPicture: รูปภาพใช้สำหรับกรณีที่ผู้ใช้งานเป็นบุคคลธรรมดาเท่านั้น
+
+        *   ถ่ายรูปตนเอง **หน้าตรง** พร้อมถือ **บัตรประชาชน** แนบกับใบหน้า และให้เห็นบัตรประชานอย่างชัดเจน
+
+        #### **การอัปโหลดไฟล์รูปภาพสำหรับฟิลด์ต่าง ๆ**
+
+        สำหรับฟิลด์ bankAccount.bookBankImage, identification.image และ identification.selfPicture
+
+        ผู้ใช้งานจำเป็นต้องอัปโหลดไฟล์รูปภาพที่เกี่ยวข้องจาก Upload Image API
+
+        *   เมื่ออัปโหลดสำเร็จ ระบบจะสร้าง **directory path** ของไฟล์ที่ถูกจัดเก็บ
+            
+        *   ผู้ใช้งานต้องนำ directory path มาใส่ตามฟิลด์ bankAccount.bookBankImage, identification.image และ identification.selfPicture ให้ตรงตามประเภท
+            
+        *   directory path จะต้องมาจาก Upload Image API เท่านั้น เพราะจะมีผลกับการตรวจสอบข้อมูลต่อไป
+            
+
+        #### ตารางแสดงชื่ออักษรย่อธนาคารที่ระบบรองรับ
+
+        | **Bank Initial** | **ธนาคาร** |
+        | --- | --- |
+        | KBANK | ธนาคารกสิกรไทย |
+        | SCB | ธนาคารไทยพาณิชย์ |
+        | BBL | ธนาคารธนาคารกรุงเทพไทย |
+        | KTB | ธนาคารกรุงไทย |
+        | TMB | ธนาคารทหารไทยธนชาต |
+        | BAY | ธนาคารกรุงศรี |
+
+        #### Response
+
+        | **Name** | **Description** | **Type** |
+        | --- | --- | --- |
+        | message | ข้อมูลสถานะการสร้างบัญชี COD | String |
+        | data | ข้อมูลตอบกลับหลังจากการสร้างสร้างบัญชี COD | Object |
+
+        ##### Data Detail
+
+        | **Name** | **Description** | **Type** |
+        | --- | --- | --- |
+        | bankAccount | ข้อมูลผู้ส่ง | Object |
+        | bankAccount.bankFullName | ชื่อเต็มธนาคาร | String |
+        | bankAccount.bankInitial | อักษรย่อธนาคาร | String |
+        | bankAccount.holderName | ชื่อบนสมุดบัญชีธนาคาร | String |
+        | bankAccount.number | หมายเลขสมุดบัญชีธนาคาร | String |
+        | bankAccount.bookBankImage | ภาพถ่ายหน้าสมุดบัญชีธนาคาร | String |
+        | approval | สถานะการอนุมัติ | String |
+        | updateApprovalDate | เวลาการอนุมัติ | String |
+        | name | ชื่อผู้ส่ง | String |
+        | phoneNumber | เบอร์โทรศัพท์ผู้ส่ง | String |
+        | email | อีเมลผู้ส่ง | String |
+        | address | ที่อยู่ผู้ส่ง | String |
+        | subDistrict | ตำบลผู้ส่ง | String |
+        | district | อำเภอผู้ส่ง | String |
+        | province | จังหวัดผู้ส่ง | String |
+        | zipCode | รหัสไปรษณีย์ผู้ส่ง | String |
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                bankAccount:
+                  bankInitial: KBANK
+                  holderName: Test
+                  number: '0000000000'
+                  bookBankImage: mxp-bookbank-cod-image/mxp-bookbank-cod-image/1707213724144.png
+                identification:
+                  number: '1111111111111'
+                  image: mxp-indentification-cod-image/mxp-indentification-cod-image/idCard-1707213724148.png
+                  selfPicture: mxp-indentification-cod-image/mxp-indentification-cod-image/PersonIdCard-1707213724149.png
+                  type: PERSON
+                name: Test
+                phoneNumber: '0900000000'
+                email: test@test.com
+                address: 99/9
+                subDistrict: เกาะขวาง
+                district: เมืองจันทบุรี
+                province: จันทบุรี
+                zipCode: '22000'
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Success (บุคคลธรรมดา)
+                  value:
+                    message: create sender cod success
+                    data:
+                      bankAccount:
+                        bankFullName: ธนาคารกสิกรไทย (KBANK)
+                        bankInitial: KBANK
+                        holderName: Test
+                        number: '00000000000'
+                        bookBankImage: mxp-bookbank-cod-image/mxp-bookbank-cod-image/Cert-1707213724144.png
+                      approval: PENDING
+                      updateApprovalDate: '2024-10-09 06:07:06'
+                      name: Test
+                      phoneNumber: '0900000004'
+                      email: test@test.com
+                      address: 99/9
+                      subDistrict: เกาะขวาง
+                      district: เมืองจันทบุรี
+                      province: จันทบุรี
+                      zipCode: '22000'
+                example-1:
+                  summary: Success (นิติบุคคล)
+                  value:
+                    message: create sender cod success
+                    data:
+                      bankAccount:
+                        bankFullName: ธนาคารกสิกรไทย (KBANK)
+                        bankInitial: KBANK
+                        holderName: Test
+                        number: '00000000000'
+                        bookBankImage: mxp-bookbank-cod-image/mxp-bookbank-cod-image/1707213724144.png
+                      approval: PENDING
+                      updateApprovalDate: '2024-10-09 06:07:06'
+                      name: Test
+                      phoneNumber: '0900000004'
+                      email: test@test.com
+                      address: 99/9
+                      subDistrict: เกาะขวาง
+                      district: เมืองจันทบุรี
+                      province: จันทบุรี
+                      zipCode: '22000'
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 (Invalid Bank Initial)
+                  value:
+                    status: 400
+                    message: bankInitial has wrong format. Please recheck bankInitial again.
+                    name: BadRequestException
+                example-1:
+                  summary: Error 400 (Invalid Type)
+                  value:
+                    status: 400
+                    message: Invalid Type.
+                    name: BadRequestException
+                example-2:
+                  summary: Error 400 (บุคคลธรรมดา แต่ไม่แนบรูปคู่บัตร)
+                  value:
+                    status: 400
+                    message: Self picture is required for PERSON type
+                    name: BadRequestException
+                example-3:
+                  summary: Error 400 (Invalid Input)
+                  value:
+                    status: 400
+                    message: Invalid input. Please review your details and try again.
+                    name: BadRequestException
+    get:
+      tags:
+        - Verify COD Account
+      summary: Get Sender COD
+      description: |-
+        ![](assets/sender-cod-example.png)
+
+        ##### Request Query Params
+
+        | Name | **Description** | Type | **Additional information** |
+        | --- | --- | --- | --- |
+        | email | Email ของผู้ส่ง COD _**\*กำหนดการค้นหา email จำเป็นต้องใส่ email ตาม email pattern**_\_\_\_\__\*_  
+        _ตัวอย่างเช่น  
+        Valid_:  
+        \- [test@example.com](mailto:test@example.com)  
+        _Invalid_:  
+        \- test@.com  
+        \- test@domain  
+        \- @domain.com | String | Optional Condition  
+        ( จำเป็นต้องใส่การค้นหาด้วย email หรือ phoneNumber หรือ ค้นหาทั้ง email และ phoneNumber ) |
+        | phoneNumber | เบอร์โทร ของผู้ส่ง COD _**\*กำหนดการค้นหา เบอร์โทรต้อง มากกว่า 9 ตัว และไม่เกิน 10**_ _ตัว\*_ | Number | Optional Condition  
+        ( จำเป็นต้องใส่การค้นหาด้วย email หรือ phoneNumber หรือ ค้นหาทั้ง email และ phoneNumber ) |
+
+        ##### **Response**
+
+        | Name | **Description** | Type |
+        | --- | --- | --- |
+        | data | ข้อมูลผู้ส่ง COD | Array |
+
+        ##### **Data detail**
+
+        | **Name** | **Description** | **Type** |
+        | --- | --- | --- |
+        | bankAccount | ข้อมูลผู้ส่ง | Object |
+        | bankAccount.bankFullName | ชื่อเต็มธนาคาร | String |
+        | bankAccount.bankInitial | อักษรย่อธนาคาร | String |
+        | bankAccount.holderName | ชื่อบนสมุดบัญชีธนาคาร | String |
+        | bankAccount.number | หมายเลขสมุดบัญชีธนาคาร | String |
+        | bankAccount.bookBankImage | ภาพถ่ายหน้าสมุดบัญชีธนาคาร | String |
+        | approval | สถานะการอนุมัติ  
+        ประกอบด้วย 3 สถานะ  
+        "PENDING" รอการตรวจสอบ,  
+        "APPROVED" ผ่านการตรวจสอบ,  
+        "NOT\_APPROVED" ไม่ผ่านการตรวจสอบ, | String |
+        | updateApprovalDate | เวลาการอนุมัติ | String |
+        | note | ข้อมูล เหตุผลการไม่อนุมัติข้อมูล | String |
+        | name | ชื่อผู้ส่ง | String |
+        | phoneNumber | เบอร์โทรศัพท์ผู้ส่ง | String |
+        | email | อีเมลผู้ส่ง | String |
+        | address | ที่อยู่ผู้ส่ง | String |
+        | subDistrict | ตำบลผู้ส่ง | String |
+        | district | อำเภอผู้ส่ง | String |
+        | province | จังหวัดผู้ส่ง | String |
+        | zipCode | รหัสไปรษณีย์ผู้ส่ง | String |
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: Bearer <YOUR_ACCESS_TOKEN>
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                example-0:
+                  summary: Get Sender COD
+                  value: |-
+                    {
+                        "data": [
+                            {
+                                "bankAccount": {
+                                    "bankFullName": "ธนาคารกสิกรไทย (KBANK)",
+                                    "bankInitial": "KBANK",
+                                    "holderName": "มายเอกซ์เพลส น่ารัก",
+                                    "number": "00000000011",
+                                    "bookBankImage": "beta-mxp-bookbank-cod-image/mxp-bookbank-cod-image/662f048bfbd1db001302450e_1727885297312.jpg"
+                                },
+                                "approval": "PENDING",
+                                "updateApprovalDate": "2024-10-08 23:08:18",
+                                "note": "",
+                                "name": "มายเอกซ์เพลส น่ารัก",
+                                "phoneNumber": "0989392917",
+                                "email": "myexpress.international@gmail.com",
+                                "address": "123",
+                                "subDistrict": "เกาะขวาง",
+                                "district": "เมืองจันทบุรี",
+                                "province": "จันทบุรี",
+                                "zipCode": "22000"
+                            }
+                        ]
+                    }
+                example-1:
+                  summary: Success  (APPROVED)
+                  value: |-
+                    {
+                        "data": [
+                            {
+                                "bankAccount": {
+                                    "bankFullName": "ธนาคารกสิกรไทย (KBANK)",
+                                    "bankInitial": "KBANK",
+                                    "holderName": "มายเอกซ์เพลส น่ารัก",
+                                    "number": "00000000011",
+                                    "bookBankImage": "beta-mxp-bookbank-cod-image/mxp-bookbank-cod-image/662f048bfbd1db001302450e_1727885297312.jpg"
+                                },
+                                "approval": "APPROVED",
+                                "updateApprovalDate": "2024-10-08 23:08:18",
+                                "note": "",
+                                "name": "มายเอกซ์เพลส น่ารัก",
+                                "phoneNumber": "0989392917",
+                                "email": "myexpress.international@gmail.com",
+                                "address": "123",
+                                "subDistrict": "เกาะขวาง",
+                                "district": "เมืองจันทบุรี",
+                                "province": "จันทบุรี",
+                                "zipCode": "22000"
+                            }
+                        ]
+                    }
+                example-2:
+                  summary: Success  (NOT_APPROVED)
+                  value: |-
+                    {
+                        "data": [
+                            {
+                                "bankAccount": {
+                                    "bankFullName": "ธนาคารกสิกรไทย (KBANK)",
+                                    "bankInitial": "KBANK",
+                                    "holderName": "มายเอกซ์เพลส น่ารัก",
+                                    "number": "00000000011",
+                                    "bookBankImage": "beta-mxp-bookbank-cod-image/mxp-bookbank-cod-image/662f048bfbd1db001302450e_1727885297312.jpg"
+                                },
+                                "approval": "NOT_APPROVED",
+                                "updateApprovalDate": "2024-10-08 23:08:18",
+                                "note": "หนังสือรับรองบริษัทมีอายุเกิน 6 เดือน,มีข้อความ/ลายน้ำ ทับซ้อนข้อมูล",
+                                "name": "มายเอกซ์เพลส น่ารัก",
+                                "phoneNumber": "0989392917",
+                                "email": "myexpress.international@gmail.com",
+                                "address": "123",
+                                "subDistrict": "เกาะขวาง",
+                                "district": "เมืองจันทบุรี",
+                                "province": "จันทบุรี",
+                                "zipCode": "22000"
+                            }
+                        ]
+                    }
+        '400':
+          description: Bad Request
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Error 400 (Invalid search)
+                  value:
+                    status: 400
+                    message: Phone number or email not found.
+                    name: BadRequestException
+                example-1:
+                  summary: ERROR 400 (Invalid phone number)
+                  value:
+                    status: 400
+                    message: Phone number invalid length
+                    name: BadRequestException
+                example-2:
+                  summary: ERROR 400 (Invalid email pattern)
+                  value:
+                    status: 400
+                    message: Invalid email format
+                    name: BadRequestException
+        '404':
+          description: Not Found
+          headers:
+            Content-Type:
+              schema:
+                type: string
+                example: application/json
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: 404
+                message: COD Account Not Found
+                name: NotFoundException
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: Access token จาก Generate Access Token endpoint
+security:
+  - bearerAuth: []
