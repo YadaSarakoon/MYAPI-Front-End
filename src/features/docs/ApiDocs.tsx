@@ -4,7 +4,7 @@ import logo from '../../assets/logo.png';
 
 
 /* ============================================================
-   TYPES
+  TYPES
    ============================================================ */
 
 import {
@@ -40,10 +40,9 @@ function MethodChip({
         inline-flex shrink-0 items-center justify-center
         rounded-md border font-mono font-bold
         ${style.bg} ${style.text} ${style.border}
-        ${
-          size === 'sm'
-            ? 'px-2 py-0.5 text-xs'
-            : 'px-2.5 py-1 text-xs'
+        ${size === 'sm'
+          ? 'px-2 py-0.5 text-xs'
+          : 'px-2.5 py-1 text-xs'
         }
       `}
     >
@@ -237,28 +236,28 @@ const REQUEST_LANGUAGES: {
   label: string;
   clients: { id: RequestClientId; label: string }[];
 }[] = [
-  { id: 'c', label: 'C', clients: [{ id: 'c-libcurl', label: 'libcurl' }] },
-  { id: 'csharp', label: 'C#', clients: [{ id: 'csharp-httpclient', label: 'HttpClient' }, { id: 'csharp-restsharp', label: 'RestSharp' }] },
-  { id: 'clojure', label: 'Clojure', clients: [{ id: 'clojure-clj-http', label: 'clj-http' }] },
-  { id: 'dart', label: 'Dart', clients: [{ id: 'dart-http', label: 'package:http' }] },
-  { id: 'fsharp', label: 'F#', clients: [{ id: 'fsharp-httpclient', label: 'HttpClient' }] },
-  { id: 'go', label: 'Go HTTP', clients: [{ id: 'go-net-http', label: 'net/http' }] },
-  { id: 'java', label: 'Java', clients: [{ id: 'java-okhttp', label: 'OkHttp' }, { id: 'java-unirest', label: 'Unirest' }] },
-  { id: 'javascript', label: 'JavaScript', clients: [{ id: 'javascript-fetch', label: 'Fetch' }, { id: 'javascript-axios', label: 'Axios' }] },
-  { id: 'julia', label: 'Julia', clients: [{ id: 'julia-http', label: 'HTTP.jl' }] },
-  { id: 'kotlin', label: 'Kotlin', clients: [{ id: 'kotlin-okhttp', label: 'OkHttp' }, { id: 'kotlin-fuel', label: 'Fuel' }] },
-  { id: 'node', label: 'Node.js', clients: [{ id: 'node-axios', label: 'Axios' }, { id: 'node-fetch', label: 'Fetch' }] },
-  { id: 'objective-c', label: 'Objective-C', clients: [{ id: 'objc-nsurlsession', label: 'NSURLSession' }] },
-  { id: 'ocaml', label: 'OCaml', clients: [{ id: 'ocaml-cohttp', label: 'Cohttp' }] },
-  { id: 'php', label: 'PHP', clients: [{ id: 'php-guzzle', label: 'Guzzle' }, { id: 'php-curl', label: 'cURL' }] },
-  { id: 'powershell', label: 'PowerShell', clients: [{ id: 'powershell-restmethod', label: 'Invoke-RestMethod' }] },
-  { id: 'python', label: 'Python', clients: [{ id: 'python-requests', label: 'Requests' }, { id: 'python-httpclient', label: 'http.client' }] },
-  { id: 'r', label: 'R', clients: [{ id: 'r-httr', label: 'httr' }, { id: 'r-curl', label: 'curl' }] },
-  { id: 'ruby', label: 'Ruby', clients: [{ id: 'ruby-faraday', label: 'Faraday' }, { id: 'ruby-nethttp', label: 'Net::HTTP' }] },
-  { id: 'rust', label: 'Rust', clients: [{ id: 'rust-reqwest', label: 'reqwest' }] },
-  { id: 'shell', label: 'Shell', clients: [{ id: 'shell-curl', label: 'cURL' }, { id: 'shell-httpie', label: 'HTTPie' }] },
-  { id: 'swift', label: 'Swift', clients: [{ id: 'swift-urlsession', label: 'URLSession' }] },
-];
+    { id: 'c', label: 'C', clients: [{ id: 'c-libcurl', label: 'libcurl' }] },
+    { id: 'csharp', label: 'C#', clients: [{ id: 'csharp-httpclient', label: 'HttpClient' }, { id: 'csharp-restsharp', label: 'RestSharp' }] },
+    { id: 'clojure', label: 'Clojure', clients: [{ id: 'clojure-clj-http', label: 'clj-http' }] },
+    { id: 'dart', label: 'Dart', clients: [{ id: 'dart-http', label: 'package:http' }] },
+    { id: 'fsharp', label: 'F#', clients: [{ id: 'fsharp-httpclient', label: 'HttpClient' }] },
+    { id: 'go', label: 'Go HTTP', clients: [{ id: 'go-net-http', label: 'net/http' }] },
+    { id: 'java', label: 'Java', clients: [{ id: 'java-okhttp', label: 'OkHttp' }, { id: 'java-unirest', label: 'Unirest' }] },
+    { id: 'javascript', label: 'JavaScript', clients: [{ id: 'javascript-fetch', label: 'Fetch' }, { id: 'javascript-axios', label: 'Axios' }] },
+    { id: 'julia', label: 'Julia', clients: [{ id: 'julia-http', label: 'HTTP.jl' }] },
+    { id: 'kotlin', label: 'Kotlin', clients: [{ id: 'kotlin-okhttp', label: 'OkHttp' }, { id: 'kotlin-fuel', label: 'Fuel' }] },
+    { id: 'node', label: 'Node.js', clients: [{ id: 'node-axios', label: 'Axios' }, { id: 'node-fetch', label: 'Fetch' }] },
+    { id: 'objective-c', label: 'Objective-C', clients: [{ id: 'objc-nsurlsession', label: 'NSURLSession' }] },
+    { id: 'ocaml', label: 'OCaml', clients: [{ id: 'ocaml-cohttp', label: 'Cohttp' }] },
+    { id: 'php', label: 'PHP', clients: [{ id: 'php-guzzle', label: 'Guzzle' }, { id: 'php-curl', label: 'cURL' }] },
+    { id: 'powershell', label: 'PowerShell', clients: [{ id: 'powershell-restmethod', label: 'Invoke-RestMethod' }] },
+    { id: 'python', label: 'Python', clients: [{ id: 'python-requests', label: 'Requests' }, { id: 'python-httpclient', label: 'http.client' }] },
+    { id: 'r', label: 'R', clients: [{ id: 'r-httr', label: 'httr' }, { id: 'r-curl', label: 'curl' }] },
+    { id: 'ruby', label: 'Ruby', clients: [{ id: 'ruby-faraday', label: 'Faraday' }, { id: 'ruby-nethttp', label: 'Net::HTTP' }] },
+    { id: 'rust', label: 'Rust', clients: [{ id: 'rust-reqwest', label: 'reqwest' }] },
+    { id: 'shell', label: 'Shell', clients: [{ id: 'shell-curl', label: 'cURL' }, { id: 'shell-httpie', label: 'HTTPie' }] },
+    { id: 'swift', label: 'Swift', clients: [{ id: 'swift-urlsession', label: 'URLSession' }] },
+  ];
 
 type LanguageIconName = 'shell' | 'ruby' | 'node' | 'php' | 'python' | 'more';
 
@@ -327,10 +326,9 @@ function clientTabClass(active: boolean) {
   return `
     -mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-2.5
     text-xs transition-colors
-    ${
-      active
-        ? 'border-slate-900 font-semibold text-slate-900'
-        : 'border-transparent font-medium text-slate-500 hover:text-slate-800'
+    ${active
+      ? 'border-slate-900 font-semibold text-slate-900'
+      : 'border-transparent font-medium text-slate-500 hover:text-slate-800'
     }
   `;
 }
@@ -382,8 +380,8 @@ function RequestClientPicker({
       clients: group.label.toLowerCase().includes(keyword)
         ? group.clients
         : group.clients.filter((item) =>
-            item.label.toLowerCase().includes(keyword),
-          ),
+          item.label.toLowerCase().includes(keyword),
+        ),
     })).filter((group) => group.clients.length > 0);
   }, [keyword]);
 
@@ -479,11 +477,10 @@ function RequestClientPicker({
             : `
               inline-flex min-w-0 items-center gap-1.5 rounded-md px-2 py-1
               text-xs font-semibold transition-colors
-              ${
-                open
-                  ? 'bg-slate-800 text-white'
-                  : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-              }
+              ${open
+              ? 'bg-slate-800 text-white'
+              : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+            }
             `
         }
       >
@@ -499,9 +496,8 @@ function RequestClientPicker({
             </span>
 
             <svg
-              className={`h-3 w-3 shrink-0 transition-transform ${
-                open ? 'rotate-180' : ''
-              }`}
+              className={`h-3 w-3 shrink-0 transition-transform ${open ? 'rotate-180' : ''
+                }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -586,17 +582,15 @@ function RequestClientPicker({
                           flex w-full items-center gap-2.5 rounded-lg
                           px-2.5 py-2 text-left text-xs transition-colors
                           hover:bg-slate-100
-                          ${
-                            selected
-                              ? 'bg-slate-50 font-semibold text-slate-900'
-                              : 'text-slate-700'
+                          ${selected
+                            ? 'bg-slate-50 font-semibold text-slate-900'
+                            : 'text-slate-700'
                           }
                         `}
                       >
                         <span
-                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${
-                            selected ? 'border-indigo-600' : 'border-slate-300'
-                          }`}
+                          className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? 'border-indigo-600' : 'border-slate-300'
+                            }`}
                         >
                           {selected && (
                             <span className="h-2 w-2 rounded-full bg-indigo-600" />
@@ -801,357 +795,357 @@ function requestAsCode(
     if (formFields) {
       if (client === 'node-axios' || client === 'javascript-axios') {
         return [
-        "const axios = require('axios');",
-        "const FormData = require('form-data');",
-        "const fs = require('node:fs');",
-        '',
-        'const form = new FormData();',
-        ...formFields.map((field) =>
-          field.key === 'file'
-            ? `form.append(${JSON.stringify(field.key)}, fs.createReadStream(${JSON.stringify(field.value)}));`
-            : `form.append(${JSON.stringify(field.key)}, ${JSON.stringify(field.value)});`,
-        ),
-        'axios.request({',
-        `  method: ${JSON.stringify(endpoint.method)},`,
-        `  url: ${JSON.stringify(url)},`,
-        `  headers: { ...form.getHeaders(), ${headers.map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`).join(', ')} },`,
-        '  data: form,',
-        '}).then((response) => console.log(response.data));',
+          "const axios = require('axios');",
+          "const FormData = require('form-data');",
+          "const fs = require('node:fs');",
+          '',
+          'const form = new FormData();',
+          ...formFields.map((field) =>
+            field.key === 'file'
+              ? `form.append(${JSON.stringify(field.key)}, fs.createReadStream(${JSON.stringify(field.value)}));`
+              : `form.append(${JSON.stringify(field.key)}, ${JSON.stringify(field.value)});`,
+          ),
+          'axios.request({',
+          `  method: ${JSON.stringify(endpoint.method)},`,
+          `  url: ${JSON.stringify(url)},`,
+          `  headers: { ...form.getHeaders(), ${headers.map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`).join(', ')} },`,
+          '  data: form,',
+          '}).then((response) => console.log(response.data));',
         ].join('\n');
       }
     }
 
-      const jsonBody = JSON.stringify(body);
-      const headersObject = Object.fromEntries(headers);
-      const headerPairs = Object.entries(headersObject)
-        .map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`)
-        .join(', ');
+    const jsonBody = JSON.stringify(body);
+    const headersObject = Object.fromEntries(headers);
+    const headerPairs = Object.entries(headersObject)
+      .map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`)
+      .join(', ');
 
-      if (client === 'shell-httpie') {
-        return [
-          `http ${endpoint.method} ${url}`,
-          ...headers.map(([key, value]) => `${key}:${value}`),
-          ...(hasBody ? [jsonBody] : []),
-        ].join(' \\\n  ');
-      }
+    if (client === 'shell-httpie') {
+      return [
+        `http ${endpoint.method} ${url}`,
+        ...headers.map(([key, value]) => `${key}:${value}`),
+        ...(hasBody ? [jsonBody] : []),
+      ].join(' \\\n  ');
+    }
 
-      if (client === 'javascript-fetch' || client === 'node-fetch') {
-        return [
-          ...(client === 'node-fetch' ? ["const fetch = require('node-fetch');", ''] : []),
-          `const response = await fetch(${JSON.stringify(url)}, {`,
-          `  method: ${JSON.stringify(endpoint.method)},`,
-          `  headers: { ${headerPairs} },`,
-          ...(hasBody ? [`  body: ${JSON.stringify(jsonBody)},`] : []),
-          '});',
-          'console.log(await response.text());',
-        ].join('\n');
-      }
+    if (client === 'javascript-fetch' || client === 'node-fetch') {
+      return [
+        ...(client === 'node-fetch' ? ["const fetch = require('node-fetch');", ''] : []),
+        `const response = await fetch(${JSON.stringify(url)}, {`,
+        `  method: ${JSON.stringify(endpoint.method)},`,
+        `  headers: { ${headerPairs} },`,
+        ...(hasBody ? [`  body: ${JSON.stringify(jsonBody)},`] : []),
+        '});',
+        'console.log(await response.text());',
+      ].join('\n');
+    }
 
-      if (client === 'powershell-restmethod') {
-        return [
-          `$headers = ${headersJsonToPowerShell(Object.fromEntries(headers))}`,
-          ...(hasBody ? [`$body = @'\n${JSON.stringify(body, null, 2)}\n'@`] : []),
-          `Invoke-RestMethod -Method ${endpoint.method} -Uri '${url}' -Headers $headers${hasBody ? ' -ContentType "application/json" -Body $body' : ''}`,
-        ].join('\n');
-      }
+    if (client === 'powershell-restmethod') {
+      return [
+        `$headers = ${headersJsonToPowerShell(Object.fromEntries(headers))}`,
+        ...(hasBody ? [`$body = @'\n${JSON.stringify(body, null, 2)}\n'@`] : []),
+        `Invoke-RestMethod -Method ${endpoint.method} -Uri '${url}' -Headers $headers${hasBody ? ' -ContentType "application/json" -Body $body' : ''}`,
+      ].join('\n');
+    }
 
-      if (client === 'c-libcurl') {
-        return [
-          '#include <curl/curl.h>',
-          '',
-          'CURL *curl = curl_easy_init();',
-          'struct curl_slist *headers = NULL;',
-          ...headers.map(([key, value]) => `headers = curl_slist_append(headers, ${JSON.stringify(`${key}: ${value}`)});`),
-          `curl_easy_setopt(curl, CURLOPT_URL, ${JSON.stringify(url)});`,
-          `curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, ${JSON.stringify(endpoint.method)});`,
-          'curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);',
-          ...(hasBody ? [`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, ${JSON.stringify(jsonBody)});`] : []),
-          'curl_easy_perform(curl);',
-          'curl_slist_free_all(headers);',
-          'curl_easy_cleanup(curl);',
-        ].join('\n');
-      }
+    if (client === 'c-libcurl') {
+      return [
+        '#include <curl/curl.h>',
+        '',
+        'CURL *curl = curl_easy_init();',
+        'struct curl_slist *headers = NULL;',
+        ...headers.map(([key, value]) => `headers = curl_slist_append(headers, ${JSON.stringify(`${key}: ${value}`)});`),
+        `curl_easy_setopt(curl, CURLOPT_URL, ${JSON.stringify(url)});`,
+        `curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, ${JSON.stringify(endpoint.method)});`,
+        'curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);',
+        ...(hasBody ? [`curl_easy_setopt(curl, CURLOPT_POSTFIELDS, ${JSON.stringify(jsonBody)});`] : []),
+        'curl_easy_perform(curl);',
+        'curl_slist_free_all(headers);',
+        'curl_easy_cleanup(curl);',
+      ].join('\n');
+    }
 
-      if (client === 'csharp-httpclient' || client === 'fsharp-httpclient') {
-        const fsharp = client === 'fsharp-httpclient';
-        return [
-          ...(fsharp ? ['open System.Net.Http', 'open System.Text', '', 'use client = new HttpClient()'] : ['using System.Net.Http;', 'using System.Text;', '', 'using var client = new HttpClient();']),
-          ...headers.map(([key, value]) => fsharp
-            ? `client.DefaultRequestHeaders.TryAddWithoutValidation(${JSON.stringify(key)}, ${JSON.stringify(value)}) |> ignore`
-            : `client.DefaultRequestHeaders.TryAddWithoutValidation(${JSON.stringify(key)}, ${JSON.stringify(value)});`),
-          ...(hasBody ? [fsharp
-            ? `use content = new StringContent(${JSON.stringify(jsonBody)}, Encoding.UTF8, "application/json")`
-            : `using var content = new StringContent(${JSON.stringify(jsonBody)}, Encoding.UTF8, "application/json");`] : []),
-          ...(fsharp
-            ? [`let! request = new HttpRequestMessage(HttpMethod.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}, ${JSON.stringify(url)})`, ...(hasBody ? ['request.Content <- content'] : []), 'let! response = client.SendAsync(request)']
-            : [`using var request = new HttpRequestMessage(HttpMethod.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}, ${JSON.stringify(url)})${hasBody ? ' { Content = content }' : ''};`, 'using var response = await client.SendAsync(request);']),
-          fsharp ? 'let! responseBody = response.Content.ReadAsStringAsync()' : 'var responseBody = await response.Content.ReadAsStringAsync();',
-        ].join('\n');
-      }
+    if (client === 'csharp-httpclient' || client === 'fsharp-httpclient') {
+      const fsharp = client === 'fsharp-httpclient';
+      return [
+        ...(fsharp ? ['open System.Net.Http', 'open System.Text', '', 'use client = new HttpClient()'] : ['using System.Net.Http;', 'using System.Text;', '', 'using var client = new HttpClient();']),
+        ...headers.map(([key, value]) => fsharp
+          ? `client.DefaultRequestHeaders.TryAddWithoutValidation(${JSON.stringify(key)}, ${JSON.stringify(value)}) |> ignore`
+          : `client.DefaultRequestHeaders.TryAddWithoutValidation(${JSON.stringify(key)}, ${JSON.stringify(value)});`),
+        ...(hasBody ? [fsharp
+          ? `use content = new StringContent(${JSON.stringify(jsonBody)}, Encoding.UTF8, "application/json")`
+          : `using var content = new StringContent(${JSON.stringify(jsonBody)}, Encoding.UTF8, "application/json");`] : []),
+        ...(fsharp
+          ? [`let! request = new HttpRequestMessage(HttpMethod.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}, ${JSON.stringify(url)})`, ...(hasBody ? ['request.Content <- content'] : []), 'let! response = client.SendAsync(request)']
+          : [`using var request = new HttpRequestMessage(HttpMethod.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}, ${JSON.stringify(url)})${hasBody ? ' { Content = content }' : ''};`, 'using var response = await client.SendAsync(request);']),
+        fsharp ? 'let! responseBody = response.Content.ReadAsStringAsync()' : 'var responseBody = await response.Content.ReadAsStringAsync();',
+      ].join('\n');
+    }
 
-      if (client === 'csharp-restsharp') {
-        return [
-          'using RestSharp;',
-          '',
-          `var client = new RestClient(${JSON.stringify(url)});`,
-          `var request = new RestRequest("", Method.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()});`,
-          ...headers.map(([key, value]) => `request.AddHeader(${JSON.stringify(key)}, ${JSON.stringify(value)});`),
-          ...(hasBody ? [`request.AddStringBody(${JSON.stringify(jsonBody)}, DataFormat.Json);`] : []),
-          'var response = await client.ExecuteAsync(request);',
-        ].join('\n');
-      }
+    if (client === 'csharp-restsharp') {
+      return [
+        'using RestSharp;',
+        '',
+        `var client = new RestClient(${JSON.stringify(url)});`,
+        `var request = new RestRequest("", Method.${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()});`,
+        ...headers.map(([key, value]) => `request.AddHeader(${JSON.stringify(key)}, ${JSON.stringify(value)});`),
+        ...(hasBody ? [`request.AddStringBody(${JSON.stringify(jsonBody)}, DataFormat.Json);`] : []),
+        'var response = await client.ExecuteAsync(request);',
+      ].join('\n');
+    }
 
-      if (client === 'clojure-clj-http') {
-        return [
-          "(require '[clj-http.client :as http])",
-          '',
-          `(http/request {:method :${endpoint.method.toLowerCase()}`,
-          `                :url ${JSON.stringify(url)}`,
-          `                :headers {${headers.map(([key, value]) => `${JSON.stringify(key)} ${JSON.stringify(value)}`).join(', ')}}${hasBody ? `\n                :body ${JSON.stringify(jsonBody)}` : ''}})`,
-        ].join('\n');
-      }
+    if (client === 'clojure-clj-http') {
+      return [
+        "(require '[clj-http.client :as http])",
+        '',
+        `(http/request {:method :${endpoint.method.toLowerCase()}`,
+        `                :url ${JSON.stringify(url)}`,
+        `                :headers {${headers.map(([key, value]) => `${JSON.stringify(key)} ${JSON.stringify(value)}`).join(', ')}}${hasBody ? `\n                :body ${JSON.stringify(jsonBody)}` : ''}})`,
+      ].join('\n');
+    }
 
-      if (client === 'dart-http') {
-        return [
-          "import 'package:http/http.dart' as http;",
-          '',
-          `final uri = Uri.parse(${JSON.stringify(url)});`,
-          `final request = http.Request(${JSON.stringify(endpoint.method)}, uri);`,
-          ...headers.map(([key, value]) => `request.headers[${JSON.stringify(key)}] = ${JSON.stringify(value)};`),
-          ...(hasBody ? [`request.body = ${JSON.stringify(jsonBody)};`] : []),
-          'final response = await request.send();',
-          'print(await response.stream.bytesToString());',
-        ].join('\n');
-      }
+    if (client === 'dart-http') {
+      return [
+        "import 'package:http/http.dart' as http;",
+        '',
+        `final uri = Uri.parse(${JSON.stringify(url)});`,
+        `final request = http.Request(${JSON.stringify(endpoint.method)}, uri);`,
+        ...headers.map(([key, value]) => `request.headers[${JSON.stringify(key)}] = ${JSON.stringify(value)};`),
+        ...(hasBody ? [`request.body = ${JSON.stringify(jsonBody)};`] : []),
+        'final response = await request.send();',
+        'print(await response.stream.bytesToString());',
+      ].join('\n');
+    }
 
-      if (client === 'go-net-http') {
-        return [
-          'package main',
-          '',
-          'import (',
-          '    "fmt"',
-          '    "io"',
-          '    "net/http"',
-          ...(hasBody ? ['    "strings"'] : []),
-          ')',
-          '',
-          `req, err := http.NewRequest(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)}, ${hasBody ? `strings.NewReader(${JSON.stringify(jsonBody)})` : 'nil'})`,
-          'if err != nil { /* handle error */ }',
-          ...headers.map(([key, value]) => `req.Header.Set(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
-          'resp, err := http.DefaultClient.Do(req)',
-          'if err != nil { /* handle error */ }',
-          'defer resp.Body.Close()',
-          'responseBody, _ := io.ReadAll(resp.Body)',
-          'fmt.Println(string(responseBody))',
-        ].join('\n');
-      }
+    if (client === 'go-net-http') {
+      return [
+        'package main',
+        '',
+        'import (',
+        '    "fmt"',
+        '    "io"',
+        '    "net/http"',
+        ...(hasBody ? ['    "strings"'] : []),
+        ')',
+        '',
+        `req, err := http.NewRequest(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)}, ${hasBody ? `strings.NewReader(${JSON.stringify(jsonBody)})` : 'nil'})`,
+        'if err != nil { /* handle error */ }',
+        ...headers.map(([key, value]) => `req.Header.Set(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
+        'resp, err := http.DefaultClient.Do(req)',
+        'if err != nil { /* handle error */ }',
+        'defer resp.Body.Close()',
+        'responseBody, _ := io.ReadAll(resp.Body)',
+        'fmt.Println(string(responseBody))',
+      ].join('\n');
+    }
 
-      if (client === 'java-okhttp') {
-        return [
-          'import okhttp3.*;',
-          '',
-          'OkHttpClient client = new OkHttpClient();',
-          ...(hasBody ? [`RequestBody body = RequestBody.create(${JSON.stringify(jsonBody)}, MediaType.parse("application/json"));`] : []),
-          'Request request = new Request.Builder()',
-          `    .url(${JSON.stringify(url)})`,
-          ...headers.map(([key, value]) => `    .addHeader(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
-          `    .method(${JSON.stringify(endpoint.method)}, ${hasBody ? 'body' : 'null'})`,
-          '    .build();',
-          'try (Response response = client.newCall(request).execute()) {',
-          '    System.out.println(response.body().string());',
-          '}',
-        ].join('\n');
-      }
+    if (client === 'java-okhttp') {
+      return [
+        'import okhttp3.*;',
+        '',
+        'OkHttpClient client = new OkHttpClient();',
+        ...(hasBody ? [`RequestBody body = RequestBody.create(${JSON.stringify(jsonBody)}, MediaType.parse("application/json"));`] : []),
+        'Request request = new Request.Builder()',
+        `    .url(${JSON.stringify(url)})`,
+        ...headers.map(([key, value]) => `    .addHeader(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
+        `    .method(${JSON.stringify(endpoint.method)}, ${hasBody ? 'body' : 'null'})`,
+        '    .build();',
+        'try (Response response = client.newCall(request).execute()) {',
+        '    System.out.println(response.body().string());',
+        '}',
+      ].join('\n');
+    }
 
-      if (client === 'java-unirest') {
-        return [
-          'import kong.unirest.Unirest;',
-          '',
-          `var response = Unirest.${endpoint.method.toLowerCase()}(${JSON.stringify(url)})`,
-          ...headers.map(([key, value]) => `    .header(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
-          ...(hasBody ? [`    .body(${JSON.stringify(jsonBody)})`] : []),
-          '    .asString();',
-          'System.out.println(response.getBody());',
-        ].join('\n');
-      }
+    if (client === 'java-unirest') {
+      return [
+        'import kong.unirest.Unirest;',
+        '',
+        `var response = Unirest.${endpoint.method.toLowerCase()}(${JSON.stringify(url)})`,
+        ...headers.map(([key, value]) => `    .header(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
+        ...(hasBody ? [`    .body(${JSON.stringify(jsonBody)})`] : []),
+        '    .asString();',
+        'System.out.println(response.getBody());',
+      ].join('\n');
+    }
 
-      if (client === 'julia-http') {
-        return [
-          'using HTTP',
-          '',
-          `headers = ${JSON.stringify(headersObject)}`,
-          `response = HTTP.request(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)}, headers${hasBody ? `, ${JSON.stringify(jsonBody)}` : ''})`,
-          'println(String(response.body))',
-        ].join('\n');
-      }
+    if (client === 'julia-http') {
+      return [
+        'using HTTP',
+        '',
+        `headers = ${JSON.stringify(headersObject)}`,
+        `response = HTTP.request(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)}, headers${hasBody ? `, ${JSON.stringify(jsonBody)}` : ''})`,
+        'println(String(response.body))',
+      ].join('\n');
+    }
 
-      if (client === 'kotlin-okhttp') {
-        return [
-          'val client = OkHttpClient()',
-          ...(hasBody ? [`val body = ${JSON.stringify(jsonBody)}.toRequestBody("application/json".toMediaType())`] : []),
-          'val request = Request.Builder()',
-          `    .url(${JSON.stringify(url)})`,
-          ...headers.map(([key, value]) => `    .addHeader(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
-          `    .method(${JSON.stringify(endpoint.method)}, ${hasBody ? 'body' : 'null'})`,
-          '    .build()',
-          'client.newCall(request).execute().use { response -> println(response.body?.string()) }',
-        ].join('\n');
-      }
+    if (client === 'kotlin-okhttp') {
+      return [
+        'val client = OkHttpClient()',
+        ...(hasBody ? [`val body = ${JSON.stringify(jsonBody)}.toRequestBody("application/json".toMediaType())`] : []),
+        'val request = Request.Builder()',
+        `    .url(${JSON.stringify(url)})`,
+        ...headers.map(([key, value]) => `    .addHeader(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
+        `    .method(${JSON.stringify(endpoint.method)}, ${hasBody ? 'body' : 'null'})`,
+        '    .build()',
+        'client.newCall(request).execute().use { response -> println(response.body?.string()) }',
+      ].join('\n');
+    }
 
-      if (client === 'kotlin-fuel') {
-        return [
-          'import com.github.kittinunf.fuel.Fuel',
-          '',
-          `Fuel.${endpoint.method.toLowerCase()}(${JSON.stringify(url)})`,
-          ...headers.map(([key, value]) => `    .header(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
-          ...(hasBody ? [`    .body(${JSON.stringify(jsonBody)})`] : []),
-          '    .responseString { _, _, result -> println(result.get()) }',
-        ].join('\n');
-      }
+    if (client === 'kotlin-fuel') {
+      return [
+        'import com.github.kittinunf.fuel.Fuel',
+        '',
+        `Fuel.${endpoint.method.toLowerCase()}(${JSON.stringify(url)})`,
+        ...headers.map(([key, value]) => `    .header(${JSON.stringify(key)}, ${JSON.stringify(value)})`),
+        ...(hasBody ? [`    .body(${JSON.stringify(jsonBody)})`] : []),
+        '    .responseString { _, _, result -> println(result.get()) }',
+      ].join('\n');
+    }
 
-      if (client === 'objc-nsurlsession') {
-        return [
-          '#import <Foundation/Foundation.h>',
-          '',
-          `NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:${JSON.stringify(url)}]];`,
-          `request.HTTPMethod = ${JSON.stringify(endpoint.method)};`,
-          ...headers.map(([key, value]) => `[request setValue:${JSON.stringify(value)} forHTTPHeaderField:${JSON.stringify(key)}];`),
-          ...(hasBody ? [`request.HTTPBody = [${JSON.stringify(jsonBody)} dataUsingEncoding:NSUTF8StringEncoding];`] : []),
-          'NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {',
-          '    NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);',
-          '}];',
-          '[task resume];',
-        ].join('\n');
-      }
+    if (client === 'objc-nsurlsession') {
+      return [
+        '#import <Foundation/Foundation.h>',
+        '',
+        `NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:${JSON.stringify(url)}]];`,
+        `request.HTTPMethod = ${JSON.stringify(endpoint.method)};`,
+        ...headers.map(([key, value]) => `[request setValue:${JSON.stringify(value)} forHTTPHeaderField:${JSON.stringify(key)}];`),
+        ...(hasBody ? [`request.HTTPBody = [${JSON.stringify(jsonBody)} dataUsingEncoding:NSUTF8StringEncoding];`] : []),
+        'NSURLSessionDataTask *task = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {',
+        '    NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);',
+        '}];',
+        '[task resume];',
+      ].join('\n');
+    }
 
-      if (client === 'ocaml-cohttp') {
-        return [
-          'open Lwt.Infix',
-          'open Cohttp',
-          'open Cohttp_lwt_unix',
-          '',
-          `let headers = Header.of_list [${headers.map(([key, value]) => `(${JSON.stringify(key)}, ${JSON.stringify(value)})`).join('; ')}] in`,
-          `let body = ${hasBody ? `Cohttp_lwt.Body.of_string ${JSON.stringify(jsonBody)}` : 'Cohttp_lwt.Body.empty'} in`,
-          `Client.call ~headers ~body \`${endpoint.method} (Uri.of_string ${JSON.stringify(url)})`,
-          '|= fun (_response, body) -> body |> Cohttp_lwt.Body.to_string |> Lwt.map print_endline',
-        ].join('\n');
-      }
+    if (client === 'ocaml-cohttp') {
+      return [
+        'open Lwt.Infix',
+        'open Cohttp',
+        'open Cohttp_lwt_unix',
+        '',
+        `let headers = Header.of_list [${headers.map(([key, value]) => `(${JSON.stringify(key)}, ${JSON.stringify(value)})`).join('; ')}] in`,
+        `let body = ${hasBody ? `Cohttp_lwt.Body.of_string ${JSON.stringify(jsonBody)}` : 'Cohttp_lwt.Body.empty'} in`,
+        `Client.call ~headers ~body \`${endpoint.method} (Uri.of_string ${JSON.stringify(url)})`,
+        '|= fun (_response, body) -> body |> Cohttp_lwt.Body.to_string |> Lwt.map print_endline',
+      ].join('\n');
+    }
 
-      if (client === 'php-curl') {
-        return [
-          '<?php',
-          '$curl = curl_init();',
-          'curl_setopt_array($curl, [',
-          `    CURLOPT_URL => ${phpSingleQuote(url)},`,
-          '    CURLOPT_RETURNTRANSFER => true,',
-          `    CURLOPT_CUSTOMREQUEST => ${phpSingleQuote(endpoint.method)},`,
-          `    CURLOPT_HTTPHEADER => ${toPhpValue(headers.map(([key, value]) => `${key}: ${value}`))},`,
-          ...(hasBody ? [`    CURLOPT_POSTFIELDS => ${phpSingleQuote(jsonBody)},`] : []),
-          ']);',
-          '$response = curl_exec($curl);',
-          'curl_close($curl);',
-          'echo $response;',
-        ].join('\n');
-      }
+    if (client === 'php-curl') {
+      return [
+        '<?php',
+        '$curl = curl_init();',
+        'curl_setopt_array($curl, [',
+        `    CURLOPT_URL => ${phpSingleQuote(url)},`,
+        '    CURLOPT_RETURNTRANSFER => true,',
+        `    CURLOPT_CUSTOMREQUEST => ${phpSingleQuote(endpoint.method)},`,
+        `    CURLOPT_HTTPHEADER => ${toPhpValue(headers.map(([key, value]) => `${key}: ${value}`))},`,
+        ...(hasBody ? [`    CURLOPT_POSTFIELDS => ${phpSingleQuote(jsonBody)},`] : []),
+        ']);',
+        '$response = curl_exec($curl);',
+        'curl_close($curl);',
+        'echo $response;',
+      ].join('\n');
+    }
 
-      if (client === 'python-httpclient') {
-        return [
-          'import http.client',
-          'from urllib.parse import urlparse',
-          '',
-          `url = urlparse(${JSON.stringify(url)})`,
-          'connection = http.client.HTTPSConnection(url.netloc)',
-          `headers = ${JSON.stringify(headersObject, null, 2)}`,
-          ...(hasBody ? [`body = ${JSON.stringify(jsonBody)}`] : []),
-          `connection.request(${JSON.stringify(endpoint.method)}, url.path, ${hasBody ? 'body=body, ' : ''}headers=headers)`,
-          'response = connection.getresponse()',
-          'print(response.read().decode())',
-          'connection.close()',
-        ].join('\n');
-      }
+    if (client === 'python-httpclient') {
+      return [
+        'import http.client',
+        'from urllib.parse import urlparse',
+        '',
+        `url = urlparse(${JSON.stringify(url)})`,
+        'connection = http.client.HTTPSConnection(url.netloc)',
+        `headers = ${JSON.stringify(headersObject, null, 2)}`,
+        ...(hasBody ? [`body = ${JSON.stringify(jsonBody)}`] : []),
+        `connection.request(${JSON.stringify(endpoint.method)}, url.path, ${hasBody ? 'body=body, ' : ''}headers=headers)`,
+        'response = connection.getresponse()',
+        'print(response.read().decode())',
+        'connection.close()',
+      ].join('\n');
+    }
 
-      if (client === 'r-httr') {
-        return [
-          'library(httr)',
-          '',
-          `response <- VERB(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)},`,
-          `  add_headers(.headers = ${JSON.stringify(headersObject)}),`,
-          ...(hasBody ? [`  body = ${JSON.stringify(jsonBody)},`, '  encode = "raw"'] : ['  encode = "json"']),
-          ')',
-          'content(response, "text")',
-        ].join('\n');
-      }
+    if (client === 'r-httr') {
+      return [
+        'library(httr)',
+        '',
+        `response <- VERB(${JSON.stringify(endpoint.method)}, ${JSON.stringify(url)},`,
+        `  add_headers(.headers = ${JSON.stringify(headersObject)}),`,
+        ...(hasBody ? [`  body = ${JSON.stringify(jsonBody)},`, '  encode = "raw"'] : ['  encode = "json"']),
+        ')',
+        'content(response, "text")',
+      ].join('\n');
+    }
 
-      if (client === 'r-curl') {
-        return [
-          'library(curl)',
-          '',
-          'handle <- new_handle()',
-          `handle_setopt(handle, customrequest = ${JSON.stringify(endpoint.method)})`,
-          ...headers.map(([key, value]) => `handle_setheaders(handle, ${JSON.stringify(`${key}: ${value}`)})`),
-          ...(hasBody ? [`handle_setopt(handle, postfields = ${JSON.stringify(jsonBody)})`] : []),
-          `response <- curl_fetch_memory(${JSON.stringify(url)}, handle = handle)`,
-          'rawToChar(response$content)',
-        ].join('\n');
-      }
+    if (client === 'r-curl') {
+      return [
+        'library(curl)',
+        '',
+        'handle <- new_handle()',
+        `handle_setopt(handle, customrequest = ${JSON.stringify(endpoint.method)})`,
+        ...headers.map(([key, value]) => `handle_setheaders(handle, ${JSON.stringify(`${key}: ${value}`)})`),
+        ...(hasBody ? [`handle_setopt(handle, postfields = ${JSON.stringify(jsonBody)})`] : []),
+        `response <- curl_fetch_memory(${JSON.stringify(url)}, handle = handle)`,
+        'rawToChar(response$content)',
+      ].join('\n');
+    }
 
-      if (client === 'ruby-nethttp') {
-        return [
-          'require "net/http"',
-          'require "uri"',
-          '',
-          `uri = URI(${JSON.stringify(url)})`,
-          `request = Net::HTTP::${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}.new(uri)`,
-          ...headers.map(([key, value]) => `request[${JSON.stringify(key)}] = ${JSON.stringify(value)}`),
-          ...(hasBody ? [`request.body = ${JSON.stringify(jsonBody)}`] : []),
-          'response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") { |http| http.request(request) }',
-          'puts response.body',
-        ].join('\n');
-      }
+    if (client === 'ruby-nethttp') {
+      return [
+        'require "net/http"',
+        'require "uri"',
+        '',
+        `uri = URI(${JSON.stringify(url)})`,
+        `request = Net::HTTP::${endpoint.method[0]}${endpoint.method.slice(1).toLowerCase()}.new(uri)`,
+        ...headers.map(([key, value]) => `request[${JSON.stringify(key)}] = ${JSON.stringify(value)}`),
+        ...(hasBody ? [`request.body = ${JSON.stringify(jsonBody)}`] : []),
+        'response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https") { |http| http.request(request) }',
+        'puts response.body',
+      ].join('\n');
+    }
 
-      if (client === 'rust-reqwest') {
-        return [
-          'use reqwest::header::{HeaderMap, HeaderName, HeaderValue};',
-          '',
-          '#[tokio::main]',
-          'async fn main() -> Result<(), Box<dyn std::error::Error>> {',
-          '    let client = reqwest::Client::new();',
-          '    let mut headers = HeaderMap::new();',
-          ...headers.map(([key, value]) => `    headers.insert(HeaderName::from_static(${JSON.stringify(key.toLowerCase())}), HeaderValue::from_static(${JSON.stringify(value)}));`),
-          `    let response = client.request(reqwest::Method::${endpoint.method}, ${JSON.stringify(url)}).headers(headers)${hasBody ? `.body(${JSON.stringify(jsonBody)})` : ''}.send().await?;`,
-          '    println!("{}", response.text().await?);',
-          '    Ok(())',
-          '}',
-        ].join('\n');
-      }
+    if (client === 'rust-reqwest') {
+      return [
+        'use reqwest::header::{HeaderMap, HeaderName, HeaderValue};',
+        '',
+        '#[tokio::main]',
+        'async fn main() -> Result<(), Box<dyn std::error::Error>> {',
+        '    let client = reqwest::Client::new();',
+        '    let mut headers = HeaderMap::new();',
+        ...headers.map(([key, value]) => `    headers.insert(HeaderName::from_static(${JSON.stringify(key.toLowerCase())}), HeaderValue::from_static(${JSON.stringify(value)}));`),
+        `    let response = client.request(reqwest::Method::${endpoint.method}, ${JSON.stringify(url)}).headers(headers)${hasBody ? `.body(${JSON.stringify(jsonBody)})` : ''}.send().await?;`,
+        '    println!("{}", response.text().await?);',
+        '    Ok(())',
+        '}',
+      ].join('\n');
+    }
 
-      if (client === 'swift-urlsession') {
-        return [
-          'import Foundation',
-          '',
-          `var request = URLRequest(url: URL(string: ${JSON.stringify(url)})!)`,
-          `request.httpMethod = ${JSON.stringify(endpoint.method)}`,
-          ...headers.map(([key, value]) => `request.setValue(${JSON.stringify(value)}, forHTTPHeaderField: ${JSON.stringify(key)})`),
-          ...(hasBody ? [`request.httpBody = ${JSON.stringify(jsonBody)}.data(using: .utf8)`] : []),
-          'let (data, _) = try await URLSession.shared.data(for: request)',
-          'print(String(data: data, encoding: .utf8) ?? "")',
-        ].join('\n');
-      }
+    if (client === 'swift-urlsession') {
+      return [
+        'import Foundation',
+        '',
+        `var request = URLRequest(url: URL(string: ${JSON.stringify(url)})!)`,
+        `request.httpMethod = ${JSON.stringify(endpoint.method)}`,
+        ...headers.map(([key, value]) => `request.setValue(${JSON.stringify(value)}, forHTTPHeaderField: ${JSON.stringify(key)})`),
+        ...(hasBody ? [`request.httpBody = ${JSON.stringify(jsonBody)}.data(using: .utf8)`] : []),
+        'let (data, _) = try await URLSession.shared.data(for: request)',
+        'print(String(data: data, encoding: .utf8) ?? "")',
+      ].join('\n');
+    }
 
-      if (client === 'node-axios' || client === 'javascript-axios') {
-        return [
-          "const axios = require('axios');",
-          '',
-          'axios.request({',
-          `  method: ${JSON.stringify(endpoint.method)},`,
-          `  url: ${JSON.stringify(url)},`,
-          `  headers: { ${headers.map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`).join(', ')} },`,
-          ...(hasBody ? [`  data: ${JSON.stringify(body, null, 2).replace(/\n/g, '\n  ')},`] : []),
-          '}).then((response) => console.log(response.data));',
-        ].join('\n');
-      }
+    if (client === 'node-axios' || client === 'javascript-axios') {
+      return [
+        "const axios = require('axios');",
+        '',
+        'axios.request({',
+        `  method: ${JSON.stringify(endpoint.method)},`,
+        `  url: ${JSON.stringify(url)},`,
+        `  headers: { ${headers.map(([key, value]) => `${JSON.stringify(key)}: ${JSON.stringify(value)}`).join(', ')} },`,
+        ...(hasBody ? [`  data: ${JSON.stringify(body, null, 2).replace(/\n/g, '\n  ')},`] : []),
+        '}).then((response) => console.log(response.data));',
+      ].join('\n');
+    }
 
-      return '';
+    return '';
   }
 
   if (client === 'python-requests') {
@@ -1246,9 +1240,9 @@ function requestAsCode(
     `headers = ${toLanguageValue(Object.fromEntries(headers), 'ruby')}`,
     ...(hasBody
       ? [
-          `body = ${toLanguageValue(body, 'ruby')}`,
-          `response = connection.run_request(${JSON.stringify(endpoint.method.toLowerCase())}, ${JSON.stringify(url)}, JSON.generate(body), headers)`,
-        ]
+        `body = ${toLanguageValue(body, 'ruby')}`,
+        `response = connection.run_request(${JSON.stringify(endpoint.method.toLowerCase())}, ${JSON.stringify(url)}, JSON.generate(body), headers)`,
+      ]
       : [`response = connection.run_request(${JSON.stringify(endpoint.method.toLowerCase())}, ${JSON.stringify(url)}, nil, headers)`]),
     'puts response.body',
   ].join('\n');
@@ -1333,8 +1327,8 @@ function endpointAsMarkdown(endpoint: Endpoint) {
     const bodyExample =
       endpoint.bodyType === 'formdata'
         ? (endpoint.bodyExample as FormField[])
-            .map((field) => `${field.key}: ${field.value}`)
-            .join('\n')
+          .map((field) => `${field.key}: ${field.value}`)
+          .join('\n')
         : exampleAsText(endpoint.bodyExample);
 
     sections.push(
@@ -1477,10 +1471,9 @@ function CodeBlock({
     <div
       className={`
         overflow-hidden rounded-xl border
-        ${
-          tone === 'dark'
-            ? 'border-slate-800 bg-[#0B1220]'
-            : 'border-slate-200 bg-white'
+        ${tone === 'dark'
+          ? 'border-slate-800 bg-[#0B1220]'
+          : 'border-slate-200 bg-white'
         }
       `}
     >
@@ -1489,10 +1482,9 @@ function CodeBlock({
           className={`
             flex flex-wrap items-center justify-between gap-2
             border-b px-3 py-2
-            ${
-              tone === 'dark'
-                ? 'border-slate-800 bg-[#111827]'
-                : 'border-slate-200 bg-slate-50'
+            ${tone === 'dark'
+              ? 'border-slate-800 bg-[#111827]'
+              : 'border-slate-200 bg-slate-50'
             }
           `}
         >
@@ -1508,20 +1500,18 @@ function CodeBlock({
           className={`
             flex items-center justify-between
             border-b px-3 py-2
-            ${
-              tone === 'dark'
-                ? 'border-slate-800 bg-[#111827]'
-                : 'border-slate-200 bg-slate-50'
+            ${tone === 'dark'
+              ? 'border-slate-800 bg-[#111827]'
+              : 'border-slate-200 bg-slate-50'
             }
           `}
         >
           <span
             className={`
               text-xs font-bold uppercase tracking-wider
-              ${
-                tone === 'dark'
-                  ? 'text-slate-400'
-                  : 'text-slate-500'
+              ${tone === 'dark'
+                ? 'text-slate-400'
+                : 'text-slate-500'
               }
             `}
           >
@@ -1537,10 +1527,9 @@ function CodeBlock({
           className={`
             overflow-x-auto p-4
             font-mono text-xs leading-7
-            ${
-              tone === 'dark'
-                ? 'text-indigo-100'
-                : 'text-slate-700'
+            ${tone === 'dark'
+              ? 'text-indigo-100'
+              : 'text-slate-700'
             }
           `}
         >
@@ -1681,10 +1670,9 @@ function Sidebar({
             className={`
               flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2
               text-left text-xs transition-all
-              ${
-                page === 'overview'
-                  ? 'bg-indigo-50 font-semibold text-indigo-700'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+              ${page === 'overview'
+                ? 'bg-indigo-50 font-semibold text-indigo-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
               }
             `}
           >
@@ -1737,9 +1725,8 @@ function Sidebar({
                   <span>{t(group.label)}</span>
 
                   <svg
-                    className={`h-3 w-3 transition-transform ${
-                      collapsed ? '-rotate-90' : ''
-                    }`}
+                    className={`h-3 w-3 transition-transform ${collapsed ? '-rotate-90' : ''
+                      }`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -1771,10 +1758,9 @@ function Sidebar({
                             group flex w-full items-center
                             gap-2.5 rounded-lg px-2.5 py-2
                             text-left text-xs transition-all
-                            ${
-                              active
-                                ? 'bg-indigo-50 text-indigo-800'
-                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                            ${active
+                              ? 'bg-indigo-50 text-indigo-800'
+                              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                             }
                           `}
                         >
@@ -1785,10 +1771,9 @@ function Sidebar({
                           <span
                             className={`
                               min-w-0 flex-1 truncate
-                              ${
-                                active
-                                  ? 'font-semibold'
-                                  : ''
+                              ${active
+                                ? 'font-semibold'
+                                : ''
                               }
                             `}
                           >
@@ -1960,12 +1945,12 @@ const QUICK_CLIENTS: {
   language: RequestLanguage;
   client: RequestClientId;
 }[] = [
-  { label: 'Shell', icon: 'shell', language: 'shell', client: 'shell-curl' },
-  { label: 'Ruby', icon: 'ruby', language: 'ruby', client: 'ruby-faraday' },
-  { label: 'Node.js', icon: 'node', language: 'node', client: 'node-axios' },
-  { label: 'PHP', icon: 'php', language: 'php', client: 'php-guzzle' },
-  { label: 'Python', icon: 'python', language: 'python', client: 'python-requests' },
-];
+    { label: 'Shell', icon: 'shell', language: 'shell', client: 'shell-curl' },
+    { label: 'Ruby', icon: 'ruby', language: 'ruby', client: 'ruby-faraday' },
+    { label: 'Node.js', icon: 'node', language: 'node', client: 'node-axios' },
+    { label: 'PHP', icon: 'php', language: 'php', client: 'php-guzzle' },
+    { label: 'Python', icon: 'python', language: 'python', client: 'python-requests' },
+  ];
 
 function ClientLibrariesCard({
   settings,
@@ -2039,31 +2024,31 @@ function Overview({
   const overviewCards = [
     [
       'Signing Up',
-       'Register as a partner and receive Test Environment credentials.',
+      'Register as a partner and receive Test Environment credentials.',
     ],
     [
       'API Use Suggestion',
-       'Base URLs, HTTP status codes, and error response formats.',
+      'Base URLs, HTTP status codes, and error response formats.',
     ],
     [
       'Authentication / Authorization',
-       'Generate an access token using OAuth 2.0 Client Credentials.',
+      'Generate an access token using OAuth 2.0 Client Credentials.',
     ],
     [
       'Parcel API',
-       'Create and delete parcels, look up parcels, and check COD payment status.',
+      'Create and delete parcels, look up parcels, and check COD payment status.',
     ],
     [
       'Webhook',
-       'Receive parcel status updates through webhooks, review Thai Post status details, and simulate webhooks for testing.',
+      'Receive parcel status updates through webhooks, review Thai Post status details, and simulate webhooks for testing.',
     ],
     [
       'Print Label',
-       'Generate parcel labels as PDF files for up to 20 items per request.',
+      'Generate parcel labels as PDF files for up to 20 items per request.',
     ],
     [
       'Verify COD Account',
-       'Upload documents, register a COD sender account, and check its approval status.',
+      'Upload documents, register a COD sender account, and check its approval status.',
     ],
   ];
 
@@ -2071,37 +2056,37 @@ function Overview({
     [
       '01',
       'Partner submit Google Form',
-       'The partner submits a form to register for MyAPI Open API.',
+      'The partner submits a form to register for MyAPI Open API.',
       'https://forms.gle/FHuFkuTXCHW9kBTR9',
     ],
     [
       '02',
       'MyAPI create Partner Account',
-       'MyExpress creates the partner account, generates client_id / client_secret, and configures the webhook.',
+      'MyExpress creates the partner account, generates client_id / client_secret, and configures the webhook.',
       '',
     ],
     [
       '03',
       'Receive Test Credentials',
-       'MyExpress sends the client_id and client_secret for the Test Environment.',
+      'MyExpress sends the client_id and client_secret for the Test Environment.',
       '',
     ],
     [
       '04',
       'Self-test in Test Environment',
-       'The partner tests API suggestions, authentication/authorization, parcel creation and deletion, and webhooks in the Test Environment.',
+      'The partner tests API suggestions, authentication/authorization, parcel creation and deletion, and webhooks in the Test Environment.',
       '',
     ],
     [
       '05',
       'Plan go-live',
-       'The partner prepares for production launch.',
+      'The partner prepares for production launch.',
       '',
     ],
     [
       '06',
       'Receive Production Credentials',
-       'MyExpress sends the client_id and client_secret for the Production Environment.',
+      'MyExpress sends the client_id and client_secret for the Production Environment.',
       '',
     ],
   ];
@@ -2111,346 +2096,345 @@ function Overview({
       <div className="mx-auto max-w-[1360px] px-7 py-9 lg:px-12">
         <div className="grid items-start gap-6 xl:grid-cols-12">
           <div className="min-w-0 space-y-6 xl:col-span-7">
-          {/* Hero */}
-          <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-indigo-50 blur-3xl" />
+            {/* Hero */}
+            <section className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="absolute right-0 top-0 h-48 w-48 rounded-full bg-indigo-50 blur-3xl" />
 
-            <div className="relative p-7 lg:p-8">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
-                    {t("Getting Started")}</div>
+              <div className="relative p-7 lg:p-8">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div>
+                    <div className="mb-3 inline-flex rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600">
+                      {t("Getting Started")}</div>
 
-                  <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">
-                    {t("MyAPI Open API")}</h1>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-950 lg:text-3xl">
+                      {t("MyAPI Open API")}</h1>
 
-                  <p className="mt-3 max-w-2xl text-xs leading-7 text-slate-500">
-                    {t("Introduction and guide for integrating your application with MyAPI Open API.")}</p>
+                    <p className="mt-3 max-w-2xl text-xs leading-7 text-slate-500">
+                      {t("Introduction and guide for integrating your application with MyAPI Open API.")}</p>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href="/openapi.json"
+                      download="openapi.json"
+                      className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                    >
+                      {t("Download JSON")}
+                    </a>
+                    <a
+                      href="/openapi.yaml"
+                      download="openapi.yaml"
+                      className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                    >
+                      {t("Download YAML")}
+                    </a>
+                  </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  <a
-                    href="/openapi.json"
-                    download="openapi.json"
-                    className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-                  >
-                    {t("Download JSON")}
-                  </a>
-                  <a
-                    href="/openapi.yaml"
-                    download="openapi.yaml"
-                    className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-                  >
-                    {t("Download YAML")}
-                  </a>
-                </div>
+              </div>
+            </section>
+
+            {/* Introduction */}
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-100 px-6 py-5">
+                <h2 className="text-xs font-bold text-slate-950">
+                  {t("Introduction")}</h2>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  {t("Everything you need to start integrating with MyAPI.")}</p>
               </div>
 
-            </div>
-          </section>
+              <div className="p-6">
+                <p className="text-xs leading-7 text-slate-600">
+                  {t("This documentation covers the steps required to sign up as a Partner, receive Test Environment Credentials, understand authentication, and integrate MyAPI Open API with your application.")}</p>
 
-          {/* Introduction */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-5">
-              <h2 className="text-xs font-bold text-slate-950">
-                {t("Introduction")}</h2>
-
-              <p className="mt-1 text-xs text-slate-500">
-                {t("Everything you need to start integrating with MyAPI.")}</p>
-            </div>
-
-            <div className="p-6">
-              <p className="text-xs leading-7 text-slate-600">
-                {t("This documentation covers the steps required to sign up as a Partner, receive Test Environment Credentials, understand authentication, and integrate MyAPI Open API with your application.")}</p>
-
-              <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
-                {overviewCards.map(
-                  ([title, description]) => (
-                    <div
-                      key={title}
-                      className="
+                <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2">
+                  {overviewCards.map(
+                    ([title, description]) => (
+                      <div
+                        key={title}
+                        className="
                         rounded-xl border border-slate-200
                         bg-slate-50/70 p-4
                         transition-colors
                         hover:border-indigo-200
                         hover:bg-indigo-50/40
                       "
-                    >
-                      <div className="text-xs font-bold text-slate-900">
-                        {t(title)}
-                      </div>
-
-                      <p className="mt-1.5 text-xs leading-6 text-slate-500">
-                        {t(description)}
-                      </p>
-                    </div>
-                  ),
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* Signing Up */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-5">
-              <h2 className="text-xs font-bold text-slate-950">
-                {t("Signing Up & Getting Started")}</h2>
-
-              <p className="mt-1 text-xs text-slate-500">
-                {"Partner onboarding, credentials, and API setup"}</p>
-            </div>
-
-            <div className="p-6">
-              <div className="relative ml-3 border-l border-slate-200 pl-8">
-                <div className="space-y-7">
-                  {signupSteps.map(
-                    ([num, title, desc, link]) => (
-                      <div
-                        key={num}
-                        className="relative"
                       >
-                        <span className="absolute -left-[45px] top-0 flex h-7 w-7 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-xs font-bold text-white shadow-sm">
-                          {num}
-                        </span>
-
-                        <h3 className="text-xs font-bold text-slate-900">
+                        <div className="text-xs font-bold text-slate-900">
                           {t(title)}
-                        </h3>
+                        </div>
 
-                        <p className="mt-1 text-xs leading-6 text-slate-500">
-                          {t(desc)}
+                        <p className="mt-1.5 text-xs leading-6 text-slate-500">
+                          {t(description)}
                         </p>
-
-                        {link && (
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="
-                              mt-2 inline-flex items-center gap-1
-                              text-xs font-semibold
-                              text-indigo-600
-                              hover:text-indigo-800
-                            "
-                          >
-                            {t("Open Google Form")}<span>↗</span>
-                          </a>
-                        )}
                       </div>
                     ),
                   )}
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          {/* API Use Suggestion */}
-          <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="border-b border-slate-100 px-6 py-5">
-              <h2 className="text-xs font-bold text-slate-950">
-                {t("API Use Suggestion")}</h2>
+            {/* Signing Up */}
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-100 px-6 py-5">
+                <h2 className="text-xs font-bold text-slate-950">
+                  {t("Signing Up & Getting Started")}</h2>
 
-              <p className="mt-1 text-xs text-slate-500">
-                {"Base URLs and API response standards"}</p>
-            </div>
-
-            <div className="space-y-6 p-6">
-              {/* Environment */}
-              <div>
-                <SectionTitle title={t("Environment")} />
-
-                <div className="overflow-hidden rounded-xl border border-slate-200">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Environment")}</th>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Base URL")}</th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-slate-100">
-                      <tr>
-                        <td className="px-4 py-3 font-semibold text-slate-700">
-                          {t("Test")}</td>
-
-                        <td className="px-4 py-3">
-                          <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-xs text-indigo-700">
-                            {t("https://dev-open-api.myexpress.ai")}</code>
-                        </td>
-                      </tr>
-
-                      <tr>
-                        <td className="px-4 py-3 font-semibold text-slate-700">
-                          {t("Production")}</td>
-
-                        <td className="px-4 py-3">
-                          <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-xs text-indigo-700">
-                            {t("https://open-api.myexpress.ai")}</code>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  {"Partner onboarding, credentials, and API setup"}</p>
               </div>
 
-              {/* Status */}
-              <div>
-                <SectionTitle title={t("Response Status Code")} />
+              <div className="p-6">
+                <div className="relative ml-3 border-l border-slate-200 pl-8">
+                  <div className="space-y-7">
+                    {signupSteps.map(
+                      ([num, title, desc, link]) => (
+                        <div
+                          key={num}
+                          className="relative"
+                        >
+                          <span className="absolute -left-[45px] top-0 flex h-7 w-7 items-center justify-center rounded-full border-4 border-white bg-indigo-600 text-xs font-bold text-white shadow-sm">
+                            {num}
+                          </span>
 
-                <div className="overflow-hidden rounded-xl border border-slate-200">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="w-28 px-4 py-3 font-semibold">
-                          {t("Status")}</th>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Detail")}</th>
-                      </tr>
-                    </thead>
+                          <h3 className="text-xs font-bold text-slate-900">
+                            {t(title)}
+                          </h3>
 
-                    <tbody className="divide-y divide-slate-100">
-                      {STATUS_TABLE.map((status) => (
-                        <tr key={status.code}>
+                          <p className="mt-1 text-xs leading-6 text-slate-500">
+                            {t(desc)}
+                          </p>
+
+                          {link && (
+                            <a
+                              href={link}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="
+                              mt-2 inline-flex items-center gap-1
+                              text-xs font-semibold
+                              text-indigo-600
+                              hover:text-indigo-800
+                            "
+                            >
+                              {t("Open Google Form")}<span>↗</span>
+                            </a>
+                          )}
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* API Use Suggestion */}
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="border-b border-slate-100 px-6 py-5">
+                <h2 className="text-xs font-bold text-slate-950">
+                  {t("API Use Suggestion")}</h2>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  {"Base URLs and API response standards"}</p>
+              </div>
+
+              <div className="space-y-6 p-6">
+                {/* Environment */}
+                <div>
+                  <SectionTitle title={t("Environment")} />
+
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Environment")}</th>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Base URL")}</th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="divide-y divide-slate-100">
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-slate-700">
+                            {t("Test")}</td>
+
                           <td className="px-4 py-3">
-                            <span
-                              className={`
+                            <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-xs text-indigo-700">
+                              {t("https://dev-open-api.myexpress.ai")}</code>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td className="px-4 py-3 font-semibold text-slate-700">
+                            {t("Production")}</td>
+
+                          <td className="px-4 py-3">
+                            <code className="rounded-md bg-slate-50 px-2 py-1 font-mono text-xs text-indigo-700">
+                              {t("https://open-api.myexpress.ai")}</code>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <SectionTitle title={t("Response Status Code")} />
+
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th className="w-28 px-4 py-3 font-semibold">
+                            {t("Status")}</th>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Detail")}</th>
+                        </tr>
+                      </thead>
+
+                      <tbody className="divide-y divide-slate-100">
+                        {STATUS_TABLE.map((status) => (
+                          <tr key={status.code}>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`
                                 inline-flex rounded-md px-2 py-1
                                 font-mono text-xs font-bold
-                                ${
-                                  status.code === 200
+                                ${status.code === 200
                                     ? 'bg-emerald-50 text-emerald-600'
                                     : status.code >= 400
                                       ? 'bg-rose-50 text-rose-600'
                                       : 'bg-slate-50 text-slate-600'
-                                }
+                                  }
                               `}
-                            >
-                              {status.code}
-                            </span>
-                          </td>
+                              >
+                                {status.code}
+                              </span>
+                            </td>
 
-                          <td className="px-4 py-3 text-slate-600">
-                            {t(status.detail)}
-                          </td>
+                            <td className="px-4 py-3 text-slate-600">
+                              {t(status.detail)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Error */}
+                <div>
+                  <SectionTitle title={t("Error Response Detail")} />
+
+                  <div className="overflow-hidden rounded-xl border border-slate-200">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-slate-500">
+                        <tr>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Name")}</th>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Description")}</th>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Type")}</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+
+                      <tbody className="divide-y divide-slate-100">
+                        {[
+                          [
+                            'status',
+                            'status error code',
+                            'Number',
+                          ],
+                          [
+                            'error_description',
+                            'error description',
+                            'String',
+                          ],
+                          [
+                            'name',
+                            'error name from Bad request',
+                            'String',
+                          ],
+                          [
+                            'error',
+                            'error name',
+                            'String',
+                          ],
+                          [
+                            'message',
+                            'detail error',
+                            'String',
+                          ],
+                        ].map(([name, description, type]) => (
+                          <tr key={name}>
+                            <td className="px-4 py-3">
+                              <code className="font-mono font-semibold text-indigo-700">
+                                {name}
+                              </code>
+                            </td>
+
+                            <td className="px-4 py-3 text-slate-600">
+                              {t(description)}
+                            </td>
+
+                            <td className="px-4 py-3">
+                              <code className="font-mono text-slate-400">
+                                {type}
+                              </code>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
+            </section>
 
-              {/* Error */}
-              <div>
-                <SectionTitle title={t("Error Response Detail")} />
+            {/* Explore API */}
+            <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <SectionTitle
+                title={t("Explore API")}
+                description={"Select an API endpoint to view its details"}
+              />
 
-                <div className="overflow-hidden rounded-xl border border-slate-200">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Name")}</th>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Description")}</th>
-                        <th className="px-4 py-3 font-semibold">
-                          {t("Type")}</th>
-                      </tr>
-                    </thead>
-
-                    <tbody className="divide-y divide-slate-100">
-                      {[
-                        [
-                          'status',
-                          'status error code',
-                          'Number',
-                        ],
-                        [
-                          'error_description',
-                          'error description',
-                          'String',
-                        ],
-                        [
-                          'name',
-                          'error name from Bad request',
-                          'String',
-                        ],
-                        [
-                          'error',
-                          'error name',
-                          'String',
-                        ],
-                        [
-                          'message',
-                          'detail error',
-                          'String',
-                        ],
-                      ].map(([name, description, type]) => (
-                        <tr key={name}>
-                          <td className="px-4 py-3">
-                            <code className="font-mono font-semibold text-indigo-700">
-                              {name}
-                            </code>
-                          </td>
-
-                          <td className="px-4 py-3 text-slate-600">
-                            {t(description)}
-                          </td>
-
-                          <td className="px-4 py-3">
-                            <code className="font-mono text-slate-400">
-                              {type}
-                            </code>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Explore API */}
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <SectionTitle
-              title={t("Explore API")}
-              description={"Select an API endpoint to view its details"}
-            />
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              {[
-                [
-                  'Authentication',
-                  'Generate Access Token',
-                  'generate-access-token',
-                ],
-                [
-                  'Parcel API',
-                  'Create Parcel (NON_COD / COD)',
-                  'create-parcel',
-                ],
-                [
-                  'Webhook',
-                  'Simulate Thaipost Webhook',
-                  'simulate-thaipost-webhook',
-                ],
-                [
-                  'Print Label',
-                  'Print Label',
-                  'print-label',
-                ],
-                [
-                  'Verify COD Account',
-                  'Create Sender COD',
-                  'create-sender-cod',
-                ],
-              ].map(([group, title, id]) => (
-                <button
-                  type="button"
-                  key={id}
-                  onClick={() => handleEndpoint(id)}
-                  className="
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                {[
+                  [
+                    'Authentication',
+                    'Generate Access Token',
+                    'generate-access-token',
+                  ],
+                  [
+                    'Parcel API',
+                    'Create Parcel (NON_COD / COD)',
+                    'create-parcel',
+                  ],
+                  [
+                    'Webhook',
+                    'Simulate Thaipost Webhook',
+                    'simulate-thaipost-webhook',
+                  ],
+                  [
+                    'Print Label',
+                    'Print Label',
+                    'print-label',
+                  ],
+                  [
+                    'Verify COD Account',
+                    'Create Sender COD',
+                    'create-sender-cod',
+                  ],
+                ].map(([group, title, id]) => (
+                  <button
+                    type="button"
+                    key={id}
+                    onClick={() => handleEndpoint(id)}
+                    className="
                     group rounded-xl border border-slate-200
                     bg-white p-4 text-left
                     transition-all hover:-translate-y-0.5
@@ -2458,24 +2442,24 @@ function Overview({
                     hover:bg-indigo-50/30
                     hover:shadow-sm
                   "
-                >
-                  <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
-                    {t(group)}
-                  </div>
+                  >
+                    <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+                      {t(group)}
+                    </div>
 
-                  <div className="mt-2 text-xs font-bold text-slate-900">
-                    {t(title)}
-                  </div>
+                    <div className="mt-2 text-xs font-bold text-slate-900">
+                      {t(title)}
+                    </div>
 
-                  <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 transition-transform group-hover:translate-x-0.5">
-                    {t("View API")}<span>→</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
+                    <div className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 transition-transform group-hover:translate-x-0.5">
+                      {t("View API")}<span>→</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </section>
 
-          <div className="h-2" />
+            <div className="h-2" />
           </div>
 
           <aside className="min-w-0 space-y-4 xl:sticky xl:top-6 xl:col-span-5">
@@ -2570,7 +2554,7 @@ function Documentation({
   const responseGroups: FieldGroup<ResponseField>[] =
     endpoint.responseGroups ??
     (endpoint.responseFields &&
-    endpoint.responseFields.length > 0
+      endpoint.responseFields.length > 0
       ? [{ fields: endpoint.responseFields }]
       : []);
 
@@ -2924,57 +2908,57 @@ function Documentation({
 
             {/* Response Body */}
             {responseGroups.map((group, groupIndex) => (
-                <section key={group.title ?? groupIndex}>
-                  <SectionTitle
-                    title={group.title ?? t("Response Body")}
-                    description={t("Fields returned in the successful response.")}
-                  />
+              <section key={group.title ?? groupIndex}>
+                <SectionTitle
+                  title={group.title ?? t("Response Body")}
+                  description={t("Fields returned in the successful response.")}
+                />
 
-                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                    <div className="overflow-x-auto">
-                      <table className="w-full min-w-[620px] text-left text-xs">
-                        <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
-                          <tr>
-                            <th className="px-4 py-3 font-semibold">
-                              {t("Field")}</th>
-                            <th className="w-28 px-4 py-3 font-semibold">
-                              {t("Type")}</th>
-                            <th className="px-4 py-3 font-semibold">
-                              {t("Description")}</th>
-                          </tr>
-                        </thead>
+                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[620px] text-left text-xs">
+                      <thead className="border-b border-slate-100 bg-slate-50 text-slate-500">
+                        <tr>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Field")}</th>
+                          <th className="w-28 px-4 py-3 font-semibold">
+                            {t("Type")}</th>
+                          <th className="px-4 py-3 font-semibold">
+                            {t("Description")}</th>
+                        </tr>
+                      </thead>
 
-                        <tbody className="divide-y divide-slate-100">
-                          {group.fields.map(
-                            (field) => (
-                              <tr
-                                key={field.field}
-                                className="align-top"
-                              >
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono font-semibold text-indigo-700">
-                                    {field.field}
-                                  </code>
-                                </td>
+                      <tbody className="divide-y divide-slate-100">
+                        {group.fields.map(
+                          (field) => (
+                            <tr
+                              key={field.field}
+                              className="align-top"
+                            >
+                              <td className="px-4 py-3.5">
+                                <code className="font-mono font-semibold text-indigo-700">
+                                  {field.field}
+                                </code>
+                              </td>
 
-                                <td className="px-4 py-3.5">
-                                  <code className="font-mono text-xs text-slate-400">
-                                    {field.type}
-                                  </code>
-                                </td>
+                              <td className="px-4 py-3.5">
+                                <code className="font-mono text-xs text-slate-400">
+                                  {field.type}
+                                </code>
+                              </td>
 
-                                <td className="px-4 py-3.5 leading-6 text-slate-600">
-                                  {t(field.desc)}
-                                </td>
-                              </tr>
-                            ),
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
+                              <td className="px-4 py-3.5 leading-6 text-slate-600">
+                                {t(field.desc)}
+                              </td>
+                            </tr>
+                          ),
+                        )}
+                      </tbody>
+                    </table>
                   </div>
-                </section>
-              ))}
+                </div>
+              </section>
+            ))}
 
             {/* Extra tables (e.g. Status Detail) */}
             {endpoint.sections?.map((section) => (
@@ -3260,26 +3244,26 @@ export function ApiDocs() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-      {page === 'overview' ? (
-        <Overview
-          settings={settings}
-          onSettingsChange={updateSettings}
-          onNavigate={(target, endpointId) => {
-            if (endpointId) {
-              selectEndpoint(endpointId);
-              return;
-            }
+        {page === 'overview' ? (
+          <Overview
+            settings={settings}
+            onSettingsChange={updateSettings}
+            onNavigate={(target, endpointId) => {
+              if (endpointId) {
+                selectEndpoint(endpointId);
+                return;
+              }
 
-            setPage(target);
-          }}
-        />
-      ) : (
-        <Documentation
-          endpoint={endpoint}
-          settings={settings}
-          onSettingsChange={updateSettings}
-        />
-      )}
+              setPage(target);
+            }}
+          />
+        ) : (
+          <Documentation
+            endpoint={endpoint}
+            settings={settings}
+            onSettingsChange={updateSettings}
+          />
+        )}
       </div>
     </div>
   );
