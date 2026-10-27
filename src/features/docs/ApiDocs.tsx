@@ -3176,7 +3176,7 @@ function Documentation({
 }
 
 /* ============================================================
-   MAIN COMPONENT
+    MAIN COMPONENT
    ============================================================ */
 
 export function ApiDocs() {
