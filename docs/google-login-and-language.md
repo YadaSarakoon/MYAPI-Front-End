@@ -2,6 +2,8 @@
 
 ## สถานะ
 
+ทุกตำแหน่งที่ใช้ `YOUR_PROJECT_REF` เป็น placeholder ให้แทนด้วย project reference ของ MyAPI ที่ผู้ดูแลยืนยันแล้วเฉพาะตอนตั้งค่าใช้งานจริง เก็บ URL และ key จริงใน `.env` ที่ไม่เข้า Git หรือการตั้งค่า hosting ไม่ใส่กลับลงในเอกสารนี้
+
 โค้ดหน้า Login และ Sign up ใช้ Supabase Google OAuth และกลับมาที่ `/auth/callback` ก่อนเปิดหน้าที่ผู้ใช้ต้องการ ระบบจำภาษาที่เลือกใน `localStorage` ชื่อ `myapi-language` และใช้ร่วมกันทุก route
 
 คืนการเชื่อมต่อไปยังโปรเจกต์เดิม `znhevgidvrtidttdzhik` เพื่อใช้บัญชีและสิทธิ์แอดมินเดิม โปรเจกต์ใหม่ไม่ได้ย้ายบัญชีหรือฐานข้อมูลมาให้ ต้องเปิด Google provider ในโปรเจกต์เดิมและตั้ง callback ของ OAuth Client ให้ตรงตามขั้นตอนด้านล่าง
