@@ -105,7 +105,7 @@ export function DashboardPage() {
   }
 
   return <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-sans text-sm text-slate-800">
-    <Sidebar items={mainLinks} activePath="/dashboard" footer={<SidebarLogoutButton label={t(copy.logout)} onClick={() => void handleLogout()} />} />
+    <Sidebar items={mainLinks} activePath="/dashboard" footer={<SidebarLogoutButton onClick={() => void handleLogout()} />} />
     <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
       <Header
         title={`${copy.welcome}${firstName ? `, ${firstName}` : ''}`}

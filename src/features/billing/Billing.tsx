@@ -333,7 +333,6 @@ export default function Billing() {
                 activePath="/billing"
                 footer={
                     <SidebarLogoutButton
-                        label={t(copy.logout)}
                         onClick={() => void handleLogout()}
                     />
                 }

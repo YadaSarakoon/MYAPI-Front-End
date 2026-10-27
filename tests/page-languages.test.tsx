@@ -11,6 +11,16 @@ vi.mock('../src/features/contact/leadClient', () => ({ countNewLeads: async () =
 beforeEach(() => localStorage.setItem('myapi-language', 'en'));
 afterEach(() => { cleanup(); localStorage.clear(); });
 
+test('defaults the app and Console sidebar to English when no preference is saved', async () => {
+  localStorage.clear();
+  const route = appRoutes.find(route => route.path === '/dashboard')!;
+  render(<MemoryRouter initialEntries={['/dashboard']}><LanguageProvider>{route.element}</LanguageProvider></MemoryRouter>);
+
+  await waitFor(() => expect(document.documentElement.lang).toBe('en'));
+  expect(screen.getByText('Console')).toBeTruthy();
+  expect(localStorage.getItem('myapi-language')).toBe('en');
+});
+
 for (const route of appRoutes.filter(route => route.path !== '/auth/callback')) {
   test(`${route.path} supports persisted English and switching back to Thai`, async () => {
     const view = render(<MemoryRouter initialEntries={[route.path]}><LanguageProvider>{route.element}</LanguageProvider></MemoryRouter>);

@@ -37,7 +37,6 @@ export function Production() {
                 activePath="/production"
                 footer={
                     <SidebarLogoutButton
-                        label={t(copy.logout)}
                         onClick={() => void handleLogout()}
                     />
                 }

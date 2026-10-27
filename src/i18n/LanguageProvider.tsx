@@ -3,7 +3,12 @@ import { LanguageContext, translate, type Language, type LanguageValue } from '.
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
-    try { return localStorage.getItem('myapi-language') === 'en' ? 'en' : 'th'; } catch { return 'th'; }
+    try {
+      const savedLanguage = localStorage.getItem('myapi-language');
+      return savedLanguage === 'th' ? 'th' : 'en';
+    } catch {
+      return 'en';
+    }
   });
   const setLang = useCallback((lang: 'TH' | 'EN') => setLanguage(lang === 'EN' ? 'en' : 'th'), []);
   useEffect(() => {

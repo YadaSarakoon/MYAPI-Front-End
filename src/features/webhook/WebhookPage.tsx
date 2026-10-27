@@ -266,7 +266,7 @@ export function WebhookPage() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-sans text-sm text-slate-800">
-      <Sidebar items={links} activePath="/webhook" footer={<SidebarLogoutButton label={t(copy.logout)} onClick={() => void handleLogout()} />} />
+      <Sidebar items={links} activePath="/webhook" footer={<SidebarLogoutButton onClick={() => void handleLogout()} />} />
       <main className="min-w-0 flex-1 overflow-y-auto bg-[#f8fafc]">
         <Header title={t(copy.title)} subtitle={t(copy.subtitle)} userName={user?.user_metadata?.full_name || user?.email || 'My Company'} userMeta={t("Developer Account")} actions={<div className="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5">{(['TH', 'EN'] as const).map((code) => <button key={code} type="button" onClick={() => setLanguage(code)} aria-pressed={language === code} className={`rounded-md px-2.5 py-1 text-[10px] font-bold transition ${language === code ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}>{code}</button>)}</div>} />
         <PageContainer className="!px-6 !py-7 lg:!px-10">
@@ -393,4 +393,3 @@ export function WebhookPage() {
     </div>
   );
 }
-
